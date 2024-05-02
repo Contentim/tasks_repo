@@ -10,5 +10,5 @@ Git provides a wealth of historical information that, too often, goes unexploite
 
 GitAhead is no longer under active development. Low-level maintenance and bug fix releases will be made as necessary for the forseeable future, but no new features or major changes are planned at this time.
 
-[[Test 2]]
+[[Демо тест 2]]
 

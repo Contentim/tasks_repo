@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Test 1/GitAhead.md",
+                "file": "Test 2/Демо тест 2.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Test 1/GitAhead.md",
+                "file": "Test 2/Демо тест 2.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Test 1/GitAhead.md",
+                "file": "Test 2/Демо тест 2.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Test 1/GitAhead.md"
+                "file": "Test 2/Демо тест 2.md"
               }
             }
           },
@@ -154,10 +154,10 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "9601da8404652283",
+  "active": "338cb608c401c372",
   "lastOpenFiles": [
+    "Test 2/Демо тест 2.md",
     "Test 1/GitAhead.md",
-    "Test 2/Test 2.md",
     "Test 2",
     "Test 1",
     "tasks_repo/Test 1/Lorem.md",
