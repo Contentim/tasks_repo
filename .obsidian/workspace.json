@@ -18,8 +18,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "b41547cd3ed4e77f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Замена ГРМ с роликами, помпы и замена подшипников генератора.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -85,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md",
+                "file": "Замена ГРМ с роликами, помпы и замена подшипников генератора.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md",
+                "file": "Замена ГРМ с роликами, помпы и замена подшипников генератора.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md"
+                "file": "Замена ГРМ с роликами, помпы и замена подшипников генератора.md"
               }
             }
           },
@@ -154,9 +167,12 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "9601da8404652283",
+  "active": "b41547cd3ed4e77f",
   "lastOpenFiles": [
     "Test 2/Демо тест 2 - изменение.md",
+    "Замена ГРМ с роликами, помпы и замена подшипников генератора.md",
+    "Автомобиль/Двигатель",
+    "Автомобиль",
     "Test 1/GitAhead.md",
     "Test 2",
     "Test 1",
