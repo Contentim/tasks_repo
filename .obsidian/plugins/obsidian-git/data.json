@@ -25,7 +25,7 @@
   "showBranchStatusBar": true,
   "setLastSaveToLastCommit": false,
   "submoduleRecurseCheckout": false,
-  "gitDir": "C:\\Users\\Ivan\\Task Repo\\.git",
+  "gitDir": "C:\\Users\\Ivan\\GitRepos\\tasks_repo\\.git",
   "showFileMenu": true,
   "authorInHistoryView": "full",
   "dateInHistoryView": true,
