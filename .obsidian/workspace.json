@@ -11,11 +11,10 @@
             "id": "b41547cd3ed4e77f",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "diff-view",
               "state": {
                 "file": "Test 2/Демо тест 2 - изменение.md",
-                "mode": "source",
-                "source": false
+                "staged": false
               }
             }
           }
@@ -85,7 +84,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +100,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +121,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md"
-              }
+              "state": {}
             }
           },
           {
@@ -154,10 +149,10 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "338cb608c401c372",
+  "active": "b41547cd3ed4e77f",
   "lastOpenFiles": [
-    "Автомобиль/Ходовка/Размер дисков.md",
     "Test 2/Демо тест 2 - изменение.md",
+    "Автомобиль/Ходовка/Размер дисков.md",
     "Автомобиль/Двигатель/Смазка механизмов ГРМ.md",
     "Автомобиль/Ходовка",
     "Автомобиль/Двигатель/Масло (какое заливать в свою машину).md",
