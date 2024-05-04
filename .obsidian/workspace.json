@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "53e0de5285346e5f",
+        "id": "aa2fb778b1049a57",
         "type": "tabs",
         "children": [
           {
-            "id": "2a718f28085c9a41",
+            "id": "9770b7b181f1f2a6",
             "type": "leaf",
             "state": {
               "type": "diff-view",
               "state": {
-                "file": ".obsidian/workspace.json",
+                "file": "Test 2/Демо тест 2 - изменение.md",
                 "staged": false
               }
             }
@@ -47,7 +47,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#тест2",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -64,7 +64,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -149,7 +150,7 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "2a718f28085c9a41",
+  "active": "9770b7b181f1f2a6",
   "lastOpenFiles": [
     "Test 2/Демо тест 2 - изменение.md",
     "conflict-files-obsidian-git.md",
