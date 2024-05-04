@@ -4,17 +4,18 @@
     "type": "split",
     "children": [
       {
-        "id": "aa2fb778b1049a57",
+        "id": "767cb1a1bb29ae28",
         "type": "tabs",
         "children": [
           {
-            "id": "9770b7b181f1f2a6",
+            "id": "4fcbe4d4b6d0e2c7",
             "type": "leaf",
             "state": {
-              "type": "diff-view",
+              "type": "markdown",
               "state": {
                 "file": "Test 2/Демо тест 2 - изменение.md",
-                "staged": false
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -47,7 +48,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#тест2",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -85,6 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Test 2/Демо тест 2 - изменение.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -101,6 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Test 2/Демо тест 2 - изменение.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -122,7 +125,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Test 2/Демо тест 2 - изменение.md"
+              }
             }
           },
           {
@@ -150,8 +155,9 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "9770b7b181f1f2a6",
+  "active": "4fcbe4d4b6d0e2c7",
   "lastOpenFiles": [
+    "2024-05-05.md",
     "Test 2/Демо тест 2 - изменение.md",
     "conflict-files-obsidian-git.md",
     "Автомобиль/Ходовка/Размер дисков.md",
