@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "f3b3cf2a0d8a9ac3",
+        "id": "322385ec2fbebb83",
         "type": "tabs",
         "children": [
           {
-            "id": "b41547cd3ed4e77f",
+            "id": "849f4db97e98aba9",
             "type": "leaf",
             "state": {
               "type": "diff-view",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md",
+                "file": ".obsidian/workspace.json",
                 "staged": false
               }
             }
@@ -149,8 +149,9 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "b41547cd3ed4e77f",
+  "active": "849f4db97e98aba9",
   "lastOpenFiles": [
+    "conflict-files-obsidian-git.md",
     "Test 2/Демо тест 2 - изменение.md",
     "Автомобиль/Ходовка/Размер дисков.md",
     "Автомобиль/Двигатель/Смазка механизмов ГРМ.md",
