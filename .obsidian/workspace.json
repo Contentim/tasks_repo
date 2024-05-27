@@ -42,9 +42,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "679ef2c71cf1d69a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Округление.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -110,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Округление.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +139,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Округление.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +162,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md"
+                "file": "Округление.md"
               }
             }
           },
@@ -179,10 +191,11 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "f04178fb132d292c",
+  "active": "679ef2c71cf1d69a",
   "lastOpenFiles": [
-    "Установка пакета или демо-данных.md",
     "Развернуть локальный стенд.md",
+    "Округление.md",
+    "Установка пакета или демо-данных.md",
     "Test 1/GitAhead.md",
     "Test 2/Демо тест 2 - изменение.md",
     "2024-05-05.md",
