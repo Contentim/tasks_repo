@@ -18,8 +18,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "80f82b2e5747ff1a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Установка пакета или демо-данных.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -85,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md",
+                "file": "Установка пакета или демо-данных.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md",
+                "file": "Установка пакета или демо-данных.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Test 2/Демо тест 2 - изменение.md"
+                "file": "Установка пакета или демо-данных.md"
               }
             }
           },
@@ -154,10 +167,11 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "4fcbe4d4b6d0e2c7",
+  "active": "80f82b2e5747ff1a",
   "lastOpenFiles": [
-    "2024-05-05.md",
     "Test 2/Демо тест 2 - изменение.md",
+    "Установка пакета или демо-данных.md",
+    "2024-05-05.md",
     "conflict-files-obsidian-git.md",
     "Автомобиль/Ходовка/Размер дисков.md",
     "Автомобиль/Двигатель/Смазка механизмов ГРМ.md",
