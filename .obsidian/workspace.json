@@ -37,7 +37,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Test 1/GitAhead.md",
+                "file": "Развернуть локальный стенд.md",
                 "mode": "source",
                 "source": false
               }
@@ -90,8 +90,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -111,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Test 1/GitAhead.md",
+                "file": "Развернуть локальный стенд.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -128,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Test 1/GitAhead.md",
+                "file": "Развернуть локальный стенд.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -151,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Test 1/GitAhead.md"
+                "file": "Развернуть локальный стенд.md"
               }
             }
           },
@@ -182,8 +181,9 @@
   },
   "active": "f04178fb132d292c",
   "lastOpenFiles": [
-    "Развернуть локальный стенд.md",
     "Установка пакета или демо-данных.md",
+    "Развернуть локальный стенд.md",
+    "Test 1/GitAhead.md",
     "Test 2/Демо тест 2 - изменение.md",
     "2024-05-05.md",
     "conflict-files-obsidian-git.md",
@@ -200,7 +200,6 @@
     "Pasted image 20240502225403.png",
     "Автомобиль/Двигатель",
     "Автомобиль",
-    "Test 1/GitAhead.md",
     "Test 2",
     "Test 1",
     "tasks_repo/Test 1/Lorem.md",
