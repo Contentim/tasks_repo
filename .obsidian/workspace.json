@@ -30,9 +30,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "f04178fb132d292c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Развернуть локальный стенд.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -98,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Установка пакета или демо-данных.md",
+                "file": "Развернуть локальный стенд.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Установка пакета или демо-данных.md",
+                "file": "Развернуть локальный стенд.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Установка пакета или демо-данных.md"
+                "file": "Развернуть локальный стенд.md"
               }
             }
           },
@@ -167,10 +179,11 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "80f82b2e5747ff1a",
+  "active": "f04178fb132d292c",
   "lastOpenFiles": [
-    "Test 2/Демо тест 2 - изменение.md",
     "Установка пакета или демо-данных.md",
+    "Развернуть локальный стенд.md",
+    "Test 2/Демо тест 2 - изменение.md",
     "2024-05-05.md",
     "conflict-files-obsidian-git.md",
     "Автомобиль/Ходовка/Размер дисков.md",
