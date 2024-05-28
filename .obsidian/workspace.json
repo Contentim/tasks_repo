@@ -61,7 +61,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#xms",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -78,7 +78,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -167,7 +168,7 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "1b5ba5029e5f5e5a",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Установка пакета или демо-данных.md",
     "Отключение треугольника сортировки в таблице XMS.md",
