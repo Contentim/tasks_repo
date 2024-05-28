@@ -1,3 +1,5 @@
 # Отключение треугольника сортировки в таблице XMS
 
-<COL WIDTH="30zr" **PROHIBIT-SORT="1"**/>
+```js
+<COL WIDTH="30zr" PROHIBIT-SORT="1"/>
+```
