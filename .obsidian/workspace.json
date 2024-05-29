@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Логика А.М.Руденко.md",
+                "file": "История становления и развития логики.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Логика А.М.Руденко.md",
+                "file": "История становления и развития логики.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Логика А.М.Руденко.md",
+                "file": "История становления и развития логики.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Логика А.М.Руденко.md"
+                "file": "История становления и развития логики.md"
               }
             }
           },
@@ -169,8 +169,9 @@
   },
   "active": "1b5ba5029e5f5e5a",
   "lastOpenFiles": [
-    "Значение логики в жизни человека.md",
     "Логика А.М.Руденко.md",
+    "История становления и развития логики.md",
+    "Значение логики в жизни человека.md",
     "Отключение треугольника сортировки в таблице XMS.md",
     "Обложка - Логика А.М.Руденко.png",
     "Установка пакета или демо-данных.md",
