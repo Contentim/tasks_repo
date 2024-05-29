@@ -30,9 +30,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "0c1eb57eadf4fd26",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Без названия.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -61,7 +73,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#xms",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -78,8 +90,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -99,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Отключение треугольника сортировки в таблице XMS.md",
+                "file": "Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Отключение треугольника сортировки в таблице XMS.md",
+                "file": "Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -139,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Отключение треугольника сортировки в таблице XMS.md"
+                "file": "Без названия.md"
               }
             }
           },
@@ -168,10 +179,11 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "0c1eb57eadf4fd26",
   "lastOpenFiles": [
-    "Установка пакета или демо-данных.md",
     "Отключение треугольника сортировки в таблице XMS.md",
+    "Без названия.md",
+    "Установка пакета или демо-данных.md",
     "Test 2/Демо тест 2 - изменение.md",
     "Развернуть локальный стенд.md",
     "Округление.md",
