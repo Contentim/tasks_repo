@@ -26,8 +26,8 @@
               "type": "markdown",
               "state": {
                 "file": "Словарь терминов и выражений.md",
-                "mode": "preview",
-                "source": false
+                "mode": "source",
+                "source": true
               }
             }
           }
