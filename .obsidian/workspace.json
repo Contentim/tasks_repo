@@ -26,7 +26,7 @@
               "type": "markdown",
               "state": {
                 "file": "Словарь терминов и выражений.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -167,7 +167,7 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "1b5ba5029e5f5e5a",
   "lastOpenFiles": [
     "Значение логики в жизни человека.md",
     "История становления и развития логики.md",
