@@ -1,5 +1,9 @@
 /* Updated 2023-11-02 */
 
+h1 {
+    color:#a52a2a;
+}
+
 .dashboard {
     font-family: inherit;
     padding-left: 25px !important;
