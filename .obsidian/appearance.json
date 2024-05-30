@@ -2,5 +2,6 @@
   "accentColor": "",
   "enabledCssSnippets": [
     "dictionary"
-  ]
+  ],
+  "cssTheme": "Typora-Vue"
 }
