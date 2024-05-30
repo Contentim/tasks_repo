@@ -30,9 +30,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "db3b41d37877d471",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Словарь терминов и выражений.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -98,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "История становления и развития логики.md",
+                "file": "Словарь терминов и выражений.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "История становления и развития логики.md",
+                "file": "Словарь терминов и выражений.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "История становления и развития логики.md"
+                "file": "Словарь терминов и выражений.md"
               }
             }
           },
@@ -167,10 +179,11 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "1b5ba5029e5f5e5a",
+  "active": "db3b41d37877d471",
   "lastOpenFiles": [
-    "Логика А.М.Руденко.md",
     "История становления и развития логики.md",
+    "Словарь терминов и выражений.md",
+    "Логика А.М.Руденко.md",
     "Значение логики в жизни человека.md",
     "Отключение треугольника сортировки в таблице XMS.md",
     "Обложка - Логика А.М.Руденко.png",
