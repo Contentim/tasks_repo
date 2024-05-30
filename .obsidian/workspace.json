@@ -72,7 +72,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "диалектика",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -89,8 +89,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -180,8 +179,9 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "4f4c733d5d9f5285",
   "lastOpenFiles": [
+    "Без названия",
     "Домашняя страница.md",
     "Словарь терминов и выражений.md",
     "Countdown.md",
