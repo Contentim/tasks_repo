@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Книги/Логика/Значение логики в жизни человека.md",
+                "file": "Домашняя страница.md",
                 "mode": "preview",
                 "source": false
               }
@@ -122,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Книги/Логика/Значение логики в жизни человека.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -139,7 +139,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Книги/Логика/Значение логики в жизни человека.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -162,7 +162,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Книги/Логика/Значение логики в жизни человека.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -179,8 +179,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5,
-    "collapsed": true
+    "width": 415.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -193,14 +192,14 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "6721d5a38477d1d5",
   "lastOpenFiles": [
+    "Книги/Логика/Логика А.М.Руденко.md",
+    "Книги/Логика/Значение логики в жизни человека.md",
     "Домашняя страница.md",
     "Книги/Логика",
     "Книги",
-    "Книги/Логика/Значение логики в жизни человека.md",
     "Книги/Логика/История становления и развития логики.md",
-    "Книги/Логика/Логика А.М.Руденко.md",
     "Словарь терминов и выражений.md",
     "Countdown.md",
     "Без названия.md",
