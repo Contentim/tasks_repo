@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Countdown.md",
+                "file": "История становления и развития логики.md",
                 "mode": "preview",
                 "source": false
               }
@@ -122,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Countdown.md",
+                "file": "История становления и развития логики.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -139,7 +139,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Countdown.md",
+                "file": "История становления и развития логики.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -162,7 +162,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Countdown.md"
+                "file": "История становления и развития логики.md"
               }
             }
           },
@@ -195,13 +195,13 @@
   },
   "active": "6721d5a38477d1d5",
   "lastOpenFiles": [
+    "Countdown.md",
     "Домашняя страница.md",
     "Словарь терминов и выражений.md",
     "Без названия.md",
     "definitions/Прокрустово ложе.md",
     "История становления и развития логики.md",
     "definitions",
-    "Countdown.md",
     "Значение логики в жизни человека.md",
     "Развернуть локальный стенд.md",
     "Округление.md",
