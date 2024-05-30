@@ -44,8 +44,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Словарь терминов и выражений.md",
-                "mode": "source",
+                "file": "Countdown.md",
+                "mode": "preview",
                 "source": true
               }
             }
@@ -116,7 +116,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Словарь терминов и выражений.md",
+                "file": "Countdown.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -133,7 +133,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Словарь терминов и выражений.md",
+                "file": "Countdown.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -156,7 +156,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Словарь терминов и выражений.md"
+                "file": "Countdown.md"
               }
             }
           },
@@ -188,8 +188,8 @@
   },
   "active": "6a96f7ab26962a90",
   "lastOpenFiles": [
-    "Countdown.md",
     "Словарь терминов и выражений.md",
+    "Countdown.md",
     "Life Progress.md",
     "Установка пакета или демо-данных.md",
     "Развернуть локальный стенд.md",
