@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Словарь терминов и выражений.md",
-                "mode": "source",
+                "file": "Домашняя страница.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -26,7 +26,7 @@
               "type": "markdown",
               "state": {
                 "file": "Словарь терминов и выражений.md",
-                "mode": "preview",
+                "mode": "source",
                 "source": false
               }
             }
@@ -43,8 +43,7 @@
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -110,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Словарь терминов и выражений.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +126,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Словарь терминов и выражений.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +149,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Словарь терминов и выражений.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -180,17 +179,17 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "ea6e41d89dcc93ea",
+  "active": "80f82b2e5747ff1a",
   "lastOpenFiles": [
+    "Словарь терминов и выражений.md",
+    "Countdown.md",
     "Домашняя страница.md",
     "Значение логики в жизни человека.md",
-    "Словарь терминов и выражений.md",
     "Развернуть локальный стенд.md",
     "Округление.md",
     "Life Progress.md",
     "Установка пакета или демо-данных.md",
     "Логика А.М.Руденко.md",
-    "Countdown.md",
     "2024-05.md",
     "История становления и развития логики.md",
     "Без названия.canvas",
