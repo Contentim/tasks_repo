@@ -1,7 +1,9 @@
 {
   "accentColor": "#4260b8",
   "enabledCssSnippets": [
-    "dictionary"
+    "dictionary",
+    "dashboard",
+    "dashboard-ReadLineLength"
   ],
   "cssTheme": "Typora-Vue"
 }
