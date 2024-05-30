@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Словарь терминов и выражений.md",
                 "mode": "preview",
                 "source": false
               }
@@ -110,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Словарь терминов и выражений.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Словарь терминов и выражений.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Словарь терминов и выражений.md"
               }
             }
           },
@@ -182,8 +182,8 @@
   },
   "active": "ea6e41d89dcc93ea",
   "lastOpenFiles": [
-    "Значение логики в жизни человека.md",
     "Домашняя страница.md",
+    "Значение логики в жизни человека.md",
     "Словарь терминов и выражений.md",
     "Развернуть локальный стенд.md",
     "Округление.md",
