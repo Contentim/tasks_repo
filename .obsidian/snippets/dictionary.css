@@ -1,4 +1,7 @@
+/* Updated 2023-11-02 */
+
 .dashboard {
+    font-family: inherit;
     padding-left: 25px !important;
     padding-right: 25px !important;
     padding-top: 20px !important;
@@ -8,6 +11,7 @@
     max-width: 100%;
 }
 
+/* Title at top of the document */
 .dashboard .markdown-preview-section .title {
     top: 60px;
     position: absolute;
@@ -22,11 +26,26 @@
     padding-bottom: 3px !important;
 }
 
+
+/* Get rid of the parent bullet */
+.dashboard div.markdown-preview-section > div > ul > li > div.list-bullet {
+    display: none !important;
+}
+
+/* Remove the indentation guide lines */
+.dashboard.markdown-rendered.show-indentation-guide li > ul::before,
+.dashboard.markdown-rendered.show-indentation-guide li > ol::before {
+  display: none;
+}
+
+div.markdown-preview-section > div > ul.has-list-bullet > li {
+    padding-left: 0p !important;
+}
+
 .dashboard div > ul {
     list-style: none;
     display: flex;
     column-gap: 50px;
-    row-gap: 30px;
     flex-flow: row wrap;
 }
 
@@ -35,10 +54,8 @@
     width: 15%;
 }
 
-.dashboard .task-list-item {
-    width: 100% !important;
-}
-
-ul.contains-task-list.plugin-tasks-query-result {
-    row-gap: normal;
+/* Dataview support */
+.dashboard ul.dataview {
+    row-gap: 0px !important;
+    list-style-type: disc !important;
 }
