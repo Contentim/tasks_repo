@@ -20,6 +20,18 @@
             }
           },
           {
+            "id": "6721d5a38477d1d5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Домашняя страница.md",
+                "mode": "preview",
+                "source": false
+              }
+            }
+          },
+          {
             "id": "ea6e41d89dcc93ea",
             "type": "leaf",
             "state": {
@@ -43,7 +55,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -109,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Словарь терминов и выражений.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,7 +139,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Словарь терминов и выражений.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -149,7 +162,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Словарь терминов и выражений.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -176,17 +189,18 @@
       "canvas:Создать новый холст": false,
       "daily-notes:Сегодняшняя заметка": false,
       "templates:Вставить шаблон": false,
-      "command-palette:Открыть палитру команд": false
+      "command-palette:Открыть палитру команд": false,
+      "homepage:Open homepage": false
     }
   },
-  "active": "80f82b2e5747ff1a",
+  "active": "6721d5a38477d1d5",
   "lastOpenFiles": [
-    "Без названия.md",
     "Словарь терминов и выражений.md",
+    "Домашняя страница.md",
+    "Без названия.md",
     "definitions/Прокрустово ложе.md",
     "История становления и развития логики.md",
     "definitions",
-    "Домашняя страница.md",
     "Countdown.md",
     "Значение логики в жизни человека.md",
     "Развернуть локальный стенд.md",
