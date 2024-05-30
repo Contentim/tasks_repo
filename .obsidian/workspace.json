@@ -35,17 +35,17 @@
         "currentTab": 1
       },
       {
-        "id": "2c5bab414b2d9d10",
+        "id": "e38d6c60c01b5497",
         "type": "tabs",
         "children": [
           {
-            "id": "09cfd495db111fbe",
+            "id": "6a96f7ab26962a90",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "Словарь терминов и выражений.md",
-                "mode": "preview",
+                "mode": "source",
                 "source": true
               }
             }
@@ -186,11 +186,12 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "09cfd495db111fbe",
+  "active": "6a96f7ab26962a90",
   "lastOpenFiles": [
+    "Countdown.md",
+    "Словарь терминов и выражений.md",
     "Life Progress.md",
     "Установка пакета или демо-данных.md",
-    "Словарь терминов и выражений.md",
     "Развернуть локальный стенд.md",
     "Значение логики в жизни человека.md",
     "История становления и развития логики.md",
