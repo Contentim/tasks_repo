@@ -20,18 +20,6 @@
             }
           },
           {
-            "id": "eeaea3111c9a6acf",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "definitions/Прокрустово ложе.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
             "id": "ea6e41d89dcc93ea",
             "type": "leaf",
             "state": {
@@ -55,8 +43,7 @@
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -122,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "definitions/Прокрустово ложе.md",
+                "file": "Словарь терминов и выражений.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -139,7 +126,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "definitions/Прокрустово ложе.md",
+                "file": "Словарь терминов и выражений.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -162,7 +149,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "definitions/Прокрустово ложе.md"
+                "file": "Словарь терминов и выражений.md"
               }
             }
           },
@@ -192,10 +179,10 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "80f82b2e5747ff1a",
   "lastOpenFiles": [
-    "Словарь терминов и выражений.md",
     "definitions/Прокрустово ложе.md",
+    "Словарь терминов и выражений.md",
     "История становления и развития логики.md",
     "definitions",
     "Домашняя страница.md",
