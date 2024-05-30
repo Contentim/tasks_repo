@@ -13,7 +13,19 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "История становления и развития логики.md",
+                "file": "Словарь терминов и выражений.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "eeaea3111c9a6acf",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "definitions/Прокрустово ложе.md",
                 "mode": "source",
                 "source": false
               }
@@ -43,7 +55,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -109,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "История становления и развития логики.md",
+                "file": "definitions/Прокрустово ложе.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,7 +139,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "История становления и развития логики.md",
+                "file": "definitions/Прокрустово ложе.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -149,7 +162,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "История становления и развития логики.md"
+                "file": "definitions/Прокрустово ложе.md"
               }
             }
           },
@@ -179,11 +192,13 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "80f82b2e5747ff1a",
+  "active": "4f4c733d5d9f5285",
   "lastOpenFiles": [
+    "Словарь терминов и выражений.md",
+    "definitions/Прокрустово ложе.md",
+    "История становления и развития логики.md",
     "definitions",
     "Домашняя страница.md",
-    "Словарь терминов и выражений.md",
     "Countdown.md",
     "Значение логики в жизни человека.md",
     "Развернуть локальный стенд.md",
@@ -192,7 +207,6 @@
     "Установка пакета или демо-данных.md",
     "Логика А.М.Руденко.md",
     "2024-05.md",
-    "История становления и развития логики.md",
     "Без названия.canvas",
     "Отключение треугольника сортировки в таблице XMS.md",
     "Обложка - Логика А.М.Руденко.png",
