@@ -1,5 +1,5 @@
 {
-  "fileInclusion": true,
+  "fileInclusion": false,
   "sameDest": true,
   "fileDest": "",
   "fileOverwrite": false,
