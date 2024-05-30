@@ -33,6 +33,24 @@
           }
         ],
         "currentTab": 1
+      },
+      {
+        "id": "2899dbba4882b496",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0a45583da05f1db0",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Словарь терминов и выражений.md",
+                "mode": "preview",
+                "source": true
+              }
+            }
+          }
+        ]
       }
     ],
     "direction": "vertical"
@@ -155,7 +173,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 415.5
+    "width": 415.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -167,7 +186,7 @@
       "command-palette:Открыть палитру команд": false
     }
   },
-  "active": "1b5ba5029e5f5e5a",
+  "active": "0a45583da05f1db0",
   "lastOpenFiles": [
     "Установка пакета или демо-данных.md",
     "Развернуть локальный стенд.md",
