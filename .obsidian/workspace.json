@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Countdown.md",
                 "mode": "preview",
                 "source": false
               }
@@ -122,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Countdown.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -139,7 +139,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Countdown.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -162,7 +162,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Countdown.md"
               }
             }
           },
@@ -195,8 +195,8 @@
   },
   "active": "6721d5a38477d1d5",
   "lastOpenFiles": [
-    "Словарь терминов и выражений.md",
     "Домашняя страница.md",
+    "Словарь терминов и выражений.md",
     "Без названия.md",
     "definitions/Прокрустово ложе.md",
     "История становления и развития логики.md",
