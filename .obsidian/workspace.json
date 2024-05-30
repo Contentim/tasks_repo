@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
-                "mode": "preview",
+                "file": "История становления и развития логики.md",
+                "mode": "source",
                 "source": false
               }
             }
@@ -109,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "История становления и развития логики.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,7 +126,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "История становления и развития логики.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -149,7 +149,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "История становления и развития логики.md"
               }
             }
           },
@@ -181,9 +181,9 @@
   },
   "active": "80f82b2e5747ff1a",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Словарь терминов и выражений.md",
     "Countdown.md",
-    "Домашняя страница.md",
     "Значение логики в жизни человека.md",
     "Развернуть локальный стенд.md",
     "Округление.md",
