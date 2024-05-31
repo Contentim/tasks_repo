@@ -4,7 +4,8 @@
     "dashboard",
     "dashboard-ReadLineLength",
     "dictionary",
-    "infobox"
+    "infobox",
+    "annotation"
   ],
   "cssTheme": "Typora-Vue",
   "theme": "moonstone"
