@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
-                "mode": "source",
+                "file": "Домашняя страница.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -158,6 +158,7 @@
   },
   "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование и debug.md",
     "Pasted image 20240531125110.png",
     "Работа/Websoft",
     "Домашняя страница.md",
@@ -180,7 +181,6 @@
     "Отключение треугольника сортировки в таблице XMS.md",
     "Обложка - Логика А.М.Руденко.png",
     "Test 2/Демо тест 2 - изменение.md",
-    "Работа/Websoft/Логирование и debug.md",
     "2024-05-05.md",
     "conflict-files-obsidian-git.md",
     "Автомобиль/Ходовка/Размер дисков.md",
