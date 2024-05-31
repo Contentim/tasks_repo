@@ -3,7 +3,8 @@
   "enabledCssSnippets": [
     "dashboard",
     "dashboard-ReadLineLength",
-    "dictionary"
+    "dictionary",
+    "infobox"
   ],
   "cssTheme": "Typora-Vue",
   "theme": "moonstone"

@@ -32,6 +32,18 @@
             }
           },
           {
+            "id": "28be95bf98bfd95f",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Без названия.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
             "id": "ea6e41d89dcc93ea",
             "type": "leaf",
             "state": {
@@ -56,7 +68,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -122,7 +134,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -139,7 +151,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -162,7 +174,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Без названия.md"
               }
             }
           },
@@ -192,17 +204,17 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "28be95bf98bfd95f",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Без названия.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Книги/Логика/Значение логики в жизни человека.md",
-    "Домашняя страница.md",
     "Книги/Логика",
     "Книги",
     "Книги/Логика/История становления и развития логики.md",
     "Словарь терминов и выражений.md",
     "Countdown.md",
-    "Без названия.md",
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Словарь терминов и выражений",
     "Развернуть локальный стенд.md",
