@@ -1,5 +1,5 @@
 {
   "alwaysUpdateLinks": true,
   "attachmentFolderPath": "./attachments",
-  "defaultViewMode": "preview"
+  "defaultViewMode": "source"
 }
