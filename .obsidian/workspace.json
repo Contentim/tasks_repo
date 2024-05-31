@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Countdown.md",
+                "file": "templates/Книга.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Countdown.md",
+                "file": "templates/Книга.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Countdown.md",
+                "file": "templates/Книга.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Countdown.md"
+                "file": "templates/Книга.md"
               }
             }
           },
@@ -171,8 +171,8 @@
   },
   "active": "61f906f618e36790",
   "lastOpenFiles": [
-    "Книги/Без названия арапрапрапр.md",
     "Countdown.md",
+    "Книги/Без названия арапрапрапр.md",
     "templates/Книга.md",
     "Книги/Без названия 1.md",
     "Домашняя страница.md",
