@@ -158,6 +158,12 @@
   },
   "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
+    "logseq/custom.css",
+    "pages/contents.md",
+    "pages",
+    "journals",
+    "logseq/config.edn",
+    "logseq",
     "Округление StrRealFixed.md",
     "Обложка - Логика А.М.Руденко.png",
     "Домашняя страница.md",
@@ -193,11 +199,6 @@
     "2024-05-02.md",
     "Автомобиль/Двигатель/Pasted image 20240502225616.png",
     "Pasted image 20240502225403.png",
-    "Автомобиль/Двигатель",
-    "Автомобиль",
-    "Test 2",
-    "Работа",
-    "tasks_repo/Test 1/Lorem.md",
-    "tasks_repo/Test 2"
+    "Автомобиль/Двигатель"
   ]
 }
