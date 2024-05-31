@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "e52819ad44928acc",
+        "id": "3be13f2f1e3c36bf",
         "type": "tabs",
         "children": [
           {
-            "id": "57c321a29ddddc2e",
+            "id": "49f159bc60c48693",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -156,10 +156,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "57c321a29ddddc2e",
+  "active": "49f159bc60c48693",
   "lastOpenFiles": [
-    "Книги/Логика/Логика А.М.Руденко.md",
     "Книги/Логика/История становления и развития логики.md",
+    "Книги/Логика/Логика А.М.Руденко.md",
+    "Домашняя страница.md",
     "Обложка - Логика А.М.Руденко.png",
     "Округление StrRealFixed.md",
     "Отключение треугольника сортировки в таблице XMS.md",
@@ -170,7 +171,6 @@
     "Pasted image 20240531125110.png",
     "Без названия.md",
     "pages/contents.md",
-    "Домашняя страница.md",
     "Работа/Websoft/Логирование и debug.md",
     "logseq/custom.css",
     "pages",
