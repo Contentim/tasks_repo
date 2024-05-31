@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Домашняя страница.md",
                 "mode": "preview",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -158,6 +158,8 @@
   },
   "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
+    "Без названия.md",
+    "Работа/Websoft/Логирование и debug.md",
     "logseq/custom.css",
     "pages/contents.md",
     "pages",
@@ -167,7 +169,6 @@
     "Округление StrRealFixed.md",
     "Обложка - Логика А.М.Руденко.png",
     "Домашняя страница.md",
-    "Работа/Websoft/Логирование и debug.md",
     "Автомобиль/Двигатель/Замена ГРМ с роликами, помпы и замена подшипников генератора.md",
     "Автомобиль/Двигатель/Замена ремня ГРМ и роликов на аналоги.md",
     "Автомобиль/Двигатель/Смазка механизмов ГРМ.md",
@@ -178,7 +179,6 @@
     "Pasted image 20240531125110.png",
     "Работа/Websoft",
     "Книги/Логика/Логика А.М.Руденко.md",
-    "Без названия.md",
     "Книги/Логика/Значение логики в жизни человека.md",
     "Книги/Логика",
     "Книги",
@@ -198,7 +198,6 @@
     "Автомобиль/Двигатель/Pasted image 20240502225829.png",
     "2024-05-02.md",
     "Автомобиль/Двигатель/Pasted image 20240502225616.png",
-    "Pasted image 20240502225403.png",
-    "Автомобиль/Двигатель"
+    "Pasted image 20240502225403.png"
   ]
 }
