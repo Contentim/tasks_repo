@@ -37,8 +37,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md",
-                "mode": "source",
+                "file": "Без названия.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -134,7 +134,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md",
+                "file": "Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -151,7 +151,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md",
+                "file": "Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -174,7 +174,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md"
+                "file": "Без названия.md"
               }
             }
           },
@@ -206,9 +206,9 @@
   },
   "active": "28be95bf98bfd95f",
   "lastOpenFiles": [
+    "Книги/Логика/Логика А.М.Руденко.md",
     "Без названия.md",
     "Домашняя страница.md",
-    "Книги/Логика/Логика А.М.Руденко.md",
     "Книги/Логика/Значение логики в жизни человека.md",
     "Книги/Логика",
     "Книги",
