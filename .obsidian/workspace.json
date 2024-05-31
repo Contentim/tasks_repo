@@ -25,14 +25,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "templates/Книги.md",
+                "file": "Countdown.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "67e874e43e1e3220",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Без названия 1.md",
                 "mode": "source",
                 "source": false
               }
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -98,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "templates/Книги.md",
+                "file": "Без названия 1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "templates/Книги.md",
+                "file": "Без названия 1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "templates/Книги.md"
+                "file": "Без названия 1.md"
               }
             }
           },
@@ -169,22 +181,23 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "61f906f618e36790",
+  "active": "67e874e43e1e3220",
   "lastOpenFiles": [
+    "Countdown.md",
+    "Без названия 1.md",
+    "Округление StrRealFixed.md",
+    "Домашняя страница.md",
+    "templates/Книга.md",
     "Книги/Логика/Логика А.М.Руденко.md",
-    "templates/Книги.md",
     "templates",
     "Книги/Логика/Значение логики в жизни человека.md",
     "Книги/Логика/История становления и развития логики.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Книги/Логика/attachments",
-    "Домашняя страница.md",
     "Обложка - Логика А.М.Руденко.png",
-    "Округление StrRealFixed.md",
     "Отключение треугольника сортировки в таблице XMS.md",
     "Развернуть локальный стенд.md",
     "Словарь терминов и выражений.md",
-    "Countdown.md",
     "Life Progress.md",
     "Pasted image 20240531125110.png",
     "Без названия.md",
@@ -211,7 +224,6 @@
     "conflict-files-obsidian-git.md",
     "Автомобиль/Ходовка/Размер дисков.md",
     "Автомобиль/Двигатель/Pasted image 20240502225829.png",
-    "2024-05-02.md",
     "Автомобиль/Двигатель/Pasted image 20240502225616.png",
     "Pasted image 20240502225403.png"
   ]
