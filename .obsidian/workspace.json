@@ -4,16 +4,18 @@
     "type": "split",
     "children": [
       {
-        "id": "2f3dd96491ad453d",
+        "id": "eabb166d42903476",
         "type": "tabs",
         "children": [
           {
-            "id": "27603ac5ab5ae157",
+            "id": "a2046373e5f54ab3",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "markdown",
               "state": {
-                "file": "Обложка - Логика А.М.Руденко.png"
+                "file": "Книги/Логика/Логика А.М.Руденко.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -83,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Обложка - Логика А.М.Руденко.png",
+                "file": "Книги/Логика/Логика А.М.Руденко.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Обложка - Логика А.М.Руденко.png",
+                "file": "Книги/Логика/Логика А.М.Руденко.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -123,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Обложка - Логика А.М.Руденко.png"
+                "file": "Книги/Логика/Логика А.М.Руденко.md"
               }
             }
           },
@@ -154,20 +156,23 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "27603ac5ab5ae157",
+  "active": "a2046373e5f54ab3",
   "lastOpenFiles": [
-    "Книги/Логика/Логика А.М.Руденко.md",
     "Книги/Логика/История становления и развития логики.md",
-    "Без названия.md",
-    "Словарь терминов и выражений.md",
-    "Развернуть локальный стенд.md",
-    "Домашняя страница.md",
+    "Книги/Логика/Логика А.М.Руденко.md",
+    "Обложка - Логика А.М.Руденко.png",
     "Округление StrRealFixed.md",
     "Отключение треугольника сортировки в таблице XMS.md",
-    "Обложка - Логика А.М.Руденко.png",
+    "Развернуть локальный стенд.md",
+    "Словарь терминов и выражений.md",
+    "Countdown.md",
+    "Life Progress.md",
+    "Pasted image 20240531125110.png",
+    "Без названия.md",
+    "pages/contents.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Логирование и debug.md",
     "logseq/custom.css",
-    "pages/contents.md",
     "pages",
     "journals",
     "logseq/config.edn",
@@ -177,13 +182,10 @@
     "Автомобиль/Двигатель/Смазка механизмов ГРМ.md",
     "Автомобиль/Двигатель/Масло (какое заливать в свою машину).md",
     "Установка пакета или демо-данных.md",
-    "Life Progress.md",
-    "Pasted image 20240531125110.png",
     "Работа/Websoft",
     "Книги/Логика/Значение логики в жизни человека.md",
     "Книги/Логика",
     "Книги",
-    "Countdown.md",
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Словарь терминов и выражений",
     "2024-05.md",
