@@ -30,7 +30,7 @@ body.infobox-enabled,
 body:not(.css-settings-manager) {
     --infobox-font-size: var(--font-smaller);
     --infobox-gap: 16px;
-    --infobox-width: 400px;
+    --infobox-width: 310px;
 }
 
 body.infobox-enabled .cm-sizer:has([data-callout="infobox"]),
