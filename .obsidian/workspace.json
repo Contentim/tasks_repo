@@ -4,71 +4,22 @@
     "type": "split",
     "children": [
       {
-        "id": "767cb1a1bb29ae28",
+        "id": "2f3dd96491ad453d",
         "type": "tabs",
         "children": [
           {
-            "id": "80f82b2e5747ff1a",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Словарь терминов и выражений.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "6721d5a38477d1d5",
+            "id": "27603ac5ab5ae157",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "Домашняя страница.md",
-                "mode": "preview",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "28be95bf98bfd95f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Без названия.md",
-                "mode": "preview",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "ea6e41d89dcc93ea",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Словарь терминов и выражений.md",
                 "mode": "source",
                 "source": false
               }
             }
-          },
-          {
-            "id": "1b5ba5029e5f5e5a",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Countdown.md",
-                "mode": "preview",
-                "source": true
-              }
-            }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -134,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Без названия.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -151,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Без названия.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -174,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Без названия.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -205,7 +156,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "28be95bf98bfd95f",
+  "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
     "Книги/Логика/Логика А.М.Руденко.md",
     "Без названия.md",
