@@ -37,7 +37,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Книги/Без названия.md",
                 "mode": "source",
                 "source": false
               }
@@ -110,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Книги/Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Книги/Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Без названия 1.md"
+                "file": "Книги/Без названия.md"
               }
             }
           },
@@ -183,11 +183,12 @@
   },
   "active": "67e874e43e1e3220",
   "lastOpenFiles": [
-    "Countdown.md",
-    "Без названия 1.md",
-    "Округление StrRealFixed.md",
+    "templates/Книга ываываыва.md",
+    "Книги/Без названия.md",
     "Домашняя страница.md",
-    "templates/Книга.md",
+    "Без названия 1.md",
+    "Countdown.md",
+    "Округление StrRealFixed.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "templates",
     "Книги/Логика/Значение логики в жизни человека.md",
@@ -222,7 +223,6 @@
     "Test 2/Демо тест 2 - изменение.md",
     "2024-05-05.md",
     "conflict-files-obsidian-git.md",
-    "Автомобиль/Ходовка/Размер дисков.md",
     "Автомобиль/Двигатель/Pasted image 20240502225829.png",
     "Автомобиль/Двигатель/Pasted image 20240502225616.png",
     "Pasted image 20240502225403.png"
