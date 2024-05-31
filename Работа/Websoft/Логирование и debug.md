@@ -1,3 +1,4 @@
+#log #логирование #debug #alert #LogEvent
 #### Вывод логов в консоль браузера
 ```js
 LogEvent('', tools.object_to_text(oResult,'json'))

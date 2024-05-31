@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Округление.md",
+                "file": "Работа/Websoft/Логирование и debug.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Округление.md",
+                "file": "Работа/Websoft/Логирование и debug.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Округление.md",
+                "file": "Работа/Websoft/Логирование и debug.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Округление.md"
+                "file": "Работа/Websoft/Логирование и debug.md"
               }
             }
           },
@@ -158,8 +158,8 @@
   },
   "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
+    "Округление StrRealFixed.md",
     "Обложка - Логика А.М.Руденко.png",
-    "Округление.md",
     "Домашняя страница.md",
     "Работа/Websoft/Логирование и debug.md",
     "Автомобиль/Двигатель/Замена ГРМ с роликами, помпы и замена подшипников генератора.md",
