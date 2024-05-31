@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Книги/Без названия лрлол.md",
+                "file": "Книги/Логика/История становления и развития логики.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Книги/Без названия лрлол.md",
+                "file": "Книги/Логика/История становления и развития логики.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Книги/Без названия лрлол.md",
+                "file": "Книги/Логика/История становления и развития логики.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Книги/Без названия лрлол.md"
+                "file": "Книги/Логика/История становления и развития логики.md"
               }
             }
           },
@@ -171,8 +171,8 @@
   },
   "active": "61f906f618e36790",
   "lastOpenFiles": [
-    "templates/Книга.md",
     "Книги/Без названия лрлол.md",
+    "templates/Книга.md",
     "Countdown.md",
     "Книги/Без названия арапрапрапр.md",
     "Книги/Без названия 1.md",
