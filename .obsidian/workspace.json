@@ -25,8 +25,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "templates/Книга.md",
-                "mode": "source",
+                "file": "Книги/Без названия.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "templates/Книга.md",
+                "file": "Книги/Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "templates/Книга.md",
+                "file": "Книги/Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "templates/Книга.md"
+                "file": "Книги/Без названия.md"
               }
             }
           },
@@ -171,9 +171,10 @@
   },
   "active": "61f906f618e36790",
   "lastOpenFiles": [
+    "templates/Книга.md",
+    "Книги/Без названия.md",
     "Countdown.md",
     "Книги/Без названия арапрапрапр.md",
-    "templates/Книга.md",
     "Книги/Без названия 1.md",
     "Домашняя страница.md",
     "Округление StrRealFixed.md",
@@ -210,7 +211,6 @@
     "Без названия.canvas",
     "Test 2/Демо тест 2 - изменение.md",
     "2024-05-05.md",
-    "conflict-files-obsidian-git.md",
     "Автомобиль/Двигатель/Pasted image 20240502225829.png",
     "Автомобиль/Двигатель/Pasted image 20240502225616.png",
     "Pasted image 20240502225403.png"
