@@ -32,12 +32,12 @@
             }
           },
           {
-            "id": "67e874e43e1e3220",
+            "id": "06d0e89a78003059",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Книги/Без названия.md",
+                "file": "Книги/Без названия 1.md",
                 "mode": "source",
                 "source": false
               }
@@ -110,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Книги/Без названия.md",
+                "file": "Книги/Без названия 1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Книги/Без названия.md",
+                "file": "Книги/Без названия 1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Книги/Без названия.md"
+                "file": "Книги/Без названия 1.md"
               }
             }
           },
@@ -181,13 +181,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "67e874e43e1e3220",
+  "active": "4f4c733d5d9f5285",
   "lastOpenFiles": [
-    "templates/Книга ываываыва.md",
+    "templates/Книга.md",
+    "Книги/Без названия 1.md",
+    "Countdown.md",
     "Книги/Без названия.md",
     "Домашняя страница.md",
-    "Без названия 1.md",
-    "Countdown.md",
     "Округление StrRealFixed.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "templates",
