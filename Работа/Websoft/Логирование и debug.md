@@ -14,15 +14,15 @@ LogEvent('DEVELOPER_REPORT', alert(value))
 LogEvent('DEVELOPER_REPORT', tools.object_to_text(value,'json'))
 ```
 
-Отображение ИД объектов на странице портала
+#### Отображение ИД объектов на странице портала(GET-параметр)
 ```php
 ?tracing=verbose
 ```
-
-Пример
+##### Пример
 ```
 URL: https://my.websoft.ru/_wt/doc_std_20203_mywebsoft/7176312992668802317?tracing=verbose
 ```
 
+![[Pasted image 20240531125110.png]]
 [[Демо тест 2 - изменение]]
 
