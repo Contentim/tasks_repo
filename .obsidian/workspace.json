@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
-                "mode": "preview",
+                "file": "Округление StrRealFixed.md",
+                "mode": "source",
                 "source": false
               }
             }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Округление StrRealFixed.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Округление StrRealFixed.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Округление StrRealFixed.md"
               }
             }
           },
@@ -158,6 +158,10 @@
   },
   "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
+    "Отключение треугольника сортировки в таблице XMS.md",
+    "Округление StrRealFixed.md",
+    "Домашняя страница.md",
+    "Обложка - Логика А.М.Руденко.png",
     "Без названия.md",
     "Работа/Websoft/Логирование и debug.md",
     "logseq/custom.css",
@@ -166,16 +170,12 @@
     "journals",
     "logseq/config.edn",
     "logseq",
-    "Округление StrRealFixed.md",
-    "Обложка - Логика А.М.Руденко.png",
-    "Домашняя страница.md",
     "Автомобиль/Двигатель/Замена ГРМ с роликами, помпы и замена подшипников генератора.md",
     "Автомобиль/Двигатель/Замена ремня ГРМ и роликов на аналоги.md",
     "Автомобиль/Двигатель/Смазка механизмов ГРМ.md",
     "Автомобиль/Двигатель/Масло (какое заливать в свою машину).md",
     "Установка пакета или демо-данных.md",
     "Life Progress.md",
-    "Отключение треугольника сортировки в таблице XMS.md",
     "Pasted image 20240531125110.png",
     "Работа/Websoft",
     "Книги/Логика/Логика А.М.Руденко.md",
