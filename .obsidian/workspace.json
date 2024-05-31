@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md",
-                "mode": "source",
+                "file": "Без названия.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -69,8 +69,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "48de7d3b65b3d124",
@@ -86,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md",
+                "file": "Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md",
+                "file": "Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Книги/Логика/Логика А.М.Руденко.md"
+                "file": "Без названия.md"
               }
             }
           },
@@ -159,8 +158,8 @@
   },
   "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
-    "Без названия.md",
     "Книги/Логика/Логика А.М.Руденко.md",
+    "Без названия.md",
     "Словарь терминов и выражений.md",
     "Развернуть локальный стенд.md",
     "Домашняя страница.md",
