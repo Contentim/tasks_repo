@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование и debug.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование и debug.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование и debug.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Работа/Websoft/Логирование и debug.md"
               }
             }
           },
@@ -158,9 +158,10 @@
   },
   "active": "27603ac5ab5ae157",
   "lastOpenFiles": [
+    "Работа/Websoft",
+    "Домашняя страница.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Без названия.md",
-    "Домашняя страница.md",
     "Книги/Логика/Значение логики в жизни человека.md",
     "Книги/Логика",
     "Книги",
@@ -178,7 +179,7 @@
     "Отключение треугольника сортировки в таблице XMS.md",
     "Обложка - Логика А.М.Руденко.png",
     "Test 2/Демо тест 2 - изменение.md",
-    "Test 1/GitAhead.md",
+    "Работа/Websoft/Логирование и debug.md",
     "2024-05-05.md",
     "conflict-files-obsidian-git.md",
     "Автомобиль/Ходовка/Размер дисков.md",
@@ -194,7 +195,7 @@
     "Автомобиль/Двигатель",
     "Автомобиль",
     "Test 2",
-    "Test 1",
+    "Работа",
     "tasks_repo/Test 1/Lorem.md",
     "tasks_repo/Test 2",
     "tasks_repo/Test 1"

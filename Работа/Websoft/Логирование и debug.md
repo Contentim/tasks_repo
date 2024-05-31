@@ -1,3 +1,4 @@
+ёёё
 **GitAhead** is a graphical Git client for Windows, Linux and macOS. It features a fast native interface designed to help you understand and manage your source code history.
 
 GitAhead was designed by [SciTools™](https://scitools.com/), the makers of [Understand™](https://scitools.com/features/). It has all of the features you expect from a commercial quality client, now completely free and open source.
