@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md"
+                "file": "Работа/Перенос в компоненты.md"
               }
             }
           },
@@ -158,8 +158,8 @@
   },
   "active": "af49fb35647126ab",
   "lastOpenFiles": [
-    "Работа/Websoft/Регулярные выражения. Шпага.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+    "Работа/Websoft/Регулярные выражения. Шпага.md",
     "Работа/Перенос в компоненты.md",
     "Домашняя страница.md",
     "Книги/Логика/Логика А.М.Руденко.md",
