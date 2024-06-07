@@ -4,28 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "3be13f2f1e3c36bf",
+        "id": "d591adb069d125bc",
         "type": "tabs",
         "children": [
           {
-            "id": "49f159bc60c48693",
+            "id": "af49fb35647126ab",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Книги/Логика/История становления и развития логики.md",
-                "mode": "preview",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "61f906f618e36790",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Словарь терминов и выражений/Бритва Оккамма.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               }
@@ -97,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Книги/Логика/История становления и развития логики.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Книги/Логика/История становления и развития логики.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Книги/Логика/История становления и развития логики.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -168,7 +156,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "49f159bc60c48693",
+  "active": "af49fb35647126ab",
   "lastOpenFiles": [
     "Книги/Логика/Логика А.М.Руденко.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
