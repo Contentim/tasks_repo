@@ -4,22 +4,35 @@
     "type": "split",
     "children": [
       {
-        "id": "d591adb069d125bc",
+        "id": "2e44ecb7f0c4543e",
         "type": "tabs",
         "children": [
           {
-            "id": "af49fb35647126ab",
+            "id": "b9f5df1c95ba4b7b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Домашняя страница.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "18379f5f1ea439ca",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "Работа/Перенос в компоненты.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -156,12 +169,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "af49fb35647126ab",
+  "active": "18379f5f1ea439ca",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Websoft/Регулярные выражения. Шпага.md",
-    "Работа/Перенос в компоненты.md",
-    "Домашняя страница.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
     "Книги/Без названия лрлол.md",
