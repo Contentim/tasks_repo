@@ -4,5 +4,6 @@
   "dataview",
   "note-definitions",
   "homepage",
-  "oz-image-plugin"
+  "oz-image-plugin",
+  "obsidian-checklist-plugin"
 ]

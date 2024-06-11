@@ -149,9 +149,17 @@
               "type": "git-view",
               "state": {}
             }
+          },
+          {
+            "id": "8a26c168c8f53b21",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {}
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -168,7 +176,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "18379f5f1ea439ca",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Работа/Перенос в компоненты.md",
