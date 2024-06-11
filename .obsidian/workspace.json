@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "mode": "source",
                 "source": false
               }
@@ -25,14 +25,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "mode": "preview",
                 "source": false
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -98,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md"
+                "file": "Работа/Перенос в компоненты.md"
               }
             }
           },
@@ -176,12 +175,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "18379f5f1ea439ca",
+  "active": "b9f5df1c95ba4b7b",
   "lastOpenFiles": [
-    "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Работа/Websoft/Примеры регулярных выражений.md",
-    "Работа/Перенос в компоненты.md",
     "Домашняя страница.md",
+    "Работа/Перенос в компоненты.md",
+    "Работа/Websoft/Примеры регулярных выражений.md",
+    "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Websoft/Регулярные выражения. Шпага.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
