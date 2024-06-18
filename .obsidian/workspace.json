@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
                 "mode": "source",
                 "source": false
               }
@@ -97,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Перенос в компоненты.md"
+                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md"
               }
             }
           },
@@ -175,12 +175,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "338cb608c401c372",
+  "active": "b9f5df1c95ba4b7b",
   "lastOpenFiles": [
-    "Домашняя страница.md",
-    "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+    "Работа/Перенос в компоненты.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Регулярные выражения. Шпага.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
