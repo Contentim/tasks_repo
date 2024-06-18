@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-                "mode": "source",
+                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -97,7 +97,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+                "file": "Работа/Websoft/Примеры регулярных выражений.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +114,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+                "file": "Работа/Websoft/Примеры регулярных выражений.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +137,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md"
+                "file": "Работа/Websoft/Примеры регулярных выражений.md"
               }
             }
           },
@@ -177,7 +177,9 @@
   },
   "active": "b9f5df1c95ba4b7b",
   "lastOpenFiles": [
+    "templates/Книга.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
+    "pages/contents.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Перенос в компоненты.md",
     "Домашняя страница.md",
@@ -188,7 +190,6 @@
     "Словарь терминов и выражений/Теоцентризм.md",
     "Книги/Логика/История становления и развития логики.md",
     "Словарь терминов и выражений/Схоластика.md",
-    "templates/Книга.md",
     "Countdown.md",
     "Книги/Без названия арапрапрапр.md",
     "Книги/Без названия 1.md",
@@ -204,7 +205,6 @@
     "Life Progress.md",
     "Pasted image 20240531125110.png",
     "Без названия.md",
-    "pages/contents.md",
     "Работа/Websoft/Логирование и debug.md",
     "logseq/custom.css",
     "pages",
