@@ -31,7 +31,8 @@
               }
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -97,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md"
+                "file": "Работа/Перенос в компоненты.md"
               }
             }
           },
@@ -175,10 +176,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "b9f5df1c95ba4b7b",
+  "active": "18379f5f1ea439ca",
   "lastOpenFiles": [
-    "templates/Книга.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
+    "templates/Книга.md",
     "pages/contents.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Перенос в компоненты.md",
