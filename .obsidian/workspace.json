@@ -4,30 +4,28 @@
     "type": "split",
     "children": [
       {
-        "id": "2e44ecb7f0c4543e",
+        "id": "816553de26fd32b4",
         "type": "tabs",
         "children": [
           {
-            "id": "b9f5df1c95ba4b7b",
+            "id": "b5c8ccdaab2fed34",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               }
             }
           },
           {
-            "id": "18379f5f1ea439ca",
+            "id": "93b2b2f802bf09c1",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "release-notes",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
-                "mode": "preview",
-                "source": false
+                "currentVersion": "1.6.3"
               }
             }
           }
@@ -98,7 +96,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +112,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -137,9 +133,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Работа/Перенос в компоненты.md"
-              }
+              "state": {}
             }
           },
           {
@@ -176,14 +170,14 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "18379f5f1ea439ca",
+  "active": "93b2b2f802bf09c1",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
     "templates/Книга.md",
     "pages/contents.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Работа/Перенос в компоненты.md",
-    "Домашняя страница.md",
     "Работа/Websoft/Регулярные выражения. Шпага.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
