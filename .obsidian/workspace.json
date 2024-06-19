@@ -23,9 +23,11 @@
             "id": "93b2b2f802bf09c1",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "markdown",
               "state": {
-                "currentVersion": "1.6.3"
+                "file": "Работа/Перенос в компоненты.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -96,6 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -112,6 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -133,7 +137,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Работа/Перенос в компоненты.md"
+              }
             }
           },
           {
