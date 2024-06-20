@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "5203b468668d0001",
+        "id": "5583a3cb259e8dbb",
         "type": "tabs",
         "children": [
           {
-            "id": "8812287ca9df0c1f",
+            "id": "d0ecc094ad320381",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -163,11 +163,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "8812287ca9df0c1f",
+  "active": "d0ecc094ad320381",
   "lastOpenFiles": [
-    "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Домашняя страница.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
+    "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Без названия.md",
     "Работа/Websoft/Логирование и debug.md",
     "Словарь терминов и выражений/Схоластика.md",
