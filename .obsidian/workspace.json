@@ -4,23 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "816553de26fd32b4",
+        "id": "5203b468668d0001",
         "type": "tabs",
         "children": [
           {
-            "id": "b5c8ccdaab2fed34",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Домашняя страница.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "93b2b2f802bf09c1",
+            "id": "8812287ca9df0c1f",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -31,8 +19,7 @@
               }
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -176,23 +163,23 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "93b2b2f802bf09c1",
+  "active": "8812287ca9df0c1f",
   "lastOpenFiles": [
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
+    "Домашняя страница.md",
+    "Работа/Websoft/Примеры регулярных выражений.md",
     "Без названия.md",
     "Работа/Websoft/Логирование и debug.md",
     "Словарь терминов и выражений/Схоластика.md",
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
     "Test 2/Демо тест 2 - изменение.md",
-    "Домашняя страница.md",
     "Округление StrRealFixed.md",
     "Отключение треугольника сортировки в таблице XMS.md",
     "Развернуть локальный стенд.md",
     "Словарь терминов и выражений.md",
     "Установка пакета или демо-данных.md",
     "Life Progress.md",
-    "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Перенос в компоненты.md",
     "templates/Книга.md",
     "pages/contents.md",
