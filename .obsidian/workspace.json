@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "5583a3cb259e8dbb",
+        "id": "b59e22c05f0d7bbf",
         "type": "tabs",
         "children": [
           {
-            "id": "d0ecc094ad320381",
+            "id": "f610386a47b16727",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
-                "mode": "preview",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -85,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md"
-              }
+              "state": {}
             }
           },
           {
@@ -163,10 +155,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "d0ecc094ad320381",
+  "active": "f610386a47b16727",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Без названия.md",
     "Работа/Websoft/Логирование и debug.md",

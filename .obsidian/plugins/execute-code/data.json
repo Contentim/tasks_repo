@@ -27,7 +27,7 @@
   "csArgs": "",
   "csFileExtension": "csx",
   "csInject": "",
-  "pythonPath": "python",
+  "pythonPath": "Python",
   "pythonArgs": "",
   "pythonEmbedPlots": true,
   "pythonFileExtension": "py",
