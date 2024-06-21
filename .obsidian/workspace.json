@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "mode": "preview",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md"
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md"
               }
             }
           },
@@ -165,9 +165,9 @@
   },
   "active": "2dba1da58c8dbe70",
   "lastOpenFiles": [
+    "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
     "Работа/Питон (Python)/Регулярные выражения.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
-    "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Домашняя страница.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
