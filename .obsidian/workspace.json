@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
-                "mode": "preview",
+                "file": "Работа/Питон (Python)/Регулярные выражения.md",
+                "mode": "source",
                 "source": false
               }
             }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Питон (Python)/Регулярные выражения.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Питон (Python)/Регулярные выражения.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md"
+                "file": "Работа/Питон (Python)/Регулярные выражения.md"
               }
             }
           },
@@ -163,11 +163,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "f610386a47b16727",
   "lastOpenFiles": [
-    "Работа/Без названия",
-    "Домашняя страница.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
+    "Работа/Питон (Python)/Регулярные выражения.md",
+    "Работа/Питон (Python)",
+    "Домашняя страница.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Без названия.md",
     "Работа/Websoft/Логирование и debug.md",
@@ -203,7 +204,6 @@
     "logseq",
     "Работа/Websoft",
     "Книги/Логика",
-    "Книги",
     "Без названия.canvas",
     "Автомобиль/Двигатель/Pasted image 20240502225829.png",
     "Автомобиль/Двигатель/Pasted image 20240502225616.png",
