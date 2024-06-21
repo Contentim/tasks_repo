@@ -4,12 +4,19 @@ https://www.askpython.com/python/built-in-methods/read-parse-a-text-file
 import json
 
 fp = 'C:/Notes/tasks_repo/Test_files/python_reader.txt'
+
 data = []
+
 with open(fp, 'r') as f:
+
     header = f.readline()
+
     for line in f:
+
         values = line.strip().split(',')
+
         name, age, date, gender = values
+
         columns= {
 
             'Name': name,
