@@ -4,7 +4,6 @@ data = []
 with open(fp, 'r') as f:
     header = f.readline()
     for line in f:
-	    print(line)
         values = line.strip().split(',')
         name, age, date, gender = values
         columns= {
@@ -14,5 +13,5 @@ with open(fp, 'r') as f:
             'Gender': gender
         }
         data.append(columns)
-jsonstr = json.dumps(data, indent=4)
+jsonstr= json.dumps(data, indent=4)
 print(jsonstr)
