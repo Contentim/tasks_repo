@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
-                "mode": "source",
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md"
               }
             }
           },
@@ -165,11 +165,11 @@
   },
   "active": "76e66e91e2f45cc9",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Test_files/test.py",
     "Test_files/Новый текстовый документ.txt",
-    "Домашняя страница.md",
     "Test_files/python_reader.txt",
     "Test_files",
     "Тестовые файлы/python_reader.txt",
