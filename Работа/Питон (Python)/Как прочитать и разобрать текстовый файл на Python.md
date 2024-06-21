@@ -2,7 +2,7 @@ https://www.askpython.com/python/built-in-methods/read-parse-a-text-file
 
 ```python
 import json
-fp = 'Details.txt'
+fp = 'C:/WebSoft/Stand/WebTutor4/WebSoftServer/components/experts/spxml/libs/python_reader.txt'
 data = []
 with open(fp, 'r') as f:
     header = f.readline()
@@ -20,3 +20,6 @@ jsonstr = json.dumps(data, indent=4)
 print(jsonstr)
 ```
 
+```python
+print(123)
+```
