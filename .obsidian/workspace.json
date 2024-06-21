@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "b59e22c05f0d7bbf",
+        "id": "8ce1a9d344dd4de7",
         "type": "tabs",
         "children": [
           {
-            "id": "f610386a47b16727",
+            "id": "2dba1da58c8dbe70",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -85,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md"
-              }
+              "state": {}
             }
           },
           {
@@ -163,10 +155,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "f610386a47b16727",
+  "active": "2dba1da58c8dbe70",
   "lastOpenFiles": [
-    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
+    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
     "Работа/Питон (Python)/Регулярные выражения.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
