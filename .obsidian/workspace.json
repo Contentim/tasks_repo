@@ -11,8 +11,12 @@
             "id": "2dba1da58c8dbe70",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
+                "mode": "preview",
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md"
+              }
             }
           },
           {
@@ -157,13 +165,13 @@
   },
   "active": "2dba1da58c8dbe70",
   "lastOpenFiles": [
-    "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
-    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
-    "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
     "Работа/Питон (Python)/Регулярные выражения.md",
+    "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
+    "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
+    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Питон (Python)",
-    "Домашняя страница.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Без названия.md",
     "Работа/Websoft/Логирование и debug.md",
