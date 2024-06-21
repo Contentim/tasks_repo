@@ -16,7 +16,7 @@ with open(fp, 'r') as f:
             'Gender': gender
         }
         data.append(columns)
-jsonstr= json.dumps(data, indent=4)
+jsonstr = json.dumps(data, indent=4)
 print(jsonstr)
 ```
 
