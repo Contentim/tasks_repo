@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Питон (Python)/Без названия.md",
+                "file": "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Питон (Python)/Без названия.md",
+                "file": "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Питон (Python)/Без названия.md",
+                "file": "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Питон (Python)/Без названия.md"
+                "file": "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md"
               }
             }
           },
@@ -166,7 +166,7 @@
   "active": "f610386a47b16727",
   "lastOpenFiles": [
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
-    "Работа/Питон (Python)/Без названия.md",
+    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Питон (Python)/Регулярные выражения.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Питон (Python)",
