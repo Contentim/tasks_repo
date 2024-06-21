@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "8ce1a9d344dd4de7",
+        "id": "d821d097644e9567",
         "type": "tabs",
         "children": [
           {
-            "id": "2dba1da58c8dbe70",
+            "id": "f171acaa09f83d2a",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -85,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md"
-              }
+              "state": {}
             }
           },
           {
@@ -163,8 +155,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "2dba1da58c8dbe70",
+  "active": "f171acaa09f83d2a",
   "lastOpenFiles": [
+    "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
     "Test_files/python_reader.txt",
     "Test_files",
     "Тестовые файлы/python_reader.txt",
@@ -173,7 +166,6 @@
     "Новая папка",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
     "Работа/Питон (Python)/Регулярные выражения.md",
-    "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Домашняя страница.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
@@ -203,7 +195,6 @@
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
     "logseq/custom.css",
-    "pages",
     "Без названия.canvas",
     "Автомобиль/Двигатель/Pasted image 20240502225829.png",
     "Автомобиль/Двигатель/Pasted image 20240502225616.png",

@@ -2,7 +2,7 @@ https://www.askpython.com/python/built-in-methods/read-parse-a-text-file
 
 ```python
 import json
-fp = 'C:/WebSoft/Stand/WebTutor4/WebSoftServer/components/experts/spxml/libs/python_reader.txt'
+fp = 'C:/Notes/tasks_repo/Test_files/python_reader.txt'
 data = []
 with open(fp, 'r') as f:
     header = f.readline()
