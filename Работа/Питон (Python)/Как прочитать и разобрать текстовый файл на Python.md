@@ -8,7 +8,6 @@ fp = 'C:/Notes/tasks_repo/Test_files/python_reader.txt'
 data = []
 
 with open(fp, 'r') as f:
-
     header = f.readline()
 
     for line in f:
