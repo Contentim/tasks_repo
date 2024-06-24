@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Работа/Перенос в компоненты.md"
               }
             }
           },
@@ -165,10 +165,10 @@
   },
   "active": "00046ad9e14c5356",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Работа/Перенос в компоненты.md",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
-    "Домашняя страница.md",
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Test_files/test.py",
     "Test_files/Новый текстовый документ.txt",
