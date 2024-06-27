@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование и debug.md"
+                "file": "Работа/Websoft/Большие данные.md"
               }
             }
           },
@@ -178,6 +178,8 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование и debug.md",
+    "Работа/Websoft/Большие данные.md",
     "Работа/Перенос в компоненты.md",
     "Критерии дружбы.md",
     "Домашняя страница.md",
@@ -197,7 +199,6 @@
     "Работа/Питон (Python)",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Без названия.md",
-    "Работа/Websoft/Логирование и debug.md",
     "Словарь терминов и выражений/Схоластика.md",
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
@@ -212,7 +213,6 @@
     "pages/contents.md",
     "Работа/Websoft/Регулярные выражения. Шпага.md",
     "Книги/Логика/Логика А.М.Руденко.md",
-    "Книги/Без названия лрлол.md",
     "templates",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
