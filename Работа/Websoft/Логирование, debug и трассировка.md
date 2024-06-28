@@ -27,3 +27,9 @@ URL: https://my.websoft.ru/_wt/doc_std_20203_mywebsoft/7176312992668802317?traci
 ![[Pasted image 20240531125110.png]]
 [[Демо тест 2 - изменение]]
 
+```
+var sTracingLogName = "tracing-1"; 
+EnableLog(sTracingLogName); 
+var curTiming = GetCurTicks(); 
+var curAllTiming = GetCurTicks();
+```
