@@ -51,5 +51,7 @@ function Developer(value, param){
 
 Варианты вызова функции
 ```js
-tools.call_code_library_method( "libApplication", "GetPersonApplicationAccessLevel", [ iCurUserID, sApplication ] );
+tools.call_code_library_method( "libMain", "Developer", [ oResult, '_alert' ] );
+
+
 ```
