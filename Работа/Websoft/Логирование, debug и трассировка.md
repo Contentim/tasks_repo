@@ -40,11 +40,11 @@ LogEvent(sTracingLogName,'libMain: GetPersonCollaborators: get_user_collaborator
 ```js
 function Developer(value, param){
     EnableLog('DEVELOPER_FILE', true );
-    if(alert == 'alert')
+    if(param == 'alert')
     {
-        LogEvent('DEVELOPER_REPORT', alert(value))
+        LogEvent('DEVELOPER_FILE', alert(value))
     } else {
-        LogEvent('DEVELOPER_FILE', tools.object_to_text(res,'json'))
+        LogEvent('DEVELOPER_FILE', tools.object_to_text(value,'json'))
     }
 }
 ```
