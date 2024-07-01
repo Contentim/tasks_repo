@@ -42,7 +42,7 @@ function Developer(value, param){
     EnableLog('DEVELOPER_FILE', true );
     if(alert == 'alert')
     {
-        LogEvent('DEVELOPER_FILE', res)
+        LogEvent('DEVELOPER_REPORT', alert(value))
     } else {
         LogEvent('DEVELOPER_FILE', tools.object_to_text(res,'json'))
     }
