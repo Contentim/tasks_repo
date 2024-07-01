@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Большие данные.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Большие данные.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Большие данные.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Большие данные.md"
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md"
               }
             }
           },
@@ -178,8 +178,8 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
-    "Работа/Websoft/Логирование, debug и трассировка.md",
     "Работа/Websoft/Большие данные.md",
+    "Работа/Websoft/Логирование, debug и трассировка.md",
     "Работа/Перенос в компоненты.md",
     "Критерии дружбы.md",
     "Домашняя страница.md",
