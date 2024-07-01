@@ -35,3 +35,16 @@ var curAllTiming = GetCurTicks();
 
 LogEvent(sTracingLogName,'libMain: GetPersonCollaborators: get_user_collaborators: ' + (GetCurTicks() - curTiming) + ' ms. (' + (GetCurTicks() - curAllTiming) + ' ms.)'); curTiming = GetCurTicks();
 ```
+
+## Функция для библиотеки
+```js
+function Developer(value, param){
+    EnableLog('DEVELOPER_FILE', true );
+    if(alert == 'alert')
+    {
+        LogEvent('DEVELOPER_FILE', res)
+    } else {
+        LogEvent('DEVELOPER_FILE', tools.object_to_text(res,'json'))
+    }
+}
+```
