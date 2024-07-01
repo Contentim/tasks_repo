@@ -25,8 +25,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Кухня/Маринад.md",
-                "mode": "preview",
+                "file": "Кухня/Шашлык.md",
+                "mode": "source",
                 "source": false
               }
             }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Кухня/Маринад.md",
+                "file": "Кухня/Шашлык.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Кухня/Маринад.md",
+                "file": "Кухня/Шашлык.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Кухня/Маринад.md"
+                "file": "Кухня/Шашлык.md"
               }
             }
           },
@@ -178,8 +178,9 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
-    "Работа/Websoft/Большие данные.md",
     "Кухня/Маринад.md",
+    "Кухня/Шашлык.md",
+    "Работа/Websoft/Большие данные.md",
     "Кухня",
     "Работа/Websoft/Без названия.md",
     "Работа/Websoft/Логирование, debug и трассировка.md",
@@ -213,7 +214,6 @@
     "Установка пакета или демо-данных.md",
     "Life Progress.md",
     "templates/Книга.md",
-    "pages/contents.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
