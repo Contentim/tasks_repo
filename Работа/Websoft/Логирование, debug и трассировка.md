@@ -48,3 +48,8 @@ function Developer(value, param){
     }
 }
 ```
+
+Варианты вызова функции
+```js
+
+```
