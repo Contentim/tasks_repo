@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Кухня/Шашлык.md",
+                "file": "Ремонт/Цвета стен.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Кухня/Шашлык.md",
+                "file": "Ремонт/Цвета стен.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Кухня/Шашлык.md",
+                "file": "Ремонт/Цвета стен.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Кухня/Шашлык.md"
+                "file": "Ремонт/Цвета стен.md"
               }
             }
           },
@@ -178,8 +178,10 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
-    "Кухня/Маринад.md",
     "Кухня/Шашлык.md",
+    "Ремонт/Цвета стен.md",
+    "Ремонт",
+    "Кухня/Маринад.md",
     "Работа/Websoft/Большие данные.md",
     "Кухня",
     "Работа/Websoft/Без названия.md",
@@ -200,7 +202,6 @@
     "Новая папка",
     "Работа/Питон (Python)/Регулярные выражения.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
-    "Работа/Питон (Python)",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Без названия.md",
     "Словарь терминов и выражений/Схоластика.md",
@@ -213,7 +214,6 @@
     "Словарь терминов и выражений.md",
     "Установка пакета или демо-данных.md",
     "Life Progress.md",
-    "templates/Книга.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
