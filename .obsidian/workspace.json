@@ -25,8 +25,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
-                "mode": "source",
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
+                "mode": "preview",
                 "source": false
               }
             }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Перенос в компоненты.md"
+                "file": "Работа/Websoft/Логирование, debug и трассировка.md"
               }
             }
           },
@@ -178,6 +178,7 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
+    "Работа/Перенос в компоненты.md",
     "Ремонт/Цвета стен.md",
     "Кухня/Шашлык.md",
     "Ремонт",
@@ -186,7 +187,6 @@
     "Кухня",
     "Работа/Websoft/Без названия.md",
     "Работа/Websoft/Логирование, debug и трассировка.md",
-    "Работа/Перенос в компоненты.md",
     "Критерии дружбы.md",
     "Домашняя страница.md",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
