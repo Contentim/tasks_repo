@@ -1,5 +1,9 @@
 #log #логирование #debug #alert #LogEvent
-#### Вывод логов в консоль браузера
+#### Сброс кэша на странице портала
+```js
+?fcache=1
+```
+### Вывод логов в консоль браузера
 ```js
 LogEvent('', tools.object_to_text(oResult,'json'))
 ```

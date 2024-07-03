@@ -25,8 +25,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
-                "mode": "preview",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "mode": "source",
                 "source": false
               }
             }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка.md"
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
               }
             }
           },
@@ -186,7 +186,7 @@
     "Работа/Websoft/Большие данные.md",
     "Кухня",
     "Работа/Websoft/Без названия.md",
-    "Работа/Websoft/Логирование, debug и трассировка.md",
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Критерии дружбы.md",
     "Домашняя страница.md",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
