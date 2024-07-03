@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Ремонт/Цвета стен.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "mode": "source",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/Цвета стен.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/Цвета стен.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/Цвета стен.md"
+                "file": "Работа/Перенос в компоненты.md"
               }
             }
           },
@@ -178,8 +178,8 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
-    "Кухня/Шашлык.md",
     "Ремонт/Цвета стен.md",
+    "Кухня/Шашлык.md",
     "Ремонт",
     "Кухня/Маринад.md",
     "Работа/Websoft/Большие данные.md",
