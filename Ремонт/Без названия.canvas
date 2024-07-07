@@ -1,6 +1,10 @@
 {
 	"nodes":[
-		{"id":"b165ea363999c4ab","x":-200,"y":-180,"width":250,"height":60,"type":"text","text":""}
+		{"id":"b165ea363999c4ab","x":-380,"y":-300,"width":250,"height":60,"type":"text","text":"Санузел"},
+		{"id":"187f32dd012e0874","x":0,"y":-460,"width":250,"height":60,"type":"text","text":"Ниша - канализация"},
+		{"id":"479eb5ba12b1fbec","x":-125,"y":-216,"width":250,"height":60,"type":"text","text":""}
 	],
-	"edges":[]
+	"edges":[
+		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"}
+	]
 }
