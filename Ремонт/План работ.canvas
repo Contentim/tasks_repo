@@ -8,18 +8,18 @@
 		{"id":"73149a1da491413c","x":360,"y":170,"width":250,"height":50,"type":"text","text":"Унитаз"},
 		{"id":"bd69a2a048929905","x":360,"y":250,"width":250,"height":60,"type":"text","text":"Тумба с умывальником\n(подвесная)"},
 		{"id":"45e9c5b44a5d59c0","x":0,"y":120,"width":250,"height":50,"type":"text","text":"Сантехника"},
-		{"id":"21925291c6ddfa6e","x":0,"y":-100,"width":250,"height":60,"type":"text","text":"Теплый пол"},
 		{"id":"c6a98f816990b06e","x":360,"y":-304,"width":250,"height":64,"type":"text","text":"Низ выложить плиткой"},
-		{"id":"a58a427847b4edae","x":360,"y":-100,"width":250,"height":60,"type":"text","text":"Мат + терморегулятор + штроба под провод"},
 		{"id":"173f953435b1d7be","x":360,"y":-220,"width":250,"height":60,"type":"text","text":"Штроба под провод"},
 		{"id":"0860740948713554","x":360,"y":-435,"width":250,"height":90,"type":"text","text":"Материалы:\n- гипсокартон"},
 		{"id":"e52a81f18ecead01","x":0,"y":340,"width":250,"height":60,"type":"text","text":"Стены"},
-		{"id":"dbdf05eba49841f0","x":59,"y":75,"width":250,"height":60,"type":"text","text":"Декоративная штукатурка"}
+		{"id":"dbdf05eba49841f0","x":360,"y":340,"width":320,"height":160,"type":"text","text":"Декоративная штукатурка\n\nhttps://voronezh.lemanapro.ru/product/shtukaturka-mramornaya-bayramix-royal-white-n-15-kg-82106310/#reviews"},
+		{"id":"a58a427847b4edae","x":855,"y":-110,"width":250,"height":60,"type":"text","text":"Мат + терморегулятор + штроба под провод"},
+		{"id":"21925291c6ddfa6e","x":520,"y":-110,"width":250,"height":60,"type":"text","text":"Теплый пол"},
+		{"id":"b531a9238ad9ce6b","x":0,"y":-130,"width":250,"height":50,"type":"text","text":"Пол"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
 		{"id":"217bd18261027214","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"479eb5ba12b1fbec","toSide":"left"},
-		{"id":"d7f96c3f8b3ffda5","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"21925291c6ddfa6e","toSide":"left"},
 		{"id":"4faa059ebf60f5ba","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"45e9c5b44a5d59c0","toSide":"left"},
 		{"id":"ec61ae316889ac23","fromNode":"45e9c5b44a5d59c0","fromSide":"right","toNode":"4001dbf8afbca567","toSide":"left"},
 		{"id":"22ecfd5fc86d1311","fromNode":"45e9c5b44a5d59c0","fromSide":"right","toNode":"6f32c3a4df591c76","toSide":"left"},
@@ -28,6 +28,9 @@
 		{"id":"1f0ae7880e410db7","fromNode":"187f32dd012e0874","fromSide":"right","toNode":"0860740948713554","toSide":"left"},
 		{"id":"ac633748b87db319","fromNode":"479eb5ba12b1fbec","fromSide":"right","toNode":"c6a98f816990b06e","toSide":"left"},
 		{"id":"9a445fa9dde6fac0","fromNode":"21925291c6ddfa6e","fromSide":"right","toNode":"a58a427847b4edae","toSide":"left"},
-		{"id":"73b270d97c1862a8","fromNode":"479eb5ba12b1fbec","fromSide":"right","toNode":"173f953435b1d7be","toSide":"left"}
+		{"id":"73b270d97c1862a8","fromNode":"479eb5ba12b1fbec","fromSide":"right","toNode":"173f953435b1d7be","toSide":"left"},
+		{"id":"914240dce8a1533b","fromNode":"e52a81f18ecead01","fromSide":"right","toNode":"dbdf05eba49841f0","toSide":"left"},
+		{"id":"4b52f5636cccbc3a","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"e52a81f18ecead01","toSide":"left"},
+		{"id":"6e93753cd659a2d5","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"b531a9238ad9ce6b","toSide":"left"}
 	]
 }
