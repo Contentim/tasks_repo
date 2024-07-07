@@ -4,13 +4,14 @@
 		{"id":"479eb5ba12b1fbec","x":0,"y":-304,"width":250,"height":64,"type":"text","text":"Ниша - полотенцесушитель"},
 		{"id":"187f32dd012e0874","x":0,"y":-420,"width":250,"height":60,"type":"text","text":"Ниша - канализация"},
 		{"id":"21925291c6ddfa6e","x":0,"y":-180,"width":250,"height":60,"type":"text","text":"Теплый пол"},
-		{"id":"45e9c5b44a5d59c0","x":0,"y":-60,"width":250,"height":50,"type":"text","text":"Сантехника"},
-		{"id":"6f32c3a4df591c76","x":340,"y":-35,"width":250,"height":50,"type":"text","text":"Ванна"},
-		{"id":"73149a1da491413c","x":340,"y":40,"width":250,"height":50,"type":"text","text":"Унитаз"},
-		{"id":"4001dbf8afbca567","x":340,"y":-110,"width":250,"height":50,"type":"text","text":"Полотенцесушитель"},
-		{"id":"bd69a2a048929905","x":340,"y":120,"width":250,"height":60,"type":"text","text":"Тумба с умывальником\n(подвесная)"},
 		{"id":"0860740948713554","x":380,"y":-480,"width":250,"height":90,"type":"text","text":"Материалы:\n- гипсокартон"},
-		{"id":"c6a98f816990b06e","x":95,"y":-79,"width":250,"height":60,"type":"text","text":"Низ"}
+		{"id":"c6a98f816990b06e","x":340,"y":-304,"width":250,"height":64,"type":"text","text":"Низ выложить плиткой"},
+		{"id":"4001dbf8afbca567","x":360,"y":20,"width":250,"height":50,"type":"text","text":"Полотенцесушитель"},
+		{"id":"6f32c3a4df591c76","x":360,"y":95,"width":250,"height":50,"type":"text","text":"Ванна"},
+		{"id":"73149a1da491413c","x":360,"y":170,"width":250,"height":50,"type":"text","text":"Унитаз"},
+		{"id":"bd69a2a048929905","x":360,"y":250,"width":250,"height":60,"type":"text","text":"Тумба с умывальником\n(подвесная)"},
+		{"id":"45e9c5b44a5d59c0","x":0,"y":120,"width":250,"height":50,"type":"text","text":"Сантехника"},
+		{"id":"a58a427847b4edae","x":340,"y":-180,"width":250,"height":60,"type":"text","text":"Мат + терморегулятор + штроба под провод"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
@@ -21,6 +22,7 @@
 		{"id":"22ecfd5fc86d1311","fromNode":"45e9c5b44a5d59c0","fromSide":"right","toNode":"6f32c3a4df591c76","toSide":"left"},
 		{"id":"4406ed7c3da562de","fromNode":"45e9c5b44a5d59c0","fromSide":"right","toNode":"73149a1da491413c","toSide":"left"},
 		{"id":"7bf960482b458b88","fromNode":"45e9c5b44a5d59c0","fromSide":"right","toNode":"bd69a2a048929905","toSide":"left"},
-		{"id":"1f0ae7880e410db7","fromNode":"187f32dd012e0874","fromSide":"right","toNode":"0860740948713554","toSide":"left"}
+		{"id":"1f0ae7880e410db7","fromNode":"187f32dd012e0874","fromSide":"right","toNode":"0860740948713554","toSide":"left"},
+		{"id":"ac633748b87db319","fromNode":"479eb5ba12b1fbec","fromSide":"right","toNode":"c6a98f816990b06e","toSide":"left"}
 	]
 }
