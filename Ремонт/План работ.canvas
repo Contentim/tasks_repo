@@ -1,7 +1,7 @@
 {
 	"nodes":[
-		{"id":"b165ea363999c4ab","x":-380,"y":-300,"width":250,"height":60,"type":"text","text":"Санузел"},
-		{"id":"479eb5ba12b1fbec","x":0,"y":-304,"width":285,"height":64,"type":"text","text":"Ниша - полотенцесушитель"},
+		{"id":"b165ea363999c4ab","x":-260,"y":-300,"width":130,"height":60,"type":"text","text":"Санузел"},
+		{"id":"479eb5ba12b1fbec","x":0,"y":-304,"width":250,"height":64,"type":"text","text":"Ниша - полотенцесушитель"},
 		{"id":"187f32dd012e0874","x":0,"y":-420,"width":250,"height":60,"type":"text","text":"Ниша - канализация"},
 		{"id":"21925291c6ddfa6e","x":0,"y":-180,"width":250,"height":60,"type":"text","text":"Теплый пол"},
 		{"id":"45e9c5b44a5d59c0","x":0,"y":-60,"width":250,"height":50,"type":"text","text":"Сантехника"},
@@ -9,7 +9,7 @@
 		{"id":"73149a1da491413c","x":340,"y":40,"width":250,"height":50,"type":"text","text":"Унитаз"},
 		{"id":"4001dbf8afbca567","x":340,"y":-110,"width":250,"height":50,"type":"text","text":"Полотенцесушитель"},
 		{"id":"bd69a2a048929905","x":340,"y":120,"width":250,"height":60,"type":"text","text":"Тумба с умывальником\n(подвесная)"},
-		{"id":"0860740948713554","x":285,"y":-480,"width":250,"height":60,"type":"text","text":"мчмчс"}
+		{"id":"0860740948713554","x":285,"y":-480,"width":250,"height":90,"type":"text","text":"Материалы:\n- гипсокартон"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
