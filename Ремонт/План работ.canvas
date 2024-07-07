@@ -14,7 +14,7 @@
 		{"id":"173f953435b1d7be","x":360,"y":-220,"width":250,"height":60,"type":"text","text":"Штроба под провод"},
 		{"id":"0860740948713554","x":360,"y":-435,"width":250,"height":90,"type":"text","text":"Материалы:\n- гипсокартон"},
 		{"id":"e52a81f18ecead01","x":0,"y":340,"width":250,"height":60,"type":"text","text":"Стены"},
-		{"id":"dbdf05eba49841f0","x":59,"y":75,"width":250,"height":60,"type":"text","text":"Декоративная штукату"}
+		{"id":"dbdf05eba49841f0","x":59,"y":75,"width":250,"height":60,"type":"text","text":"Декоративная штукатурка"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
