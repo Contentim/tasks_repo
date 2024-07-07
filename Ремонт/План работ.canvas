@@ -9,10 +9,12 @@
 		{"id":"bd69a2a048929905","x":360,"y":250,"width":250,"height":60,"type":"text","text":"Тумба с умывальником\n(подвесная)"},
 		{"id":"45e9c5b44a5d59c0","x":0,"y":120,"width":250,"height":50,"type":"text","text":"Сантехника"},
 		{"id":"21925291c6ddfa6e","x":0,"y":-100,"width":250,"height":60,"type":"text","text":"Теплый пол"},
-		{"id":"0860740948713554","x":360,"y":-480,"width":250,"height":90,"type":"text","text":"Материалы:\n- гипсокартон"},
 		{"id":"c6a98f816990b06e","x":360,"y":-304,"width":250,"height":64,"type":"text","text":"Низ выложить плиткой"},
 		{"id":"a58a427847b4edae","x":360,"y":-100,"width":250,"height":60,"type":"text","text":"Мат + терморегулятор + штроба под провод"},
-		{"id":"173f953435b1d7be","x":360,"y":-220,"width":250,"height":60,"type":"text","text":"Штроба под провод"}
+		{"id":"173f953435b1d7be","x":360,"y":-220,"width":250,"height":60,"type":"text","text":"Штроба под провод"},
+		{"id":"0860740948713554","x":360,"y":-435,"width":250,"height":90,"type":"text","text":"Материалы:\n- гипсокартон"},
+		{"id":"e52a81f18ecead01","x":0,"y":340,"width":250,"height":60,"type":"text","text":"Стены"},
+		{"id":"dbdf05eba49841f0","x":59,"y":75,"width":250,"height":60,"type":"text","text":"Декоративная штукату"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
