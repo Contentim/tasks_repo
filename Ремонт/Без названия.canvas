@@ -1,10 +1,14 @@
 {
 	"nodes":[
 		{"id":"b165ea363999c4ab","x":-380,"y":-300,"width":250,"height":60,"type":"text","text":"Санузел"},
-		{"id":"187f32dd012e0874","x":0,"y":-460,"width":250,"height":60,"type":"text","text":"Ниша - канализация"},
-		{"id":"479eb5ba12b1fbec","x":-125,"y":-216,"width":250,"height":60,"type":"text","text":""}
+		{"id":"479eb5ba12b1fbec","x":0,"y":-304,"width":285,"height":64,"type":"text","text":"Ниша - полотенцесушитель"},
+		{"id":"187f32dd012e0874","x":0,"y":-420,"width":250,"height":60,"type":"text","text":"Ниша - канализация"},
+		{"id":"21925291c6ddfa6e","x":0,"y":-180,"width":250,"height":60,"type":"text","text":"Теплый пол"},
+		{"id":"45e9c5b44a5d59c0","x":-2,"y":-33,"width":250,"height":60,"type":"text","text":"Сантехника"}
 	],
 	"edges":[
-		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"}
+		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
+		{"id":"217bd18261027214","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"479eb5ba12b1fbec","toSide":"left"},
+		{"id":"d7f96c3f8b3ffda5","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"21925291c6ddfa6e","toSide":"left"}
 	]
 }
