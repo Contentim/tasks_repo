@@ -1,5 +1,6 @@
 {
 	"nodes":[
+		{"id":"0860740948713554","x":21,"y":-134,"width":250,"height":60,"type":"text","text":""},
 		{"id":"b165ea363999c4ab","x":-380,"y":-300,"width":250,"height":60,"type":"text","text":"Санузел"},
 		{"id":"479eb5ba12b1fbec","x":0,"y":-304,"width":285,"height":64,"type":"text","text":"Ниша - полотенцесушитель"},
 		{"id":"187f32dd012e0874","x":0,"y":-420,"width":250,"height":60,"type":"text","text":"Ниша - канализация"},
