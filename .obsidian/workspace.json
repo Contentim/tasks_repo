@@ -25,10 +25,10 @@
             "state": {
               "type": "canvas",
               "state": {
-                "file": "Ремонт/Без названия.canvas",
+                "file": "Ремонт/План работ.canvas",
                 "viewState": {
-                  "x": 146,
-                  "y": -104,
+                  "x": 603,
+                  "y": -253,
                   "zoom": 0
                 }
               }
@@ -101,7 +101,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/Без названия.canvas",
+                "file": "Ремонт/План работ.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +118,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/Без названия.canvas",
+                "file": "Ремонт/План работ.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -141,7 +141,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/Без названия.canvas"
+                "file": "Ремонт/План работ.canvas"
               }
             }
           },
@@ -182,7 +182,7 @@
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
     "Ремонт/Цвета стен.md",
-    "Ремонт/Без названия.canvas",
+    "Ремонт/План работ.canvas",
     "Ремонт/Без названия.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко/2024-07-07T06_08_20.292Z.Desktop.md",
