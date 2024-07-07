@@ -15,7 +15,8 @@
 		{"id":"dbdf05eba49841f0","x":360,"y":340,"width":320,"height":180,"type":"text","text":"Декоративная штукатурка\n\nhttps://voronezh.lemanapro.ru/product/shtukaturka-mramornaya-bayramix-royal-white-n-15-kg-82106310/"},
 		{"id":"b531a9238ad9ce6b","x":0,"y":-130,"width":250,"height":50,"type":"text","text":"Пол"},
 		{"id":"a58a427847b4edae","x":695,"y":-135,"width":250,"height":60,"type":"text","text":"Мат + терморегулятор + штроба под провод"},
-		{"id":"21925291c6ddfa6e","x":360,"y":-135,"width":250,"height":60,"type":"text","text":"Теплый пол"}
+		{"id":"21925291c6ddfa6e","x":360,"y":-135,"width":250,"height":60,"type":"text","text":"Теплый пол"},
+		{"id":"14d82e111cce0ba7","x":360,"y":560,"width":320,"height":60,"type":"text","text":"Лючок вентиляции"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
@@ -32,6 +33,7 @@
 		{"id":"914240dce8a1533b","fromNode":"e52a81f18ecead01","fromSide":"right","toNode":"dbdf05eba49841f0","toSide":"left"},
 		{"id":"4b52f5636cccbc3a","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"e52a81f18ecead01","toSide":"left"},
 		{"id":"6e93753cd659a2d5","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"b531a9238ad9ce6b","toSide":"left"},
-		{"id":"894510a6227e5960","fromNode":"b531a9238ad9ce6b","fromSide":"right","toNode":"21925291c6ddfa6e","toSide":"left"}
+		{"id":"894510a6227e5960","fromNode":"b531a9238ad9ce6b","fromSide":"right","toNode":"21925291c6ddfa6e","toSide":"left"},
+		{"id":"79e01417009bef70","fromNode":"e52a81f18ecead01","fromSide":"right","toNode":"14d82e111cce0ba7","toSide":"left"}
 	]
 }
