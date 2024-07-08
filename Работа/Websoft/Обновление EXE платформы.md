@@ -4,10 +4,13 @@
 C:\innoextract\temp
 ```
 
-и установка пакета демо-данных
+## Установка пакета
 
 ```
 package process [название пакета]
+```
 
-**package process inst_demo_full_2_rus**
+## Установка демо-данных
+```
+package process inst_demo_full_2_rus
 ```
