@@ -23,14 +23,11 @@
             "id": "03bcccd1794f9246",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "Ремонт/План работ.canvas",
-                "viewState": {
-                  "x": 192.1936488147835,
-                  "y": 299.5465569178281,
-                  "zoom": -0.3333333333333334
-                }
+                "file": "Работа/Websoft/Обновление EXE платформы.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -101,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Работа/Websoft/Обновление EXE платформы.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Работа/Websoft/Обновление EXE платформы.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -141,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/План работ.canvas"
+                "file": "Работа/Websoft/Обновление EXE платформы.md"
               }
             }
           },
@@ -181,8 +178,9 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
-    "Ремонт/Цвета стен.md",
     "Ремонт/План работ.canvas",
+    "Работа/Websoft/Обновление EXE платформы.md",
+    "Ремонт/Цвета стен.md",
     "Ремонт/Без названия.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко/2024-07-07T06_08_20.292Z.Desktop.md",
@@ -216,7 +214,6 @@
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Словарь терминов и выражений/Бритва Оккамма.md",
     "Test 2/Демо тест 2 - изменение.md",
-    "Округление StrRealFixed.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
