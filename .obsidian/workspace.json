@@ -37,9 +37,9 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Планы на отпуск.md",
                 "mode": "source",
-                "source": false
+                "source": true
               }
             }
           }
@@ -110,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Планы на отпуск.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Планы на отпуск.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Перенос в компоненты.md"
+                "file": "Планы на отпуск.md"
               }
             }
           },
@@ -190,8 +190,8 @@
   },
   "active": "786d8d093e256e14",
   "lastOpenFiles": [
-    "Countdown.md",
     "Работа/Перенос в компоненты.md",
+    "Countdown.md",
     "Планы на отпуск.md",
     "Без названия.md",
     "Словарь терминов и выражений/Прокрустово ложе.md",
