@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Работа с тегами GIT.md",
+                "file": "Словарь терминов и выражений/Прокрустово ложе.md",
                 "mode": "preview",
                 "source": false
               }
@@ -98,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Работа с тегами GIT.md",
+                "file": "Словарь терминов и выражений/Прокрустово ложе.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Работа с тегами GIT.md",
+                "file": "Словарь терминов и выражений/Прокрустово ложе.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Работа с тегами GIT.md"
+                "file": "Словарь терминов и выражений/Прокрустово ложе.md"
               }
             }
           },
@@ -178,6 +178,7 @@
   },
   "active": "03bcccd1794f9246",
   "lastOpenFiles": [
+    "Работа/Websoft/Работа с тегами GIT.md",
     "Работа/Websoft/Обновление EXE платформы.md",
     "Ремонт/План работ.canvas",
     "Ремонт/Цвета стен.md",
@@ -199,7 +200,6 @@
     "Кухня/Маринад.md",
     "Работа/Websoft/Большие данные.md",
     "Кухня",
-    "Работа/Websoft/Работа с тегами GIT.md",
     "Критерии дружбы.md",
     "Домашняя страница.md",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
