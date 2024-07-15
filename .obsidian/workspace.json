@@ -37,8 +37,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-                "mode": "preview",
+                "file": "Работа/Websoft/Без названия.md",
+                "mode": "source",
                 "source": true
               }
             }
@@ -110,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
+                "file": "Работа/Websoft/Без названия.md"
               }
             }
           },
@@ -190,6 +190,8 @@
   },
   "active": "786d8d093e256e14",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Работа/Websoft/Без названия.md",
     "Планы на отпуск.md",
     "Работа/Перенос в компоненты.md",
     "Countdown.md",
@@ -200,7 +202,6 @@
     "Ремонт/План работ.canvas",
     "Ремонт/Цвета стен.md",
     "Ремонт/Без названия.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко/2024-07-07T06_08_20.292Z.Desktop.md",
     "logseq/bak/Книги/Логика/История становления и развития логики/2024-07-07T06_08_20.224Z.Desktop.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
@@ -226,7 +227,6 @@
     "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Словарь терминов и выражений/Схоластика.md",
-    "Словарь терминов и выражений/Бритва Оккамма.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
