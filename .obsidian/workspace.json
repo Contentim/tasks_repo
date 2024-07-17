@@ -37,7 +37,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md",
                 "mode": "source",
                 "source": true
               }
@@ -110,7 +110,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +127,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +150,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
+                "file": "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md"
               }
             }
           },
@@ -190,8 +190,9 @@
   },
   "active": "786d8d093e256e14",
   "lastOpenFiles": [
-    "Работа/Websoft/Цвета полей и надписей в XMS.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md",
+    "Работа/Websoft/Цвета полей и надписей в XMS.md",
     "Планы на отпуск.md",
     "Работа/Перенос в компоненты.md",
     "Countdown.md",
@@ -226,7 +227,6 @@
     "Работа/Питон (Python)/Регулярные выражения.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Словарь терминов и выражений/Схоластика.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
