@@ -35,11 +35,14 @@
             "id": "786d8d093e256e14",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
-                "mode": "source",
-                "source": true
+                "file": "Ремонт/План работ.canvas",
+                "viewState": {
+                  "x": 342.5,
+                  "y": 545.0220125786163,
+                  "zoom": -0.2826853513389708
+                }
               }
             }
           }
@@ -110,7 +113,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Ремонт/План работ.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +130,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Ремонт/План работ.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +153,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md"
+                "file": "Ремонт/План работ.canvas"
               }
             }
           },
@@ -190,8 +193,8 @@
   },
   "active": "786d8d093e256e14",
   "lastOpenFiles": [
-    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Websoft/Стенды.md",
+    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
     "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
