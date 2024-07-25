@@ -4,50 +4,38 @@
     "type": "split",
     "children": [
       {
-        "id": "2740d111fbbad62b",
+        "id": "eec034d558924036",
         "type": "tabs",
         "children": [
           {
-            "id": "00046ad9e14c5356",
+            "id": "e982ac795dd400fb",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               }
             }
           },
           {
-            "id": "03bcccd1794f9246",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Countdown.md",
-                "mode": "preview",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "786d8d093e256e14",
+            "id": "c31b45387b0956f7",
             "type": "leaf",
             "state": {
               "type": "canvas",
               "state": {
                 "file": "Ремонт/План работ.canvas",
                 "viewState": {
-                  "x": 342.5,
-                  "y": -246.8915094339623,
+                  "x": -378.85901467505244,
+                  "y": 111.96331236897278,
                   "zoom": -0.2826853513389708
                 }
               }
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -191,8 +179,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "786d8d093e256e14",
+  "active": "c31b45387b0956f7",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Ремонт/План работ.canvas",
     "Работа/Websoft/Стенды.md",
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
@@ -206,7 +196,6 @@
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Работа/Websoft/Работа с тегами GIT.md",
     "Работа/Websoft/Обновление EXE платформы.md",
-    "Ремонт/План работ.canvas",
     "Ремонт/Цвета стен.md",
     "Ремонт/Без названия.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко/2024-07-07T06_08_20.292Z.Desktop.md",
@@ -225,11 +214,9 @@
     "Работа/Websoft/Большие данные.md",
     "Кухня",
     "Критерии дружбы.md",
-    "Домашняя страница.md",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
     "Test_files/test.py",
     "Работа/Питон (Python)/Регулярные выражения.md",
-    "Работа/Websoft/Примеры регулярных выражений.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
