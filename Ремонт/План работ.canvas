@@ -17,7 +17,8 @@
 		{"id":"a58a427847b4edae","type":"text","text":"Мат + терморегулятор + штроба под провод","x":695,"y":-135,"width":250,"height":60},
 		{"id":"21925291c6ddfa6e","type":"text","text":"Теплый пол","x":360,"y":-135,"width":250,"height":60},
 		{"id":"14d82e111cce0ba7","type":"text","text":"Лючок вентиляции","x":360,"y":560,"width":320,"height":60},
-		{"id":"2c9c8174fdf7d1d9","x":-620,"y":-300,"width":250,"height":60,"type":"text","text":"Электрика"}
+		{"id":"2c9c8174fdf7d1d9","x":-620,"y":-300,"width":250,"height":60,"type":"text","text":"Электрика"},
+		{"id":"a0cf15266dda91b6","x":-819,"y":-158,"width":479,"height":718,"type":"text","text":"![[Pasted image 20240725102949.png]]"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
@@ -36,6 +37,7 @@
 		{"id":"6e93753cd659a2d5","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"b531a9238ad9ce6b","toSide":"left"},
 		{"id":"894510a6227e5960","fromNode":"b531a9238ad9ce6b","fromSide":"right","toNode":"21925291c6ddfa6e","toSide":"left"},
 		{"id":"79e01417009bef70","fromNode":"e52a81f18ecead01","fromSide":"right","toNode":"14d82e111cce0ba7","toSide":"left"},
-		{"id":"4e376b4ff81e9820","fromNode":"b165ea363999c4ab","fromSide":"left","toNode":"2c9c8174fdf7d1d9","toSide":"right"}
+		{"id":"4e376b4ff81e9820","fromNode":"b165ea363999c4ab","fromSide":"left","toNode":"2c9c8174fdf7d1d9","toSide":"right"},
+		{"id":"8a7bd408eaaf1151","fromNode":"2c9c8174fdf7d1d9","fromSide":"bottom","toNode":"a0cf15266dda91b6","toSide":"top"}
 	]
 }
