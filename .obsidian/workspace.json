@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Таблица для XMS с сортировкой.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Таблица для XMS с сортировкой.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Таблица для XMS с сортировкой.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Таблица для XMS с сортировкой.md"
+                "file": "Работа/Websoft/Без названия.md"
               }
             }
           },
@@ -165,8 +165,9 @@
   },
   "active": "28207561da657be7",
   "lastOpenFiles": [
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
+    "Работа/Websoft/Без названия.md",
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Домашняя страница.md",
     "Ремонт/План работ.canvas",
     "Ремонт/attachments/Pasted image 20240725102949.png",
@@ -202,7 +203,6 @@
     "Кухня",
     "Критерии дружбы.md",
     "Работа/Питон (Python)/Рекурсивный поиск файлов в директории.md",
-    "Работа/Питон (Python)/Регулярные выражения.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
