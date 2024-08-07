@@ -1,7 +1,8 @@
 Работу таблицы можно посмотреть в **Процессы -> Обучение -> Управление дистанционным обучением -> Статистика -> По отзывам**
-
-Файл - **wtv_view_course_integral_efficiency_report.xms**
-
+## Файл 
+```js
+wtv_view_course_integral_efficiency_report.xms
+```
 ## Листинг
 ```xml
 <LIST NAME="ViewGrid" HEIGHT="-32vpx" ROW-AUTO-HEIGHT="1" VERT-SCROLL="1" LOOP-EXPR="
