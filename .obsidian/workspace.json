@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "eec034d558924036",
+        "id": "73f975f0988985a4",
         "type": "tabs",
         "children": [
           {
-            "id": "e982ac795dd400fb",
+            "id": "28207561da657be7",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -18,24 +18,8 @@
                 "source": false
               }
             }
-          },
-          {
-            "id": "c31b45387b0956f7",
-            "type": "leaf",
-            "state": {
-              "type": "canvas",
-              "state": {
-                "file": "Ремонт/План работ.canvas",
-                "viewState": {
-                  "x": -378.85901467505244,
-                  "y": 111.96331236897278,
-                  "zoom": -0.2826853513389708
-                }
-              }
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -101,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -118,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -141,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/План работ.canvas"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -179,12 +163,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "c31b45387b0956f7",
+  "active": "28207561da657be7",
   "lastOpenFiles": [
+    "Ремонт/План работ.canvas",
     "Ремонт/attachments/Pasted image 20240725102949.png",
     "Ремонт/attachments",
     "Домашняя страница.md",
-    "Ремонт/План работ.canvas",
     "Работа/Websoft/Стенды.md",
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
