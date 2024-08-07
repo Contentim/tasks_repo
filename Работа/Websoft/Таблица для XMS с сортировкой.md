@@ -1,4 +1,4 @@
-
+Работу таблицы можно посмотреть в **Процессы -> Обучение -> Управление дистанционным обучением** -> 
 ```xml
 <LIST NAME="ViewGrid" HEIGHT="-32vpx" ROW-AUTO-HEIGHT="1" VERT-SCROLL="1" LOOP-EXPR="
 		try
