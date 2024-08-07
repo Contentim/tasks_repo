@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Без названия.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
+                "file": "Работа/Websoft/Без названия.md"
               }
             }
           },
@@ -165,6 +165,8 @@
   },
   "active": "28207561da657be7",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Работа/Websoft/Без названия.md",
     "Домашняя страница.md",
     "Ремонт/План работ.canvas",
     "Ремонт/attachments/Pasted image 20240725102949.png",
@@ -173,7 +175,6 @@
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
     "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Цвета полей и надписей в XMS.md",
     "Планы на отпуск.md",
     "Работа/Перенос в компоненты.md",
