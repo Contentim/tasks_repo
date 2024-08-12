@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
               }
             }
           },
@@ -165,10 +165,10 @@
   },
   "active": "88f8328bcd97a565",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Домашняя страница.md",
     "Ремонт/План работ.canvas",
     "Ремонт/attachments/Pasted image 20240725102949.png",
     "Ремонт/attachments",
