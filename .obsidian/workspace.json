@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "mode": "preview",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
+                "file": "Работа/Перенос в компоненты.md"
               }
             }
           },
@@ -165,9 +165,9 @@
   },
   "active": "88f8328bcd97a565",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Обновление EXE платформы.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Домашняя страница.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
