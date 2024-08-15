@@ -20,7 +20,8 @@
 		{"id":"2c9c8174fdf7d1d9","type":"text","text":"Электрика","x":-620,"y":-300,"width":250,"height":60},
 		{"id":"a0cf15266dda91b6","type":"text","text":"![[Pasted image 20240725102949.png]]","x":-819,"y":-158,"width":479,"height":718},
 		{"id":"2265954e69be784c","x":-249,"y":-577,"width":250,"height":60,"type":"text","text":"Подоконники"},
-		{"id":"a743f6bf0743c92f","x":144,"y":-626,"width":250,"height":146,"type":"text","text":"Мебельный щит\nморилка\nлак\nщит с фаской"}
+		{"id":"5a9c7c16532f11c7","x":485,"y":-1013,"width":250,"height":226,"type":"text","text":"https://www.vseinstrumenti.ru/product/stenovaya-panel-soyuz-056am-3050x600x4-mm-mramor-latsio-belyj-m056am-6092293/"},
+		{"id":"a743f6bf0743c92f","x":125,"y":-787,"width":250,"height":146,"type":"text","text":"Мебельный щит\nморилка\nлак\nщит с фаской"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
@@ -41,6 +42,7 @@
 		{"id":"79e01417009bef70","fromNode":"e52a81f18ecead01","fromSide":"right","toNode":"14d82e111cce0ba7","toSide":"left"},
 		{"id":"4e376b4ff81e9820","fromNode":"b165ea363999c4ab","fromSide":"left","toNode":"2c9c8174fdf7d1d9","toSide":"right"},
 		{"id":"8a7bd408eaaf1151","fromNode":"2c9c8174fdf7d1d9","fromSide":"bottom","toNode":"a0cf15266dda91b6","toSide":"top"},
-		{"id":"c368ab25196f725a","fromNode":"2265954e69be784c","fromSide":"right","toNode":"a743f6bf0743c92f","toSide":"left"}
+		{"id":"c368ab25196f725a","fromNode":"2265954e69be784c","fromSide":"right","toNode":"a743f6bf0743c92f","toSide":"left"},
+		{"id":"ac6754f193676951","fromNode":"a743f6bf0743c92f","fromSide":"right","toNode":"5a9c7c16532f11c7","toSide":"left"}
 	]
 }
