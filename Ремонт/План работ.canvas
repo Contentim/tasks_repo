@@ -1,5 +1,6 @@
 {
 	"nodes":[
+		{"id":"a743f6bf0743c92f","x":144,"y":-626,"width":250,"height":60,"type":"text","text":""},
 		{"id":"b165ea363999c4ab","type":"text","text":"Санузел","x":-260,"y":-300,"width":130,"height":60,"color":"6"},
 		{"id":"479eb5ba12b1fbec","type":"text","text":"Ниша - полотенцесушитель","x":0,"y":-304,"width":250,"height":64},
 		{"id":"187f32dd012e0874","type":"text","text":"Ниша - канализация","x":0,"y":-420,"width":250,"height":60},
@@ -17,8 +18,9 @@
 		{"id":"a58a427847b4edae","type":"text","text":"Мат + терморегулятор + штроба под провод","x":695,"y":-135,"width":250,"height":60},
 		{"id":"21925291c6ddfa6e","type":"text","text":"Теплый пол","x":360,"y":-135,"width":250,"height":60},
 		{"id":"14d82e111cce0ba7","type":"text","text":"Лючок вентиляции","x":360,"y":560,"width":320,"height":60},
-		{"id":"2c9c8174fdf7d1d9","x":-620,"y":-300,"width":250,"height":60,"type":"text","text":"Электрика"},
-		{"id":"a0cf15266dda91b6","x":-819,"y":-158,"width":479,"height":718,"type":"text","text":"![[Pasted image 20240725102949.png]]"}
+		{"id":"2c9c8174fdf7d1d9","type":"text","text":"Электрика","x":-620,"y":-300,"width":250,"height":60},
+		{"id":"a0cf15266dda91b6","type":"text","text":"![[Pasted image 20240725102949.png]]","x":-819,"y":-158,"width":479,"height":718},
+		{"id":"2265954e69be784c","x":-249,"y":-577,"width":250,"height":60,"type":"text","text":"Подоконники"}
 	],
 	"edges":[
 		{"id":"957b1b5c63346470","fromNode":"b165ea363999c4ab","fromSide":"right","toNode":"187f32dd012e0874","toSide":"left"},
