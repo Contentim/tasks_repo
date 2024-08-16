@@ -11,14 +11,11 @@
             "id": "88f8328bcd97a565",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "Ремонт/План работ.canvas",
-                "viewState": {
-                  "x": 59.302722531524125,
-                  "y": -374.6915100284031,
-                  "zoom": -0.6495631940696311
-                }
+                "file": "Работа/Перенос в компоненты.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -88,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Работа/Перенос в компоненты.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Работа/Перенос в компоненты.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -128,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/План работ.canvas"
+                "file": "Работа/Перенос в компоненты.md"
               }
             }
           },
@@ -168,6 +165,7 @@
   },
   "active": "88f8328bcd97a565",
   "lastOpenFiles": [
+    "Ремонт/План работ.canvas",
     "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Обновление EXE платформы.md",
@@ -175,7 +173,6 @@
     "Домашняя страница.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
-    "Ремонт/План работ.canvas",
     "Ремонт/attachments/Pasted image 20240725102949.png",
     "Ремонт/attachments",
     "Работа/Websoft/Стенды.md",
@@ -205,7 +202,6 @@
     "Кухня/Маринад.md",
     "Работа/Websoft/Большие данные.md",
     "Кухня",
-    "Критерии дружбы.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
