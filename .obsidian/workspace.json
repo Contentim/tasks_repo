@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "bb31827381a6e39b",
+        "id": "237013e9a67ee92f",
         "type": "tabs",
         "children": [
           {
-            "id": "88f8328bcd97a565",
+            "id": "e644f39aad49e3b3",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Даты/Разницы.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Даты/Разницы.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Даты/Разницы.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Перенос в компоненты.md"
+                "file": "Работа/Websoft/Даты/Разницы.md"
               }
             }
           },
@@ -163,14 +163,16 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "88f8328bcd97a565",
+  "active": "e644f39aad49e3b3",
   "lastOpenFiles": [
-    "Ремонт/План работ.canvas",
+    "Домашняя страница.md",
+    "Работа/Websoft/Даты/Разницы.md",
+    "Работа/Websoft/Даты",
     "Работа/Перенос в компоненты.md",
+    "Ремонт/План работ.canvas",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Обновление EXE платформы.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Домашняя страница.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
     "Ремонт/attachments/Pasted image 20240725102949.png",
@@ -201,7 +203,6 @@
     "Ремонт",
     "Кухня/Маринад.md",
     "Работа/Websoft/Большие данные.md",
-    "Кухня",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
