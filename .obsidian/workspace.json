@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Даты/Разницы.md",
+                "file": "Работа/Websoft/Даты/Длительности.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Даты/Разницы.md",
+                "file": "Работа/Websoft/Даты/Длительности.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Даты/Разницы.md",
+                "file": "Работа/Websoft/Даты/Длительности.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Даты/Разницы.md"
+                "file": "Работа/Websoft/Даты/Длительности.md"
               }
             }
           },
@@ -165,8 +165,9 @@
   },
   "active": "e644f39aad49e3b3",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Работа/Websoft/Даты/Разницы.md",
+    "Работа/Websoft/Даты/Длительности.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Даты",
     "Работа/Перенос в компоненты.md",
     "Ремонт/План работ.canvas",
@@ -202,7 +203,6 @@
     "Кухня/Шашлык.md",
     "Ремонт",
     "Кухня/Маринад.md",
-    "Работа/Websoft/Большие данные.md",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
