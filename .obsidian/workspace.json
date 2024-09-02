@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Проверки.md",
+                "file": "Работа/Websoft/Примеры регулярных выражений.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Проверки.md",
+                "file": "Работа/Websoft/Примеры регулярных выражений.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Проверки.md",
+                "file": "Работа/Websoft/Примеры регулярных выражений.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Проверки.md"
+                "file": "Работа/Websoft/Примеры регулярных выражений.md"
               }
             }
           },
@@ -165,8 +165,9 @@
   },
   "active": "e644f39aad49e3b3",
   "lastOpenFiles": [
-    "Работа/Websoft/Даты/Длительности.md",
+    "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Websoft/Проверки.md",
+    "Работа/Websoft/Даты/Длительности.md",
     "Работа/Websoft/Даты/Разницы.md",
     "Домашняя страница.md",
     "Работа/Websoft/Даты",
@@ -174,7 +175,6 @@
     "Ремонт/План работ.canvas",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Обновление EXE платформы.md",
-    "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
     "Ремонт/attachments/Pasted image 20240725102949.png",
