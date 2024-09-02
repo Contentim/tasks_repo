@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Websoft/Даты/Разницы.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Websoft/Даты/Разницы.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md",
+                "file": "Работа/Websoft/Даты/Разницы.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Примеры регулярных выражений.md"
+                "file": "Работа/Websoft/Даты/Разницы.md"
               }
             }
           },
@@ -165,6 +165,7 @@
   },
   "active": "e644f39aad49e3b3",
   "lastOpenFiles": [
+    "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Даты/Длительности.md",
@@ -201,7 +202,6 @@
     "logseq/bak/Без названия",
     "logseq/bak",
     "logseq",
-    "Кухня/Шашлык.md",
     "Ремонт",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
