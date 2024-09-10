@@ -1,0 +1,35 @@
+﻿<html>
+	<head>
+		<title>Интегральная эффективность курса</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	</head>
+	<body>
+		<table border="1" cellpadding="2" cellspacing="0">
+			<tr valign="middle">
+				<td width="300" bgcolor="#FFCC99" align="center"><%=ms_tools.get_const('c_coll')%></td>
+				<td width="100" bgcolor="#FFCC99">Оценка (от 1 до 5)</td>
+			</tr>
+			<%
+		
+			arrResults = Ps.data_course_integral_efficiencys
+			
+			for (var i = 0; i < ArrayCount(arrResults); i++)
+			{
+				_data_course_integral_efficiency = arrResults[i]
+			%>
+			
+			<%if (i % 2 === 0) { %>
+				<tr valign="middle">
+			<% } else { %>
+				<tr valign="middle" bgcolor="#CCCCCC">
+			<% } %>
+				<td><%=_data_course_integral_efficiency.person_fullname%></td>
+				<td><%=_data_course_integral_efficiency.basic_score_field%></td>
+			<%
+			}
+			%>
+				</tr>
+		</table>
+
+	</body>
+</html>
