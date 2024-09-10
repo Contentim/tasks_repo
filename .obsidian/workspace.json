@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Заметка для работы.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Заметка для работы.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Заметка для работы.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Заметка для работы.md"
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
               }
             }
           },
@@ -165,11 +165,11 @@
   },
   "active": "e644f39aad49e3b3",
   "lastOpenFiles": [
+    "Работа/Websoft/Заметка для работы.md",
     "Работа/Websoft/attachments/course_integral_efficiency_report 1.html",
     "Работа/Websoft/attachments/course_integral_efficiency_report.html",
     "Работа/Websoft/attachments",
     "Работа/Websoft/Обрезать миллисекунды из тайминга.md",
-    "Работа/Websoft/Заметка для работы.md",
     "Работа/Websoft/Даты/Разницы.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
@@ -202,7 +202,6 @@
     "logseq/bak/Книги/Логика",
     "logseq/bak/Книги",
     "logseq/bak/Без названия",
-    "logseq/bak",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
     "Pasted image 20240531125110.png",
