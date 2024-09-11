@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "237013e9a67ee92f",
+        "id": "a2f6eece914c9e9b",
         "type": "tabs",
         "children": [
           {
-            "id": "e644f39aad49e3b3",
+            "id": "8ee346ca82bc15f3",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
+                "file": "Домашняя страница.md"
               }
             }
           },
@@ -163,8 +163,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e644f39aad49e3b3",
+  "active": "8ee346ca82bc15f3",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Заметка для работы.md",
     "Работа/Websoft/attachments/course_integral_efficiency_report 1.html",
     "Работа/Websoft/attachments/course_integral_efficiency_report.html",
@@ -179,7 +180,6 @@
     "Работа/Websoft/Даты",
     "Работа/Перенос в компоненты.md",
     "Ремонт/План работ.canvas",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Обновление EXE платформы.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
