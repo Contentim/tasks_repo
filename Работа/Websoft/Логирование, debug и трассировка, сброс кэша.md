@@ -37,7 +37,7 @@ EnableLog(sTracingLogName);
 var curTiming = GetCurTicks(); 
 var curAllTiming = GetCurTicks();
 
-LogEvent(sTracingLogName,'tools_report: edu_response_analysis_report SEC: ' + tools.str_time_from_mseconds( (GetCurTicks() - curTiming) ) + ' sec. (' + tools.str_time_from_mseconds((GetCurTicks() - curAllTiming)) + ' sec.)');
+LogEvent(sTracingLogName,'tools_report: edu_response_analysis_report: ' + tools.str_time_from_mseconds( (GetCurTicks() - curTiming) ) + ' (' + tools.str_time_from_mseconds((GetCurTicks() - curAllTiming)) + ')');
 ```
 
 ## Функция для библиотеки
