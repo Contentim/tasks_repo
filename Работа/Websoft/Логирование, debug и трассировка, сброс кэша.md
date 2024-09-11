@@ -37,7 +37,7 @@ EnableLog(sTracingLogName);
 var curTiming = GetCurTicks(); 
 var curAllTiming = GetCurTicks();
 
-LogEvent(sTracingLogName,'libMain: GetPersonCollaborators: get_user_collaborators: ' + (GetCurTicks() - curTiming) + ' ms. (' + (GetCurTicks() - curAllTiming) + ' ms.)'); curTiming = GetCurTicks();
+LogEvent(sTracingLogName,'tools_report: edu_response_analysis_report SEC: ' + tools.str_time_from_mseconds( (GetCurTicks() - curTiming) ) + ' sec. (' + tools.str_time_from_mseconds((GetCurTicks() - curAllTiming)) + ' sec.)');
 ```
 
 ## Функция для библиотеки
