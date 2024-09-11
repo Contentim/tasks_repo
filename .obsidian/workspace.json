@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
               }
             }
           },
@@ -165,6 +165,7 @@
   },
   "active": "8ee346ca82bc15f3",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Заметка для работы.md",
     "Работа/Websoft/attachments/course_integral_efficiency_report 1.html",
@@ -176,7 +177,6 @@
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Даты/Длительности.md",
-    "Домашняя страница.md",
     "Работа/Websoft/Даты",
     "Работа/Перенос в компоненты.md",
     "Ремонт/План работ.canvas",
