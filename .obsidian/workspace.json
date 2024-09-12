@@ -4,18 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "a2f6eece914c9e9b",
+        "id": "f4fa2c6d8a63cba1",
         "type": "tabs",
         "children": [
           {
-            "id": "8ee346ca82bc15f3",
+            "id": "998f6819962c4bd9",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "canvas",
               "state": {
-                "file": "Работа/Websoft/Массивы.md",
-                "mode": "source",
-                "source": false
+                "file": "Ремонт/План работ.canvas",
+                "viewState": {
+                  "x": 63,
+                  "y": -21.388993710691807,
+                  "zoom": -0.9129671433061184
+                }
               }
             }
           }
@@ -85,7 +88,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Массивы.md",
+                "file": "Ремонт/План работ.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +105,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Массивы.md",
+                "file": "Ремонт/План работ.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +128,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Массивы.md"
+                "file": "Ремонт/План работ.canvas"
               }
             }
           },
@@ -163,10 +166,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "8ee346ca82bc15f3",
+  "active": "998f6819962c4bd9",
   "lastOpenFiles": [
-    "Работа/Websoft/Большие данные.md",
+    "Ремонт/Без названия.canvas",
+    "Ремонт/План работ.canvas",
     "Работа/Websoft/Массивы.md",
+    "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Домашняя страница.md",
     "Работа/Websoft/Заметка для работы.md",
@@ -181,7 +186,6 @@
     "Работа/Websoft/Даты/Длительности.md",
     "Работа/Websoft/Даты",
     "Работа/Перенос в компоненты.md",
-    "Ремонт/План работ.canvas",
     "Работа/Websoft/Обновление EXE платформы.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
@@ -197,7 +201,6 @@
     "Без названия.md",
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Работа/Websoft/Работа с тегами GIT.md",
-    "Ремонт/Цвета стен.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "logseq/bak/Книги/Логика/История становления и развития логики",
     "logseq/bak/Книги/Логика",
