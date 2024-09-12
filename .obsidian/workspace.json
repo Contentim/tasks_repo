@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-                "mode": "preview",
+                "file": "Работа/Websoft/Массивы.md",
+                "mode": "source",
                 "source": false
               }
             }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Массивы.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Массивы.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
+                "file": "Работа/Websoft/Массивы.md"
               }
             }
           },
@@ -165,8 +165,10 @@
   },
   "active": "8ee346ca82bc15f3",
   "lastOpenFiles": [
-    "Домашняя страница.md",
+    "Работа/Websoft/Большие данные.md",
+    "Работа/Websoft/Массивы.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Заметка для работы.md",
     "Работа/Websoft/attachments/course_integral_efficiency_report 1.html",
     "Работа/Websoft/attachments/course_integral_efficiency_report.html",
@@ -196,7 +198,6 @@
     "Словарь терминов и выражений/Прокрустово ложе.md",
     "Работа/Websoft/Работа с тегами GIT.md",
     "Ремонт/Цвета стен.md",
-    "Ремонт/Без названия.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "logseq/bak/Книги/Логика/История становления и развития логики",
     "logseq/bak/Книги/Логика",
