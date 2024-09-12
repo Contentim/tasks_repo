@@ -11,14 +11,11 @@
             "id": "998f6819962c4bd9",
             "type": "leaf",
             "state": {
-              "type": "canvas",
+              "type": "markdown",
               "state": {
-                "file": "Ремонт/План работ.canvas",
-                "viewState": {
-                  "x": 63,
-                  "y": -21.388993710691807,
-                  "zoom": -0.9129671433061184
-                }
+                "file": "Ремонт/Материалы.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -88,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Ремонт/Материалы.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/План работ.canvas",
+                "file": "Ремонт/Материалы.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -128,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/План работ.canvas"
+                "file": "Ремонт/Материалы.md"
               }
             }
           },
@@ -168,8 +165,9 @@
   },
   "active": "998f6819962c4bd9",
   "lastOpenFiles": [
-    "Ремонт/Без названия.canvas",
     "Ремонт/План работ.canvas",
+    "Ремонт/Материалы.md",
+    "Ремонт/Без названия.canvas",
     "Работа/Websoft/Массивы.md",
     "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
@@ -200,7 +198,6 @@
     "Countdown.md",
     "Без названия.md",
     "Словарь терминов и выражений/Прокрустово ложе.md",
-    "Работа/Websoft/Работа с тегами GIT.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "logseq/bak/Книги/Логика/История становления и развития логики",
     "logseq/bak/Книги/Логика",
