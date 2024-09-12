@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Ремонт/Материалы.md",
+                "file": "Работа/Websoft/Проверки.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/Материалы.md",
+                "file": "Работа/Websoft/Проверки.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/Материалы.md",
+                "file": "Работа/Websoft/Проверки.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/Материалы.md"
+                "file": "Работа/Websoft/Проверки.md"
               }
             }
           },
@@ -165,14 +165,14 @@
   },
   "active": "998f6819962c4bd9",
   "lastOpenFiles": [
-    "Ремонт/План работ.canvas",
+    "Работа/Websoft/Заметка для работы.md",
     "Ремонт/Материалы.md",
+    "Ремонт/План работ.canvas",
     "Ремонт/Без названия.canvas",
     "Работа/Websoft/Массивы.md",
     "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Домашняя страница.md",
-    "Работа/Websoft/Заметка для работы.md",
     "Работа/Websoft/attachments/course_integral_efficiency_report 1.html",
     "Работа/Websoft/attachments/course_integral_efficiency_report.html",
     "Работа/Websoft/attachments",
