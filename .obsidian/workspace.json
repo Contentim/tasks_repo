@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Проверки.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Проверки.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Проверки.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Проверки.md"
+                "file": "Работа/Websoft/Большие данные.md"
               }
             }
           },
@@ -165,6 +165,7 @@
   },
   "active": "998f6819962c4bd9",
   "lastOpenFiles": [
+    "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Заметка для работы.md",
     "Ремонт/Материалы.md",
     "Ремонт/План работ.canvas",
@@ -180,7 +181,6 @@
     "Работа/Websoft/Даты/Разницы.md",
     "Работа/Websoft/Примеры регулярных выражений.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Даты/Длительности.md",
     "Работа/Websoft/Даты",
     "Работа/Перенос в компоненты.md",
