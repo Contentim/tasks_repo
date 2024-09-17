@@ -37,6 +37,8 @@ EnableLog(sTracingLogName);
 var curTiming = GetCurTicks(); 
 var curAllTiming = GetCurTicks();
 
+LogEvent(sTracingLogName,'tools_report: edu_response_analysis_report: ' + tools.str_time_from_mseconds( (GetCurTicks() - curTiming) ));
+
 LogEvent(sTracingLogName,'tools_report: edu_response_analysis_report: ' + tools.str_time_from_mseconds( (GetCurTicks() - curTiming) ) + ' (' + tools.str_time_from_mseconds((GetCurTicks() - curAllTiming)) + ')');
 ```
 
