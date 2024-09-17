@@ -32,7 +32,7 @@ URL: https://my.websoft.ru/_wt/doc_std_20203_mywebsoft/7176312992668802317?traci
 [[Демо тест 2 - изменение]]
 
 ```
-var sTracingLogName = "tracing-1"; 
+var sTracingLogName = 'tracing-1'; 
 EnableLog(sTracingLogName); 
 var curTiming = GetCurTicks(); 
 var curAllTiming = GetCurTicks();
