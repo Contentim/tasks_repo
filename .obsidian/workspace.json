@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "ByeDPI.md",
                 "mode": "source",
                 "source": false
               }
@@ -61,7 +61,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "dpi",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -78,7 +78,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -98,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "ByeDPI.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -115,7 +116,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "ByeDPI.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -138,7 +139,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Без названия 1.md"
+                "file": "ByeDPI.md"
               }
             }
           },
@@ -176,10 +177,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e296d2311ddb84dc",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Без названия 1.md",
+    "ByeDPI.md",
     "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Заметка для работы.md",
