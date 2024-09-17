@@ -1,5 +1,7 @@
 #dpi #goodbydpi
 
+**Скачать** - https://github.com/dovecoteescapee/ByeDPIAndroid/releases/download/v1.2.0/byedpi-1.2.0.apk
+
 ByeDPI (Bye DPI, ПокаDPI или GoodbyeDPI) для Android — бесплатное мобильное приложение, которое поможет обойти DPI пакеты глубокого анализа для открытия сайтов и сервисов.
 
 ByeDPI приложение на телефон Андроид иногда называют GoodbyeDPI Android и правильно делают, однако предназначены они для разных операционных систем.
