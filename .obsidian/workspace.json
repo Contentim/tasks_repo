@@ -18,8 +18,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "e296d2311ddb84dc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Без названия 1.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -85,7 +98,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Без названия 1.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +115,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Без названия 1.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +138,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
+                "file": "Без названия 1.md"
               }
             }
           },
@@ -163,10 +176,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "998f6819962c4bd9",
+  "active": "e296d2311ddb84dc",
   "lastOpenFiles": [
-    "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Без названия 1.md",
+    "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Заметка для работы.md",
     "Ремонт/Материалы.md",
