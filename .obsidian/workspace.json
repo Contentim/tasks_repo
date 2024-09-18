@@ -25,7 +25,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "ByeDPI.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               }
@@ -61,7 +61,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "dpi",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -99,7 +99,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "ByeDPI.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +116,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "ByeDPI.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -139,7 +139,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "ByeDPI.md"
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md"
               }
             }
           },
@@ -177,10 +177,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "e296d2311ddb84dc",
   "lastOpenFiles": [
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "ByeDPI.md",
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Заметка для работы.md",
