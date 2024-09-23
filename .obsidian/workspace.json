@@ -42,9 +42,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "acab47ce3859af45",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Что делать, если GoodbyeDPI перестал работать.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -111,7 +123,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Скачать EXE + установка демо-данных.md",
+                "file": "Что делать, если GoodbyeDPI перестал работать.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -128,7 +140,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Скачать EXE + установка демо-данных.md",
+                "file": "Что делать, если GoodbyeDPI перестал работать.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -151,7 +163,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Скачать EXE + установка демо-данных.md"
+                "file": "Что делать, если GoodbyeDPI перестал работать.md"
               }
             }
           },
@@ -189,8 +201,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "26496b23b4e4896b",
+  "active": "acab47ce3859af45",
   "lastOpenFiles": [
+    "Что делать, если GoodbyeDPI перестал работать.md",
     "Скачать EXE + установка демо-данных.md",
     "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Большие данные.md",
@@ -224,7 +237,6 @@
     "Работа/Websoft/Цвета полей и надписей в XMS.md",
     "Планы на отпуск.md",
     "Countdown.md",
-    "Без названия.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "logseq/bak/Книги/Логика/История становления и развития логики",
     "logseq/bak/Книги/Логика",
