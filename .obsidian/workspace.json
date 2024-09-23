@@ -30,9 +30,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "26496b23b4e4896b",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Скачать EXE.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -61,7 +73,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "компонен",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -99,7 +111,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Скачать EXE.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +128,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Скачать EXE.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -139,7 +151,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Перенос в компоненты.md"
+                "file": "Скачать EXE.md"
               }
             }
           },
@@ -177,8 +189,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e296d2311ddb84dc",
+  "active": "26496b23b4e4896b",
   "lastOpenFiles": [
+    "Скачать EXE.md",
+    "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Ремонт/Материалы.md",
@@ -198,7 +212,6 @@
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Работа/Websoft/Даты/Длительности.md",
     "Работа/Websoft/Даты",
-    "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Обновление EXE платформы.md",
     "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Работа/Websoft/Таблица для XMS с сортировкой.md",
@@ -212,7 +225,6 @@
     "Планы на отпуск.md",
     "Countdown.md",
     "Без названия.md",
-    "Словарь терминов и выражений/Прокрустово ложе.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "logseq/bak/Книги/Логика/История становления и развития логики",
     "logseq/bak/Книги/Логика",
