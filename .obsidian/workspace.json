@@ -54,9 +54,21 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "96abe4091f30dacd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Тегирование GIT.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -123,7 +135,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Что делать, если GoodbyeDPI перестал работать.md",
+                "file": "Тегирование GIT.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -140,7 +152,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Что делать, если GoodbyeDPI перестал работать.md",
+                "file": "Тегирование GIT.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -163,7 +175,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Что делать, если GoodbyeDPI перестал работать.md"
+                "file": "Тегирование GIT.md"
               }
             }
           },
@@ -201,12 +213,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "acab47ce3859af45",
+  "active": "96abe4091f30dacd",
   "lastOpenFiles": [
+    "Тегирование GIT.md",
+    "Что делать, если GoodbyeDPI перестал работать.md",
     "attachments/Pasted image 20240923183026.png",
     "attachments/Pasted image 20240923182923.png",
     "attachments",
-    "Что делать, если GoodbyeDPI перестал работать.md",
     "Скачать EXE + установка демо-данных.md",
     "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Большие данные.md",
