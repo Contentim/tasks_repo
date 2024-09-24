@@ -37,38 +37,14 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Скачать EXE + установка демо-данных.md",
-                "mode": "preview",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "acab47ce3859af45",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Что делать, если GoodbyeDPI перестал работать.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "96abe4091f30dacd",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
                 "file": "Тегирование GIT.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               }
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -97,7 +73,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#git",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -213,14 +189,14 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "96abe4091f30dacd",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
+    "Скачать EXE + установка демо-данных.md",
     "Тегирование GIT.md",
     "Что делать, если GoodbyeDPI перестал работать.md",
     "attachments/Pasted image 20240923183026.png",
     "attachments/Pasted image 20240923182923.png",
     "attachments",
-    "Скачать EXE + установка демо-данных.md",
     "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
