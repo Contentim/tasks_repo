@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Ремонт/Материалы.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "mode": "source",
                 "source": false
               }
@@ -48,7 +48,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "налив",
+                "query": "больш",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ремонт/Материалы.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ремонт/Материалы.md",
+                "file": "Работа/Websoft/Большие данные.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт/Материалы.md"
+                "file": "Работа/Websoft/Большие данные.md"
               }
             }
           },
@@ -166,6 +166,7 @@
   },
   "active": "5f3e6af447a24361",
   "lastOpenFiles": [
+    "Ремонт/Материалы.md",
     "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Большие данные.md",
@@ -176,7 +177,6 @@
     "attachments/Pasted image 20240923182923.png",
     "attachments",
     "Работа/Перенос в компоненты.md",
-    "Ремонт/Материалы.md",
     "ByeDPI.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Заметка для работы.md",
