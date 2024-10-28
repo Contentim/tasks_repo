@@ -33,8 +33,7 @@
               "title": "Release Notes 1.7.4"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -107,6 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Домашняя страница.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +116,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки"
+              "title": "Обратные ссылки для Домашняя страница"
             }
           },
           {
@@ -125,11 +125,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Домашняя страница.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки"
+              "title": "Исходящие ссылки из Домашняя страница"
             }
           },
           {
@@ -150,9 +151,11 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {},
+              "state": {
+                "file": "Домашняя страница.md"
+              },
               "icon": "lucide-list",
-              "title": "Структура"
+              "title": "Структура Домашняя страница"
             }
           },
           {
@@ -193,7 +196,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "22dc5f8dc9d06fed",
+  "active": "ba267d296aa321bd",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Работа/Websoft/Большие данные.md",
