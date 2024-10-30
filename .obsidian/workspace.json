@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
-                "mode": "source",
+                "file": "Книги/Логика/Значение логики в жизни человека.md",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Значение логики в жизни человека"
             }
           },
           {
@@ -64,7 +64,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "больш",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -106,7 +106,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Книги/Логика/Значение логики в жизни человека.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -116,7 +116,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки для Домашняя страница"
+              "title": "Обратные ссылки для Значение логики в жизни человека"
             }
           },
           {
@@ -125,12 +125,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Книги/Логика/Значение логики в жизни человека.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки из Домашняя страница"
+              "title": "Исходящие ссылки из Значение логики в жизни человека"
             }
           },
           {
@@ -152,10 +152,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md"
+                "file": "Книги/Логика/Значение логики в жизни человека.md"
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Значение логики в жизни человека"
             }
           },
           {
@@ -198,6 +198,7 @@
   },
   "active": "ba267d296aa321bd",
   "lastOpenFiles": [
+    "Книги/Логика/Логика А.М.Руденко.md",
     "Домашняя страница.md",
     "Работа/Websoft/Большие данные.md",
     "Ремонт/Материалы.md",
@@ -234,7 +235,6 @@
     "Работа/Питон (Python)/Как прочитать и разобрать текстовый файл на Python.md",
     "Работа/Websoft/MainScreen.AuxData и Screen.AuxData.md",
     "Работа/Websoft/Цвета полей и надписей в XMS.md",
-    "Планы на отпуск.md",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "logseq/bak/Книги/Логика/История становления и развития логики",
     "logseq/bak/Книги/Логика",
