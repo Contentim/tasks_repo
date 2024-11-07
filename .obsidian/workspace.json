@@ -53,12 +53,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Blender - уроки, советы.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Blender - уроки, советы"
+              "title": "Стенды"
             }
           }
         ],
@@ -135,7 +135,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Blender - уроки, советы.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -145,7 +145,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки для Blender - уроки, советы"
+              "title": "Обратные ссылки для Стенды"
             }
           },
           {
@@ -154,12 +154,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Blender - уроки, советы.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки из Blender - уроки, советы"
+              "title": "Исходящие ссылки из Стенды"
             }
           },
           {
@@ -181,10 +181,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Blender - уроки, советы.md"
+                "file": "Работа/Websoft/Стенды.md"
               },
               "icon": "lucide-list",
-              "title": "Структура Blender - уроки, советы"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -227,12 +227,13 @@
   },
   "active": "4b40c0eeb2b1aa88",
   "lastOpenFiles": [
+    "Работа/Websoft/Большие данные.md",
+    "Работа/Websoft/Стенды.md",
     "Blender - уроки, советы.md",
     "Запчасти на авто.md",
     "Трава - Blender.md",
     "Юпитер - Blender.md",
     "Развернуть локальный стенд.md",
-    "Работа/Websoft/Большие данные.md",
     "Книги/Логика/Значение логики в жизни человека.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Домашняя страница.md",
@@ -261,7 +262,6 @@
     "Работа/Websoft/Даты/Длительности.md",
     "Работа/Websoft/Даты",
     "Работа/Websoft/Обновление EXE платформы.md",
-    "Работа/Websoft/Проблема с правами доступа у CLAIM.md",
     "Ремонт/attachments/Pasted image 20240725102949.png",
     "Ремонт/attachments",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
