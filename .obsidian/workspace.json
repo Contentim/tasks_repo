@@ -22,18 +22,6 @@
             }
           },
           {
-            "id": "22dc5f8dc9d06fed",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.7.4"
-              },
-              "icon": "lucide-file",
-              "title": "Release Notes 1.7.4"
-            }
-          },
-          {
             "id": "4f0e70e8f1c54ef2",
             "type": "leaf",
             "state": {
@@ -61,8 +49,7 @@
               "title": "Стенды"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -135,7 +122,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -145,7 +132,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки для Стенды"
+              "title": "Обратные ссылки для Развернуть локальный стенд"
             }
           },
           {
@@ -154,12 +141,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки из Стенды"
+              "title": "Исходящие ссылки из Развернуть локальный стенд"
             }
           },
           {
@@ -181,10 +168,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md"
+                "file": "Развернуть локальный стенд.md"
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Развернуть локальный стенд"
             }
           },
           {
@@ -225,10 +212,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4b40c0eeb2b1aa88",
+  "active": "ba267d296aa321bd",
   "lastOpenFiles": [
-    "Работа/Websoft/Большие данные.md",
     "Работа/Websoft/Стенды.md",
+    "Работа/Websoft/Большие данные.md",
     "Blender - уроки, советы.md",
     "Запчасти на авто.md",
     "Трава - Blender.md",
