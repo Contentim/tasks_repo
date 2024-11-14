@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "развер",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -184,7 +184,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "5d6dfb05ff934d15",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
