@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Blender - уроки, советы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Blender - уроки, советы"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "blen",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -184,12 +184,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "5d6dfb05ff934d15",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Blender - уроки, советы.md",
-    "Развернуть локальный стенд.md",
     "Работа/Websoft/Большие данные.md",
     "Запчасти на авто.md",
     "Трава - Blender.md",
