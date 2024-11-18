@@ -14,5 +14,8 @@ https://youtube.com/shorts/rXuTmKnRM1c?si=XHBsyTWuiMW0iuhM
 ## Моделирование дуг и арок
 https://www.youtube.com/shorts/F80sv2P-V9c
 
-## # Топология. Базовые ошибки в сетке
+## Топология. Базовые ошибки в сетке
 https://www.youtube.com/watch?v=bZitEPLsQ0M
+
+## # 100 фишек в Blender, которые сэкономят тебе 100 часов. Часть 1.
+https://www.youtube.com/watch?v=D33SpOjuzJM
