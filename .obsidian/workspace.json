@@ -4,35 +4,33 @@
     "type": "split",
     "children": [
       {
-        "id": "6c2b47b924141900",
+        "id": "a756f64ebb765c48",
         "type": "tabs",
         "children": [
           {
-            "id": "5d6dfb05ff934d15",
+            "id": "2827cf828949a850",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Blender - уроки, советы.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Blender - уроки, советы"
+              "title": "Домашняя страница"
             }
           },
           {
-            "id": "4679cb6196e72e63",
+            "id": "7f009f25bc436e29",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "release-notes",
               "state": {
-                "file": "Разница в днях.md",
-                "mode": "source",
-                "source": false
+                "currentVersion": "1.7.7"
               },
               "icon": "lucide-file",
-              "title": "Разница в днях"
+              "title": "Release Notes 1.7.7"
             }
           }
         ],
@@ -199,13 +197,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4679cb6196e72e63",
+  "active": "7f009f25bc436e29",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Разница в днях.md",
     "Blender - уроки, советы.md",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Работа/Websoft/Большие данные.md",
     "Запчасти на авто.md",
     "Трава - Blender.md",
