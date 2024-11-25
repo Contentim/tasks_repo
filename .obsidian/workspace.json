@@ -4,25 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "a756f64ebb765c48",
+        "id": "c10ca3fb0aaebcf4",
         "type": "tabs",
         "children": [
           {
-            "id": "2827cf828949a850",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Домашняя страница.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Домашняя страница"
-            }
-          },
-          {
-            "id": "7f009f25bc436e29",
+            "id": "5b91b331448663bb",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -35,8 +21,7 @@
               "title": "Развернуть локальный стенд"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -199,14 +184,14 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "7f009f25bc436e29",
+  "active": "5b91b331448663bb",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Развернуть локальный стенд.md",
     "Работа/Перенос в компоненты.md",
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Разница в днях.md",
     "Blender - уроки, советы.md",
-    "Развернуть локальный стенд.md",
     "Работа/Websoft/Большие данные.md",
     "Запчасти на авто.md",
     "Трава - Blender.md",
