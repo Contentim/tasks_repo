@@ -35,8 +35,7 @@
               "title": "Стенды"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -199,10 +198,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "c22fa393be477cb6",
+  "active": "ad79f8636f5f1945",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
+    "Домашняя страница.md",
     "Развернуть локальный стенд.md",
     "фывфыв.md",
     "Книги/Логика/Логика А.М.Руденко.md",
