@@ -4,35 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "6505cfea2ce2a19f",
+        "id": "01c2e88303cbd9f5",
         "type": "tabs",
         "children": [
           {
-            "id": "ad79f8636f5f1945",
+            "id": "60fbd828b6e52f74",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Развернуть локальный стенд.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
-            }
-          },
-          {
-            "id": "c22fa393be477cb6",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Работа/Websoft/Стенды.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Новая вкладка"
             }
           }
         ]
@@ -198,11 +180,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "ad79f8636f5f1945",
+  "active": "60fbd828b6e52f74",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
-    "Развернуть локальный стенд.md",
     "фывфыв.md",
     "Книги/Логика/Логика А.М.Руденко.md",
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
