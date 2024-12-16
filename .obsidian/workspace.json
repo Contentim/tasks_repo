@@ -35,7 +35,8 @@
               "title": "JSDoc - конфигурация"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -198,11 +199,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "60fbd828b6e52f74",
+  "active": "7bf2e7f7e3ce3f62",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Домашняя страница.md",
     "JSDoc - конфигурация.md",
-    "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "фывфыв.md",
     "Книги/Логика/Логика А.М.Руденко.md",
