@@ -30,20 +30,27 @@ if (ArrayOptFirstElem(arrSubdivisionIDs) != undefined)
 	sQuery = 'for $elem_qc in collaborators where MatchSome($elem_qc/position_parent_id, (' + ArrayMerge(arrSubdivisionIDs, 'This', ',') + ')) return $elem_qc/Fields(\'id\')';
 	xarrSubdivisionPersonIDs = tools.xquery(sQuery);
 	arrSubdivisionPersonIDs = ArrayExtract(xarrSubdivisionPersonIDs, 'This.id.Value');
-
 }
-
-
 
 _arrPersonIDs = ArrayUnion(arrOrgPersonIDs, arrSubordinateIDs, arrGroupPersonIDs, arrSubdivisionPersonIDs);
 
-
-
 if (ArrayOptFirstElem(_arrPersonIDs) != undefined)
-
 {
-
 	arrPersonIDs = ArraySelect(_arrPersonIDs, 'This != curUserID');
+}
+```
 
+```js
+switch( oModelRoles.type )
+{
+	case 'hr':
+	{
+		// код ролевой модели
+	}
+}
+
+// !!! обязательно !!!
+if(ArrayCount(arrPersonIDs) > 0){
+	sXQueryQual = ' MatchSome($elem_qc/person_id, (' + ArrayMerge(arrPersonIDs, 'This', ',') + '))';
 }
 ```
