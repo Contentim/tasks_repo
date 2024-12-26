@@ -28,7 +28,7 @@
               "type": "markdown",
               "state": {
                 "file": "Информация по сотруднику.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -64,7 +64,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -227,10 +227,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "038b5b9456757df2",
   "lastOpenFiles": [
-    "Ролевая модель Наблюдатель.md",
     "Ролевая модель HR.md",
+    "Ролевая модель Наблюдатель.md",
     "Информация по сотруднику.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/attachments/Pasted image 20241224132706.png",
