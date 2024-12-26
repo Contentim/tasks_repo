@@ -95,7 +95,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "прове",
+                "query": "websoft",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -227,7 +227,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "1fa35f9340111bc9",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Ролевая модель Наблюдатель.md",
     "Ролевая модель HR.md",
