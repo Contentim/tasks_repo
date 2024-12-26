@@ -64,7 +64,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -227,11 +227,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "038b5b9456757df2",
+  "active": "e6e318aa60151a54",
   "lastOpenFiles": [
+    "Информация по сотруднику.md",
     "Ролевая модель HR.md",
     "Ролевая модель Наблюдатель.md",
-    "Информация по сотруднику.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/attachments/Pasted image 20241224132706.png",
     "Домашняя страница.md",
