@@ -48,9 +48,23 @@
               "icon": "lucide-file",
               "title": "Ролевая модель Наблюдатель"
             }
+          },
+          {
+            "id": "1fa35f9340111bc9",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Ролевая модель HR.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Ролевая модель HR"
+            }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -213,9 +227,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e6e318aa60151a54",
+  "active": "1fa35f9340111bc9",
   "lastOpenFiles": [
     "Ролевая модель Наблюдатель.md",
+    "Ролевая модель HR.md",
     "Информация по сотруднику.md",
     "Работа/Websoft/Проверки.md",
     "Работа/Websoft/attachments/Pasted image 20241224132706.png",
@@ -250,7 +265,6 @@
     "Работа/Websoft/Заметка для работы.md",
     "Ремонт/План работ.canvas",
     "Ремонт/Без названия.canvas",
-    "Работа/Websoft/Массивы.md",
     "Работа/Websoft/attachments/course_integral_efficiency_report 1.html",
     "Работа/Websoft/attachments/course_integral_efficiency_report.html",
     "Работа/Websoft/attachments",
