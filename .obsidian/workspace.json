@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "Проверки"
             }
+          },
+          {
+            "id": "038b5b9456757df2",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Информация по сотруднику.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Информация по сотруднику"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -184,8 +199,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "afc66160e2f741bd",
+  "active": "038b5b9456757df2",
   "lastOpenFiles": [
+    "Информация по сотруднику.md",
+    "Работа/Websoft/Проверки.md",
     "Работа/Websoft/attachments/Pasted image 20241224132706.png",
     "Домашняя страница.md",
     "JSDoc - конфигурация.md",
@@ -215,7 +232,6 @@
     "attachments/Pasted image 20240923182923.png",
     "attachments",
     "ByeDPI.md",
-    "Работа/Websoft/Проверки.md",
     "Работа/Websoft/Заметка для работы.md",
     "Ремонт/План работ.canvas",
     "Ремонт/Без названия.canvas",
@@ -233,7 +249,6 @@
     "logseq/bak/Книги",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Обложка - Логика А.М.Руденко.png",
-    "Pasted image 20240531125110.png",
     "Без названия.canvas"
   ]
 }
