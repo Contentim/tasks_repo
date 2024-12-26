@@ -95,7 +95,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "websoft",
+                "query": "model",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
