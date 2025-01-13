@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "model",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -186,9 +186,9 @@
   },
   "active": "b88c49026d1f36d5",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Зеркала.md",
     "attachments/Pasted image 20241229112835.png",
-    "Домашняя страница.md",
     "Информация по сотруднику.md",
     "Ролевая модель Наблюдатель.md",
     "Ролевая модель HR.md",
