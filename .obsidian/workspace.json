@@ -35,7 +35,8 @@
               "title": "Список задач - Websoft"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -198,12 +199,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "dc044f055bef681e",
+  "active": "7d2174ee1d978ec8",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Работа/Перенос в компоненты.md",
     "Список задач - Websoft.md",
-    "Работа/Websoft/Стенды.md",
     "Зеркала.md",
     "attachments/Pasted image 20241229112835.png",
     "Информация по сотруднику.md",
