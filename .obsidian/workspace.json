@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Список задач - Websoft.md",
+                "file": "Работа/Перенос в компоненты.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Список задач - Websoft"
+              "title": "Перенос в компоненты"
             }
           },
           {
@@ -35,7 +35,8 @@
               "title": "Список задач - Websoft"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -66,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "компонент",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -198,8 +199,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "dc044f055bef681e",
+  "active": "7d2174ee1d978ec8",
   "lastOpenFiles": [
+    "Работа/Перенос в компоненты.md",
     "Домашняя страница.md",
     "Список задач - Websoft.md",
     "Работа/Websoft/Стенды.md",
@@ -219,7 +221,6 @@
     "attachments/Pasted image 20241129143455.png",
     "attachments/Pasted image 20241129143409.png",
     "attachments/Pasted image 20241129143342.png",
-    "Работа/Перенос в компоненты.md",
     "Разница в днях.md",
     "Blender - уроки, советы.md",
     "Работа/Websoft/Большие данные.md",
