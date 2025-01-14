@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Перенос в компоненты.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Перенос в компоненты"
+              "title": "Стенды"
             }
           },
           {
@@ -35,8 +35,7 @@
               "title": "Список задач - Websoft"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -199,10 +198,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "7d2174ee1d978ec8",
+  "active": "dc044f055bef681e",
   "lastOpenFiles": [
-    "Работа/Перенос в компоненты.md",
     "Домашняя страница.md",
+    "Работа/Перенос в компоненты.md",
     "Список задач - Websoft.md",
     "Работа/Websoft/Стенды.md",
     "Зеркала.md",
