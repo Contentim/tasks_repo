@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "компонент",
+                "query": "websoft",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -184,7 +184,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "49338060af4b4523",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Список задач - Websoft.md",
     "Работа/Websoft/Стенды.md",
