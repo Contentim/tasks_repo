@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "Развернуть локальный стенд.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -186,6 +186,8 @@
   },
   "active": "3a2db2aab0daea2c",
   "lastOpenFiles": [
+    "attachments/Logs/xhttp_2025-01-23.log",
+    "attachments/Logs",
     "attachments/xHttp_64.exe",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
@@ -231,8 +233,6 @@
     "Ремонт/attachments",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "logseq/bak/Книги/Логика/История становления и развития логики",
-    "logseq/bak/Книги/Логика",
-    "logseq/bak/Книги",
     "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Без названия.canvas"
   ]
