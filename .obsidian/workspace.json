@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -186,6 +186,7 @@
   },
   "active": "3a2db2aab0daea2c",
   "lastOpenFiles": [
+    "attachments/Pasted image 20250124114014.png",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "attachments/Logs/xhttp_2025-01-23.log",
