@@ -2,7 +2,8 @@
 
 1. Склонировать ветку DEV#WORKSPACE_ADMIN и развернуть стенд по инструкции с портала
 
-2. Загрузить компонент "applications_management" [https://gitea.websoft.ru/WebSoft.Components/applications_management.git](https://gitea.websoft.ru/WebSoft.Components/applications_management.git) в папку **components**
+2. Загрузить компонент " 
+core_application_mng" [https://gitea.websoft.ru/WebSoft.Components/core_application_mng](https://gitea.websoft.ru/WebSoft.Components/core_application_mng) в папку **components**
 
 3. Добавить в профиль безопасности "Базовые API" библиотеку "libAppsMgmt"
 ![[Pasted image 20241129143459.png]]
