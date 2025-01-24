@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/9f7ac014-370d-41bf-9fe6-a715b6e69244)#websoft #стенд 
+#websoft #стенд 
 # Как развернуть локальный стенд из branch DEV#WORKSPACE_ADMIN
 
 1. Склонировать ветку DEV#WORKSPACE_ADMIN и развернуть стенд по инструкции с портала
@@ -19,4 +19,5 @@
 8. Перезапустить сервер с перестройкой каталогов
 9. http://localhost/vchat/apps
 
-![image](https://github.com/user-attachments/assets/fc12e504-cbb7-42dc-a920-9f66d6e90e50)
+![image](https://github.com/user-attachments/assets/6c0b252c-a26e-4808-8b1f-ca37400ee82e)
+
