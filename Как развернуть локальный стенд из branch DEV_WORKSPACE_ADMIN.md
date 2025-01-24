@@ -12,7 +12,7 @@
 ![[Pasted image 20241129143342.png]]
 ![[Pasted image 20241129143409.png]]
 
-5. Обработать пакет с агентом convert_roles_to_config и запустить, чтобы изменить механизм доступа в конфигурации [https://devopssrv.websoft.ru/DefaultCollection/webtutor4/_workitems/edit/28604](https://devopssrv.websoft.ru/DefaultCollection/webtutor4/_workitems/edit/28604)
+5. Обработать пакет с агентом **convert_roles_to_config** и запустить, чтобы изменить механизм доступа в конфигурации [https://devopssrv.websoft.ru/DefaultCollection/webtutor4/_workitems/edit/28604](https://devopssrv.websoft.ru/DefaultCollection/webtutor4/_workitems/edit/28604)
 
 6. Перезапустить сервер с перестройкой каталогов
 7. http://localhost/vchat/apps
