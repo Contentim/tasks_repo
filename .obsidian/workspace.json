@@ -22,15 +22,15 @@
             }
           },
           {
-            "id": "cd40bec8d3378508",
+            "id": "36053bd1ce555f72",
             "type": "leaf",
             "state": {
               "type": "image",
               "state": {
-                "file": "attachments/Pasted image 20241129143459.png"
+                "file": "attachments/Pasted image 20250124114014.png"
               },
               "icon": "lucide-image",
-              "title": "Pasted image 20241129143459"
+              "title": "Pasted image 20250124114014"
             }
           }
         ],
@@ -197,9 +197,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "cd40bec8d3378508",
+  "active": "36053bd1ce555f72",
   "lastOpenFiles": [
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
+    "attachments/Pasted image 20241129143459.png",
     "Развернуть локальный стенд.md",
     "attachments/Pasted image 20250124114014.png",
     "Работа/Websoft/Стенды.md",
@@ -219,7 +220,6 @@
     "JSDoc - конфигурация.md",
     "фывфыв.md",
     "Книги/Логика/Логика А.М.Руденко.md",
-    "attachments/Pasted image 20241129143459.png",
     "attachments/Pasted image 20241129143455.png",
     "attachments/Pasted image 20241129143409.png",
     "attachments/Pasted image 20241129143342.png",
