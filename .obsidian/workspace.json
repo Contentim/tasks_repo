@@ -20,8 +20,21 @@
               "icon": "lucide-file",
               "title": "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN"
             }
+          },
+          {
+            "id": "cd40bec8d3378508",
+            "type": "leaf",
+            "state": {
+              "type": "image",
+              "state": {
+                "file": "attachments/Pasted image 20241129143459.png"
+              },
+              "icon": "lucide-image",
+              "title": "Pasted image 20241129143459"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -52,7 +65,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "tag:#websoft",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -167,7 +180,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -184,16 +197,16 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "3a2db2aab0daea2c",
+  "active": "cd40bec8d3378508",
   "lastOpenFiles": [
-    "attachments/Pasted image 20250124114014.png",
+    "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
     "Развернуть локальный стенд.md",
+    "attachments/Pasted image 20250124114014.png",
     "Работа/Websoft/Стенды.md",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
     "attachments/xHttp_64.exe",
     "Домашняя страница.md",
-    "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
     "Список задач - Websoft.md",
     "Работа/Перенос в компоненты.md",
     "Зеркала.md",
@@ -233,7 +246,6 @@
     "Ремонт/attachments/Pasted image 20240725102949.png",
     "Ремонт/attachments",
     "logseq/bak/Книги/Логика/Логика А.М.Руденко",
-    "Книги/Логика/attachments/Pasted image 20240531200927.png",
     "Без названия.canvas"
   ]
 }
