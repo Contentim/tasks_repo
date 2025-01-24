@@ -2,7 +2,9 @@
 # Как развернуть локальный стенд из branch DEV#WORKSPACE_ADMIN
 
 1. Клонировать ветку DEV#WORKSPACE_ADMIN и развернуть стенд по инструкции с портала
-
+```
+git clone https://gitea.websoft.ru/WebSoft/WebTutor4.git -b DEV#WORKSPACE_ADMIN
+```
 2. Загрузить компонент **core_application_mng** [https://gitea.websoft.ru/WebSoft.Components/core_application_mng](https://gitea.websoft.ru/WebSoft.Components/core_application_mng) в папку **components**
 
 3. Добавить в профиль безопасности "Базовые API" библиотеку "libAppsMgmt"
