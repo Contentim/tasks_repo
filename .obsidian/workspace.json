@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Стенды"
             }
           }
         ]
@@ -186,8 +186,8 @@
   },
   "active": "3a2db2aab0daea2c",
   "lastOpenFiles": [
-    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
+    "Работа/Websoft/Стенды.md",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
     "attachments/xHttp_64.exe",
