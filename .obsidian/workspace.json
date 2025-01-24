@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
