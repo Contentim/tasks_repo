@@ -22,15 +22,15 @@
             }
           },
           {
-            "id": "36053bd1ce555f72",
+            "id": "e89d798731a8539f",
             "type": "leaf",
             "state": {
               "type": "image",
               "state": {
-                "file": "attachments/Pasted image 20250124114014.png"
+                "file": "attachments/Pasted image 20241129143409.png"
               },
               "icon": "lucide-image",
-              "title": "Pasted image 20250124114014"
+              "title": "Pasted image 20241129143409"
             }
           }
         ],
@@ -197,12 +197,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "36053bd1ce555f72",
+  "active": "e89d798731a8539f",
   "lastOpenFiles": [
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
+    "attachments/Pasted image 20241129143342.png",
+    "attachments/Pasted image 20250124114014.png",
     "attachments/Pasted image 20241129143459.png",
     "Развернуть локальный стенд.md",
-    "attachments/Pasted image 20250124114014.png",
     "Работа/Websoft/Стенды.md",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
@@ -222,7 +223,6 @@
     "Книги/Логика/Логика А.М.Руденко.md",
     "attachments/Pasted image 20241129143455.png",
     "attachments/Pasted image 20241129143409.png",
-    "attachments/Pasted image 20241129143342.png",
     "Разница в днях.md",
     "Blender - уроки, советы.md",
     "Работа/Websoft/Большие данные.md",
