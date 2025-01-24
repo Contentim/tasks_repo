@@ -15,5 +15,7 @@
 
 5. Обработать пакет с агентом **convert_roles_to_config** и **ЗАПУСТИТЬ АГЕНТ**, чтобы изменить механизм доступа в конфигурации [https://devopssrv.websoft.ru/DefaultCollection/webtutor4/_workitems/edit/28604](https://devopssrv.websoft.ru/DefaultCollection/webtutor4/_workitems/edit/28604)
 
-6. Перезапустить сервер с перестройкой каталогов
-7. http://localhost/vchat/apps
+6. Остановить сервер
+7. В папке **WebSoftServer\wt_data** удалить папку catalogs
+8. Перезапустить сервер с перестройкой каталогов
+9. http://localhost/vchat/apps
