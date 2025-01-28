@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Вкладки формы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Без названия 1"
+              "title": "Вкладки формы"
             }
           }
         ],
@@ -229,7 +229,7 @@
   },
   "active": "948a73702f776cf3",
   "lastOpenFiles": [
-    "Без названия 1.md",
+    "Вкладки формы.md",
     "Единичный выбор.md",
     "Фильтр категорий для выборок.md",
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
