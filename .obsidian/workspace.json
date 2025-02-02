@@ -95,7 +95,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "логир",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -227,7 +227,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "948a73702f776cf3",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Вкладки формы.md",
     "Единичный выбор.md",
