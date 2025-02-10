@@ -83,16 +83,30 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "asdasdad.md",
+                "file": "Расчет доходности облигации.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "asdasdad"
+              "title": "Расчет доходности облигации"
+            }
+          },
+          {
+            "id": "423c4204be38f2d4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Без названия 1.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Без названия 1"
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 6
       }
     ],
     "direction": "vertical"
@@ -255,15 +269,16 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "924d51936edbbee0",
+  "active": "423c4204be38f2d4",
   "lastOpenFiles": [
+    "Без названия 1.md",
+    "Расчет доходности облигации.md",
     "attachments/Pasted image 20250206142640.png",
     "attachments/Pasted image 20250206142623.png",
     "attachments/Pasted image 20250206142519.png",
     "attachments/Pasted image 20250206142504.png",
     "attachments/Pasted image 20250206142422.png",
     "attachments/Pasted image 20250206142400.png",
-    "asdasdad.md",
     "Разворачивание и использование стенда Платформы локально.md",
     "Вкладки формы.md",
     "Единичный выбор.md",
@@ -282,7 +297,6 @@
     "Список задач - Websoft.md",
     "Работа/Перенос в компоненты.md",
     "Зеркала.md",
-    "attachments/Pasted image 20241229112835.png",
     "Информация по сотруднику.md",
     "Ролевая модель Наблюдатель.md",
     "Ролевая модель HR.md",
