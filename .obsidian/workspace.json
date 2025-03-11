@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "acdcdc74a95e6a65",
+        "id": "a6714a851ab5cafe",
         "type": "tabs",
         "children": [
           {
-            "id": "4dbeb234739099b9",
+            "id": "7b925ec5d6752d1d",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Развернуть локальный стенд.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Новая вкладка"
             }
           }
         ]
@@ -184,8 +180,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4dbeb234739099b9",
+  "active": "7b925ec5d6752d1d",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Домашняя страница.md",
     "Рассказ про Чужих - Челнок и платформа.md",
     "Рассказ про Чужих - Набросок №1.md",
@@ -205,7 +202,6 @@
     "attachments/Pasted image 20241129143342.png",
     "attachments/Pasted image 20250124114014.png",
     "attachments/Pasted image 20241129143459.png",
-    "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
