@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Переход на SQL-базу.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Без названия 1"
+              "title": "Переход на SQL-базу"
             }
           }
         ],
@@ -201,7 +201,7 @@
   },
   "active": "a36eb4f518872a1e",
   "lastOpenFiles": [
-    "Без названия 1.md",
+    "Переход на SQL-базу.md",
     "Демо-данные для платформы.md",
     "Развернуть локальный стенд.md",
     "Домашняя страница.md",
