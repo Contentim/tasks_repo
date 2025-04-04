@@ -67,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "платформа",
+                "query": "tag:#websoft",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -199,7 +199,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "a36eb4f518872a1e",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Переход на SQL-базу.md",
     "Демо-данные для платформы.md",
