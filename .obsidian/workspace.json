@@ -11,10 +11,14 @@
             "id": "aa965326b813e225",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Переход на SQL-базу.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "Переход на SQL-базу"
             }
           }
         ]
@@ -182,19 +186,19 @@
   },
   "active": "aa965326b813e225",
   "lastOpenFiles": [
+    "Демо-данные для платформы.md",
+    "Домашняя страница.md",
     "Поиск.md",
     "Иконки для работы.md",
     "Каталоги. Работа с каталогами.md",
     "Глобальные константы.md",
     "Константы.md",
-    "Домашняя страница.md",
     "Переход на SQL-базу.md",
     "Как добавить пункт в фильтр выборки.md",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
     "attachments/Pasted image 20250407142448.png",
     "attachments/Pasted image 20250407142415.png",
-    "Демо-данные для платформы.md",
     "Развернуть локальный стенд.md",
     "Создать тестовую запись.md",
     "Рассказ про Чужих - Челнок и платформа.md",
