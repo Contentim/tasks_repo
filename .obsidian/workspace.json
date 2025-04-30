@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Демо-данные для платформы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Демо-данные для платформы"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#websoft",
+                "query": "tag:#платформа",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -186,8 +186,8 @@
   },
   "active": "aa965326b813e225",
   "lastOpenFiles": [
-    "Работа с SQL на платформе.md",
     "Развернуть локальный стенд.md",
+    "Работа с SQL на платформе.md",
     "Демо-данные для платформы.md",
     "Домашняя страница.md",
     "Поиск.md",
