@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Округление StrRealFixed.md",
+                "file": "Создать тестовую запись.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Округление StrRealFixed"
+              "title": "Создать тестовую запись"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "тип данны",
+                "query": "запись",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -186,6 +186,8 @@
   },
   "active": "aa965326b813e225",
   "lastOpenFiles": [
+    "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
+    "Округление StrRealFixed.md",
     "Демо-данные для платформы.md",
     "Работа с SQL на платформе.md",
     "Развернуть локальный стенд.md",
@@ -223,8 +225,6 @@
     "Работа/Перенос в компоненты.md",
     "Зеркала.md",
     "Информация по сотруднику.md",
-    "Ролевая модель Наблюдатель.md",
-    "Ролевая модель HR.md",
     "attachments",
     "Ремонт/План работ.canvas",
     "Ремонт/Без названия.canvas",
