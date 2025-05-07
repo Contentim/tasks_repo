@@ -67,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "запись",
+                "query": "log",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -199,7 +199,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "0dbfc1dfad7cab03",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Запись в файл.md",
     "Создать тестовую запись.md",
