@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Иконки для работы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Иконки для работы"
             }
           }
         ],
@@ -67,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "стенд",
+                "query": "икон",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -201,6 +201,7 @@
   },
   "active": "68edef26c563d24e",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
@@ -234,7 +235,6 @@
     "Единичный выбор.md",
     "Фильтр категорий для выборок.md",
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
-    "Работа/Websoft/Стенды.md",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
     "attachments/xHttp_64.exe",
