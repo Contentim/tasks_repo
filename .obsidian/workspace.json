@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Запустить стенд.md",
+                "file": "Запись в файл.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Запустить стенд"
+              "title": "Запись в файл"
             }
           }
         ],
@@ -81,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "стенд",
+                "query": "файл",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -215,8 +215,8 @@
   },
   "active": "1ef25857d66d57c6",
   "lastOpenFiles": [
-    "attachments/Pasted image 20250514105517.png",
     "Запустить стенд.md",
+    "attachments/Pasted image 20250514105517.png",
     "Развернуть локальный стенд.md",
     "Домашняя страница.md",
     "Иконки для работы.md",
@@ -245,7 +245,6 @@
     "attachments/Pasted image 20250206142519.png",
     "attachments/Pasted image 20250206142504.png",
     "attachments/Pasted image 20250206142422.png",
-    "attachments/Pasted image 20250206142400.png",
     "Разворачивание и использование стенда Платформы локально.md",
     "Вкладки формы.md",
     "Единичный выбор.md",
