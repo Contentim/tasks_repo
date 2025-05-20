@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "файл",
+                "query": "стенды",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -186,11 +186,11 @@
   },
   "active": "dfe690a69c071911",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Запись в файл.md",
     "Запустить стенд.md",
     "attachments/Pasted image 20250514105517.png",
     "Развернуть локальный стенд.md",
-    "Домашняя страница.md",
     "Иконки для работы.md",
     "Работа/Websoft/Стенды.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
