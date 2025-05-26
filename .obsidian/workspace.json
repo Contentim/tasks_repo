@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Вкладки формы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Вкладки формы"
             }
           },
           {
@@ -198,10 +198,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "e19e5e5d3da2d70d",
   "lastOpenFiles": [
-    "Ролевая модель приложений.md",
+    "Единичный выбор.md",
     "Домашняя страница.md",
+    "Ролевая модель приложений.md",
     "Список задач - Websoft.md",
     "Разворачивание и использование стенда Платформы локально.md",
     "Q4 2022.md",
@@ -235,7 +236,6 @@
     "attachments/Pasted image 20250206142519.png",
     "attachments/Pasted image 20250206142504.png",
     "attachments/Pasted image 20250206142422.png",
-    "Вкладки формы.md",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
     "attachments/xHttp_64.exe",
