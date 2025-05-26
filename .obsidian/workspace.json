@@ -66,7 +66,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "#формы",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -198,7 +198,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e19e5e5d3da2d70d",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Ролевая модель приложений.md",
     "Домашняя страница.md",
