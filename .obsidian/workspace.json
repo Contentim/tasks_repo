@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Вкладки формы.md",
+                "file": "Иконки для работы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Вкладки формы"
+              "title": "Иконки для работы"
             }
           },
           {
@@ -66,7 +66,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "#формы",
+                "query": "tag:#иконки",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -200,6 +200,7 @@
   },
   "active": "e19e5e5d3da2d70d",
   "lastOpenFiles": [
+    "Вкладки формы.md",
     "Единичный выбор.md",
     "Домашняя страница.md",
     "Ролевая модель приложений.md",
@@ -230,7 +231,6 @@
     "attachments/Pasted image 20250407142415.png",
     "Рассказ про Чужих - Челнок и платформа.md",
     "Рассказ про Чужих - Набросок №1.md",
-    "Расчет доходности облигации.md",
     "attachments/Pasted image 20250206142640.png",
     "attachments/Pasted image 20250206142623.png",
     "attachments/Pasted image 20250206142519.png",
