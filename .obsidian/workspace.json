@@ -67,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tag:#иконки",
+                "query": "типы",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -199,7 +199,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "94abe3ddf3bd92db",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Иконки для работы.md",
