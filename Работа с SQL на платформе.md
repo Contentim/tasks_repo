@@ -1,4 +1,4 @@
-#websoft #DB #платформа
+#websoft #DB #платформа #БД
 
 db set type mssql
 db create
