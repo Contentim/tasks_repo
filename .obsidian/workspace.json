@@ -67,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "типы",
+                "query": "платформа",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
