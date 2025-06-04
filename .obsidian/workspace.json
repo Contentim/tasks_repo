@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа с SQL на платформе.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Работа с SQL на платформе"
             }
           },
           {
@@ -240,10 +240,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "5324441af2b04054",
   "lastOpenFiles": [
-    "Получить название типа.md",
     "Домашняя страница.md",
+    "Получить название типа.md",
     "Работа/Websoft/Стенды.md",
     "Texas.md",
     "Austria.md",
