@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "Домашняя страница.md",
-                "mode": "preview",
+                "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
@@ -228,8 +228,11 @@
   },
   "active": "5324441af2b04054",
   "lastOpenFiles": [
-    "Bill Hansen.md",
+    "Texas.md",
     "Домашняя страница.md",
+    "Austria.md",
+    "Peru.md",
+    "Bill Hansen.md",
     "Brad Jefferson.md",
     "Olga Olson.md",
     "Откат.md",
@@ -252,9 +255,6 @@
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Создать тестовую запись.md",
     "Работа/Питон (Python)/Работа с файлами. Чтение и запись.md",
-    "Округление StrRealFixed.md",
-    "Поиск.md",
-    "Каталоги. Работа с каталогами.md",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
     "attachments/Pasted image 20250407142448.png",
