@@ -14,8 +14,8 @@
               "type": "markdown",
               "state": {
                 "file": "Домашняя страница.md",
-                "mode": "preview",
-                "source": false
+                "mode": "source",
+                "source": true
               },
               "icon": "lucide-file",
               "title": "Домашняя страница"
