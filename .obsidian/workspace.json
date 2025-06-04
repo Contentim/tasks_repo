@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Bill Hansen.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Bill Hansen"
             }
           },
           {
@@ -228,8 +228,11 @@
   },
   "active": "5324441af2b04054",
   "lastOpenFiles": [
-    "Откат.md",
     "Домашняя страница.md",
+    "Brad Jefferson.md",
+    "Olga Olson.md",
+    "Bill Hansen.md",
+    "Откат.md",
     "Работа с SQL на платформе.md",
     "Демо-данные для платформы.md",
     "Развернуть локальный стенд.md",
@@ -252,9 +255,6 @@
     "Округление StrRealFixed.md",
     "Поиск.md",
     "Каталоги. Работа с каталогами.md",
-    "Глобальные константы.md",
-    "Константы.md",
-    "Как добавить пункт в фильтр выборки.md",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
     "attachments/Pasted image 20250407142448.png",
