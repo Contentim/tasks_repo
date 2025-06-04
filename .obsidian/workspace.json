@@ -108,7 +108,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "пше",
+                "query": "sql",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -240,7 +240,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "5324441af2b04054",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Получить название типа.md",
     "Домашняя страница.md",
