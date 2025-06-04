@@ -77,8 +77,7 @@
               "title": "Получить название типа"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -241,7 +240,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "241c4e70c9758c44",
+  "active": "5324441af2b04054",
   "lastOpenFiles": [
     "Получить название типа.md",
     "Домашняя страница.md",
