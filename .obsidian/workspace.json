@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
-                "mode": "source",
+                "file": "Работа/Websoft/Стенды.md",
+                "mode": "preview",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           },
           {
@@ -228,8 +228,8 @@
   },
   "active": "5324441af2b04054",
   "lastOpenFiles": [
-    "Texas.md",
     "Домашняя страница.md",
+    "Texas.md",
     "Austria.md",
     "Peru.md",
     "Bill Hansen.md",
