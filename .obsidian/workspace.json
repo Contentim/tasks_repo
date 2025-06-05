@@ -27,16 +27,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Миграция.md",
+                "file": "Переход и миграция с XML на SQL.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Миграция"
+              "title": "Переход и миграция с XML на SQL"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -199,9 +198,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "85d8ebeaf316aa02",
+  "active": "9d7837ba90b289ec",
   "lastOpenFiles": [
-    "Миграция.md",
+    "Переход и миграция с XML на SQL.md",
     "Домашняя страница.md",
     "Разворачивание и использование стенда Платформы локально.md",
     "Демо-данные для платформы.md",
