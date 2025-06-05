@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "sql",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -184,7 +184,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "9d7837ba90b289ec",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Работа с SQL на платформе.md",
     "Домашняя страница.md",
