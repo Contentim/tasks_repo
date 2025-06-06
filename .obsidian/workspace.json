@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Развернуть локальный стенд"
             }
           },
           {
@@ -49,8 +49,7 @@
               "title": "Откат"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -213,11 +212,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4b211259256bd633",
+  "active": "9d7837ba90b289ec",
   "lastOpenFiles": [
     "Домашняя страница.md",
-    "Переход и миграция с XML на SQL.md",
     "Работа/Websoft/Стенды.md",
+    "Откат.md",
+    "Переход и миграция с XML на SQL.md",
     "Разворачивание и использование стенда Платформы локально.md",
     "Демо-данные для платформы.md",
     "Работа с SQL на платформе.md",
@@ -228,7 +228,6 @@
     "Bill Hansen.md",
     "Brad Jefferson.md",
     "Olga Olson.md",
-    "Откат.md",
     "Развернуть локальный стенд.md",
     "Платформа.md",
     "Запустить стенд newint.md",
