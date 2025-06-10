@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Демо-данные для платформы.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Демо-данные для платформы"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -80,7 +80,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "логир",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -215,8 +215,8 @@
   "active": "34cac21fd92a1615",
   "lastOpenFiles": [
     "Домашняя страница.md",
-    "Работа/Websoft/Стенды.md",
     "Демо-данные для платформы.md",
+    "Работа/Websoft/Стенды.md",
     "Любовная история - свидание.md",
     "Развернуть локальный стенд.md",
     "Откат.md",
