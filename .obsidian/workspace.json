@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -213,10 +213,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "7c0539c92295b127",
+  "active": "676af6783b67c713",
   "lastOpenFiles": [
-    "Пикник - сюжет.md",
     "Пикник(фабула).md",
+    "Пикник - сюжет.md",
     "Домашняя страница.md",
     "Любовная история - свидание.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
