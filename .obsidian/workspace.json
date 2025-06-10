@@ -49,7 +49,8 @@
               "title": "Любовная история - свидание"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -212,8 +213,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "34cac21fd92a1615",
+  "active": "8b6d2918e5008aa6",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Домашняя страница.md",
     "Демо-данные для платформы.md",
     "Работа/Websoft/Стенды.md",
@@ -239,7 +241,6 @@
     "Список задач - Websoft.md",
     "Q4 2022.md",
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
-    "Запись в файл.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
