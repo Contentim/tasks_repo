@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Пикник.md",
+                "file": "Пикник(фабула).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Пикник"
+              "title": "Пикник(фабула)"
             }
           }
         ],
@@ -201,7 +201,7 @@
   },
   "active": "7c0539c92295b127",
   "lastOpenFiles": [
-    "Пикник.md",
+    "Пикник(фабула).md",
     "Домашняя страница.md",
     "Любовная история - свидание.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
