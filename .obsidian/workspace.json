@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ]
@@ -186,10 +186,10 @@
   },
   "active": "9a4e5cc3bd0cb3b1",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Округление StrRealFixed.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Домашняя страница.md",
     "Пикник(фабула).md",
     "Пикник - Действующие лица.md",
     "Пикник - финал.md",
