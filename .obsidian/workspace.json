@@ -80,7 +80,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "округ",
+                "query": "связ",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -212,7 +212,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "278509811b5b39e7",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Работа/Websoft/Стенды.md",
     "Заметки для диалогов.md",
