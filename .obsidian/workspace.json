@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Переход и миграция с XML на SQL.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Переход и миграция с XML на SQL"
             }
           },
           {
@@ -63,8 +63,7 @@
               "title": "Каталоги-связки"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -227,13 +226,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "44cd3aafd0a01633",
+  "active": "278509811b5b39e7",
   "lastOpenFiles": [
     "Домашняя страница.md",
-    "Каталоги-связки.md",
-    "Демо-данные для платформы.md",
-    "Работа/Websoft/Стенды.md",
     "Заметки для диалогов.md",
+    "Демо-данные для платформы.md",
+    "Каталоги-связки.md",
+    "Работа/Websoft/Стенды.md",
     "Разворачивание и использование стенда Платформы локально.md",
     "Округление StrRealFixed.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
