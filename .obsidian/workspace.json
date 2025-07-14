@@ -92,7 +92,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -255,12 +255,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "b9ba781f9a1fc720",
+  "active": "44cd3aafd0a01633",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Получить все каталоги.md",
     "Иконки для работы.md",
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Каталоги-связки.md",
     "Заметки для диалогов.md",
     "Демо-данные для платформы.md",
