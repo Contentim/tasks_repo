@@ -35,7 +35,8 @@
               "title": "Стенды"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -198,11 +199,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "3354e3ead7fc5e66",
+  "active": "f00592fe4b0afb18",
   "lastOpenFiles": [
+    "Округление StrRealFixed.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
-    "Округление StrRealFixed.md",
     "Получить все каталоги.md",
     "Иконки для работы.md",
     "Каталоги-связки.md",
