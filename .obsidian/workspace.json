@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "ff52437122b57812",
+        "id": "9f4b290ea5b2e1d6",
         "type": "tabs",
         "children": [
           {
-            "id": "ffea9648cafadf80",
+            "id": "cea7dd15758cf389",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Домашняя страница"
             }
           }
         ]
@@ -175,6 +175,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "deepseek-ai-assistant:Open deepseek AI assistant": false,
       "switcher:Меню быстрого перехода": false,
       "graph:Граф": false,
       "canvas:Создать новый холст": false,
@@ -184,10 +185,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "ffea9648cafadf80",
+  "active": "cea7dd15758cf389",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
+    "Домашняя страница.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
     "Иконки для работы.md",
