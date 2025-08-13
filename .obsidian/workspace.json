@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "9f4b290ea5b2e1d6",
+        "id": "6f8587d43e4cfa0a",
         "type": "tabs",
         "children": [
           {
-            "id": "cea7dd15758cf389",
+            "id": "988b897a16de65f9",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -185,7 +185,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "cea7dd15758cf389",
+  "active": "988b897a16de65f9",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
