@@ -20,8 +20,23 @@
               "icon": "lucide-file",
               "title": "Стенды"
             }
+          },
+          {
+            "id": "5befd3af37b4d7df",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Демо-данные для платформы.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Демо-данные для платформы"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -185,7 +200,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "6408930ae7a2de6b",
+  "active": "5befd3af37b4d7df",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
