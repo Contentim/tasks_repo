@@ -11,10 +11,26 @@
             "id": "6eec74ec4e4da3f8",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Домашняя страница.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "Домашняя страница"
+            }
+          },
+          {
+            "id": "656c4d8ab0d44962",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.9.10"
+              },
+              "icon": "lucide-book-up",
+              "title": "примечания к выпуску 1.9.10"
             }
           }
         ]
@@ -184,8 +200,8 @@
   },
   "active": "6eec74ec4e4da3f8",
   "lastOpenFiles": [
-    "Демо-данные для платформы.md",
     "Домашняя страница.md",
+    "Демо-данные для платформы.md",
     "Работа/Websoft/Стенды.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
