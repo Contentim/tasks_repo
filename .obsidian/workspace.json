@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ]
@@ -188,8 +188,8 @@
   },
   "active": "656c4d8ab0d44962",
   "lastOpenFiles": [
-    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
+    "Работа/Websoft/Стенды.md",
     "Демо-данные для платформы.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
