@@ -8,29 +8,17 @@
         "type": "tabs",
         "children": [
           {
-            "id": "6eec74ec4e4da3f8",
+            "id": "656c4d8ab0d44962",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
-            }
-          },
-          {
-            "id": "656c4d8ab0d44962",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.9.10"
-              },
-              "icon": "lucide-book-up",
-              "title": "примечания к выпуску 1.9.10"
+              "title": "Домашняя страница"
             }
           }
         ]
@@ -198,11 +186,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "6eec74ec4e4da3f8",
+  "active": "656c4d8ab0d44962",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Демо-данные для платформы.md",
-    "Работа/Websoft/Стенды.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
     "Иконки для работы.md",
