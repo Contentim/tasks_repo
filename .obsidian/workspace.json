@@ -11,10 +11,14 @@
             "id": "0a5ea16f837e0df0",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Работа/Websoft/Стенды.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "Стенды"
             }
           }
         ]
@@ -184,8 +188,8 @@
   },
   "active": "0a5ea16f837e0df0",
   "lastOpenFiles": [
-    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
+    "Работа/Websoft/Стенды.md",
     "Демо-данные для платформы.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
