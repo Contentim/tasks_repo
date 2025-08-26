@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "округ",
+                "query": "икн",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -186,7 +186,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "743b94747265a8bd",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
