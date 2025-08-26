@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Иконки для работы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Иконки для работы"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "икн",
+                "query": "икон",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -186,10 +186,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "743b94747265a8bd",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
+    "Домашняя страница.md",
     "Демо-данные для платформы.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
