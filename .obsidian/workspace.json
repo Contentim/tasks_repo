@@ -41,16 +41,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -215,7 +215,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "cb506afcaf20d1a9",
+  "active": "c1f57c85ad6292fc",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Фразы для стикеров.md",
