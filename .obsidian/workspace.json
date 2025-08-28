@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -215,13 +215,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "c1f57c85ad6292fc",
+  "active": "cb506afcaf20d1a9",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Фразы для стикеров.md",
     "attachments/Pasted image 20250826152806.png",
     "Иконки для работы.md",
-    "Работа/Websoft/Стенды.md",
     "Демо-данные для платформы.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
