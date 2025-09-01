@@ -4,17 +4,33 @@
     "type": "split",
     "children": [
       {
-        "id": "a1d0d3add069f49c",
+        "id": "678476db694a77ee",
         "type": "tabs",
         "children": [
           {
-            "id": "d9681bb4335c8dd2",
+            "id": "ce502651ce50f7fa",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Работа/Websoft/Стенды.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "Стенды"
+            }
+          },
+          {
+            "id": "81c1786df484f6ac",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.9.12"
+              },
+              "icon": "lucide-book-up",
+              "title": "примечания к выпуску 1.9.12"
             }
           }
         ]
@@ -182,11 +198,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "d9681bb4335c8dd2",
+  "active": "ce502651ce50f7fa",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Фразы для стикеров.md",
-    "Домашняя страница.md",
     "attachments/Pasted image 20250826152806.png",
     "Иконки для работы.md",
     "Демо-данные для платформы.md",
