@@ -78,7 +78,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "икон",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -212,7 +212,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "ce502651ce50f7fa",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Развернуть локальный стенд.md",
     "Домашняя страница.md",
