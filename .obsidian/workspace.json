@@ -90,7 +90,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 5
       }
     ],
     "direction": "vertical"
@@ -255,11 +255,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "58716110acb81a5a",
+  "active": "9084251f41b64914",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Домашняя страница.md",
     "Регулярные выражения.md",
     "Работа/Websoft/Стенды.md",
     "Фразы для стикеров.md",
