@@ -62,27 +62,13 @@
             }
           },
           {
-            "id": "732f8414ed6ce34d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Регулярные выражения. Шпаргалка"
-            }
-          },
-          {
             "id": "9084251f41b64914",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "Регулярные выражения.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -90,7 +76,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
