@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "678476db694a77ee",
+        "id": "3206eba7c368ea0b",
         "type": "tabs",
         "children": [
           {
-            "id": "81c1786df484f6ac",
+            "id": "f48749f40adae46b",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Домашняя страница"
             }
           }
         ]
@@ -186,13 +186,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "81c1786df484f6ac",
+  "active": "f48749f40adae46b",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Регулярные выражения.md",
-    "Развернуть локальный стенд.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Фразы для стикеров.md",
     "attachments/Pasted image 20250826152806.png",
