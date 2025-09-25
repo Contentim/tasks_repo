@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Решение проблем.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Решение проблем"
             }
           }
         ],
@@ -203,9 +203,11 @@
   },
   "active": "17b0f85d8050de01",
   "lastOpenFiles": [
+    "attachments/Pasted image 20250925190204.png",
+    "Домашняя страница.md",
+    "Решение проблем.md",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Регулярные выражения.md",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
@@ -228,8 +230,6 @@
     "Работа с SQL на платформе.md",
     "Получить название типа.md",
     "Texas.md",
-    "Austria.md",
-    "Peru.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
