@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -215,12 +215,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "f6e1320d399cf9bf",
+  "active": "17b0f85d8050de01",
   "lastOpenFiles": [
+    "Получить название типа.md",
+    "Решение проблем.md",
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
-    "Решение проблем.md",
     "attachments/Pasted image 20250925190204.png",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Регулярные выражения.md",
@@ -242,7 +243,6 @@
     "Любовная история - свидание.md",
     "Откат.md",
     "Работа с SQL на платформе.md",
-    "Получить название типа.md",
     "Texas.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
