@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ]
@@ -188,8 +188,8 @@
   },
   "active": "916e8290170d92b2",
   "lastOpenFiles": [
-    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
+    "Работа/Websoft/Стенды.md",
     "Задачи для обучения.md",
     "Развернуть локальный стенд.md",
     "Решение проблем.md",
