@@ -54,16 +54,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Переход и миграция с XML на SQL.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Переход и миграция с XML на SQL"
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -95,7 +95,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "Переход и миграция с XML на SQL",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -116,7 +116,8 @@
               "title": "Закладки"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -238,10 +239,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e689fe0ca950e951",
+  "active": "f9b62f16bea17b3c",
   "lastOpenFiles": [
-    "Работа/Websoft/Стенды.md",
+    "Запустить стенд newint.md",
     "Домашняя страница.md",
+    "Работа/Websoft/Стенды.md",
     "Test Base.md",
     "Работа/Websoft/Заметка для работы.md",
     "Без названия 4.base",
@@ -272,7 +274,6 @@
     "Переход и миграция с XML на SQL.md",
     "Разворачивание и использование стенда Платформы локально.md",
     "Пикник(фабула).md",
-    "Пикник - Действующие лица.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
