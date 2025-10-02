@@ -49,17 +49,17 @@
             }
           },
           {
-            "id": "78825728364070ee",
+            "id": "af23be6b5c6ac2bd",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Список задач - Websoft.md",
+                "file": "Ролевая модель приложений.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Список задач - Websoft"
+              "title": "Ролевая модель приложений"
             }
           },
           {
@@ -253,10 +253,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "78825728364070ee",
+  "active": "af23be6b5c6ac2bd",
   "lastOpenFiles": [
     "Домашняя страница.md",
-    "Список задач - Websoft.md",
+    "Глобальные константы.md",
+    "Чек-лист для задач с большим списком файлов.md",
     "JSDoc - конфигурация.md",
     "Демо-данные для платформы.md",
     "Переход и миграция с XML на SQL.md",
@@ -270,7 +271,6 @@
     "Без названия 1.base",
     "Без названия 2.base",
     "Без названия 3.base",
-    "Глобальные константы.md",
     "Untitled.md",
     "asdasdasd.md",
     "Регулярные выражения.md",
