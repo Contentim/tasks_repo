@@ -48,9 +48,23 @@
               "icon": "lucide-file",
               "title": "Логирование, debug и трассировка, сброс кэша"
             }
+          },
+          {
+            "id": "5664e81fdfe35434",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Домашняя страница.md",
+                "mode": "preview",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Домашняя страница"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -172,13 +186,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Домашняя страница.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Развернуть локальный стенд"
+              "title": "Структура Домашняя страница"
             }
           },
           {
@@ -222,13 +236,14 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "8fdb76c408e08853",
+  "active": "5664e81fdfe35434",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Без названия 3.base",
     "Test Base.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Откат.md",
     "Без названия 5.base",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
@@ -255,7 +270,6 @@
     "Untitled.md",
     "asdasdasd.md",
     "Задачи для обучения.md",
-    "Развернуть локальный стенд.md",
     "attachments/Pasted image 20250925190204.png",
     "Фразы для стикеров.md",
     "attachments/Pasted image 20250826152806.png",
