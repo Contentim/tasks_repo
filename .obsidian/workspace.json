@@ -14,7 +14,7 @@
               "type": "markdown",
               "state": {
                 "file": "Test Base.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -22,16 +22,17 @@
             }
           },
           {
-            "id": "2d4d6cb0434fb2fe",
+            "id": "8fdb76c408e08853",
             "type": "leaf",
             "state": {
-              "type": "bases",
+              "type": "markdown",
               "state": {
-                "file": "Без названия 3.base",
-                "viewName": "Таблица"
+                "file": "Работа/Websoft/Стенды.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-table",
-              "title": "Без названия 3"
+              "icon": "lucide-file",
+              "title": "Стенды"
             }
           },
           {
@@ -48,7 +49,8 @@
               "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -170,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Test Base.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Test Base"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -220,11 +222,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "8236fa2e6a4846bb",
+  "active": "8fdb76c408e08853",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Без названия 3.base",
+    "Test Base.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Откат.md",
     "Без названия 5.base",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
@@ -235,7 +239,6 @@
     "Регулярные выражения.md",
     "Получить все каталоги.md",
     "Каталоги-связки.md",
-    "Без названия 3.base",
     "Демо-данные для платформы.md",
     "Ролевая модель приложений.md",
     "Глобальные константы.md",
@@ -243,7 +246,6 @@
     "JSDoc - конфигурация.md",
     "Переход и миграция с XML на SQL.md",
     "Запустить стенд newint.md",
-    "Test Base.md",
     "Работа/Websoft/Заметка для работы.md",
     "Без названия 4.base",
     "Без названия.md",
@@ -257,7 +259,6 @@
     "attachments/Pasted image 20250925190204.png",
     "Фразы для стикеров.md",
     "attachments/Pasted image 20250826152806.png",
-    "Иконки для работы.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
