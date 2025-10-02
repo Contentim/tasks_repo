@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
-                "mode": "source",
+                "file": "Развернуть локальный стенд.md",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Развернуть локальный стенд"
             }
           },
           {
@@ -82,7 +82,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "verbo",
+                "query": "shared",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -172,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Развернуть локальный стенд"
             }
           },
           {
@@ -224,11 +224,11 @@
   },
   "active": "8fdb76c408e08853",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Без названия 3.base",
     "Test Base.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Работа/Websoft/Стенды.md",
     "Откат.md",
     "Без названия 5.base",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
