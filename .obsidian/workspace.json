@@ -38,13 +38,18 @@
             "id": "e689fe0ca950e951",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Домашняя страница.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "Домашняя страница"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -219,10 +224,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "8236fa2e6a4846bb",
+  "active": "e689fe0ca950e951",
   "lastOpenFiles": [
-    "Без названия 4.base",
     "Test Base.md",
+    "Работа/Websoft/Заметка для работы.md",
+    "Без названия 4.base",
     "Без названия.md",
     "Без названия.base",
     "Без названия 1.base",

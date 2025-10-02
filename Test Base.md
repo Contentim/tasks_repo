@@ -2,12 +2,6 @@
 filters:
   or:
     - file.hasTag("websoft")
-    - and:
-        - file.hasTag("websoft")
-        - file.hasLink("Textbook")
-    - not:
-        - file.hasTag("book")
-        - file.inFolder("Required Reading")
 formulas:
   formatted_price: if(price, price.toFixed(2) + " dollars")
   ppu: (price / age).toFixed(2)
