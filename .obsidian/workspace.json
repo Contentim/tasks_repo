@@ -40,7 +40,7 @@
               "type": "markdown",
               "state": {
                 "file": "Без названия 1.md",
-                "mode": "preview",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
@@ -48,7 +48,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -213,11 +213,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "2d4d6cb0434fb2fe",
+  "active": "8236fa2e6a4846bb",
   "lastOpenFiles": [
+    "Без названия 1.md",
     "Untitled.md",
     "asdasdasd.md",
-    "Без названия 1.md",
     "Домашняя страница.md",
     "Регулярные выражения.md",
     "Работа/Websoft/Стенды.md",
