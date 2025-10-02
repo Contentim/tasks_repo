@@ -81,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "Откат",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -227,8 +227,9 @@
   },
   "active": "e689fe0ca950e951",
   "lastOpenFiles": [
-    "Без названия 5.base",
+    "Откат.md",
     "Домашняя страница.md",
+    "Без названия 5.base",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Решение проблем.md",
     "Получить название типа.md",
