@@ -40,7 +40,7 @@
               "type": "markdown",
               "state": {
                 "file": "Без названия 1.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -215,6 +215,8 @@
   },
   "active": "2d4d6cb0434fb2fe",
   "lastOpenFiles": [
+    "Untitled.md",
+    "asdasdasd.md",
     "Без названия 1.md",
     "Домашняя страница.md",
     "Регулярные выражения.md",
@@ -241,8 +243,6 @@
     "Пикник - финал.md",
     "Пикник - сюжет.md",
     "Любовная история - свидание.md",
-    "Откат.md",
-    "Работа с SQL на платформе.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
