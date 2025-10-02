@@ -56,11 +56,25 @@
               "type": "markdown",
               "state": {
                 "file": "Домашняя страница.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
               "title": "Домашняя страница"
+            }
+          },
+          {
+            "id": "ceb2ee84c325a7a1",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Решение проблем.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Решение проблем"
             }
           }
         ],
@@ -238,16 +252,16 @@
   },
   "active": "5664e81fdfe35434",
   "lastOpenFiles": [
+    "Решение проблем.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Без названия 3.base",
     "Test Base.md",
     "Откат.md",
     "Без названия 5.base",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
-    "Решение проблем.md",
     "Получить название типа.md",
     "attachments/Pasted image 20251002105923.png",
     "attachments/Pasted image 20251002105627.png",
