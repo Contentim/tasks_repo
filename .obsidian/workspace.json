@@ -48,8 +48,7 @@
               "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -171,13 +170,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Test Base.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Логирование, debug и трассировка, сброс кэша"
+              "title": "Структура Test Base"
             }
           },
           {
@@ -221,8 +220,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e689fe0ca950e951",
+  "active": "8236fa2e6a4846bb",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Откат.md",
@@ -235,7 +235,6 @@
     "Регулярные выражения.md",
     "Получить все каталоги.md",
     "Каталоги-связки.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Без названия 3.base",
     "Демо-данные для платформы.md",
     "Ролевая модель приложений.md",
