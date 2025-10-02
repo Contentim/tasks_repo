@@ -190,8 +190,8 @@
             "state": {
               "type": "deepseek-ai-assistant-itemview",
               "state": {},
-              "icon": "lucide-ghost",
-              "title": "deepseek-ai-assistant-itemview"
+              "icon": "bot",
+              "title": "Deepseek AI assistant"
             }
           },
           {
@@ -205,7 +205,7 @@
             }
           }
         ],
-        "currentTab": 6
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -225,7 +225,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "eab4147d5838ea95",
+  "active": "ee80189e4b9b8151",
   "lastOpenFiles": [
     "Откат.md",
     "Домашняя страница.md",
