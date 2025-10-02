@@ -40,12 +40,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
         ],
@@ -81,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "verbo",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -171,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -223,6 +223,7 @@
   },
   "active": "e689fe0ca950e951",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Откат.md",
     "Без названия 5.base",
@@ -243,7 +244,6 @@
     "JSDoc - конфигурация.md",
     "Переход и миграция с XML на SQL.md",
     "Запустить стенд newint.md",
-    "Работа/Websoft/Стенды.md",
     "Test Base.md",
     "Работа/Websoft/Заметка для работы.md",
     "Без названия 4.base",
