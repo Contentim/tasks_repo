@@ -40,12 +40,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ],
@@ -171,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -221,10 +221,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "782fd6f0639a7823",
+  "active": "e689fe0ca950e951",
   "lastOpenFiles": [
-    "Откат.md",
     "Домашняя страница.md",
+    "Откат.md",
     "Без названия 5.base",
     "Работа/Websoft/Регулярные выражения. Шпаргалка.md",
     "Решение проблем.md",
