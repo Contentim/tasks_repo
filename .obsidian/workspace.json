@@ -77,7 +77,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -253,8 +253,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "f284b2c3cca35d23",
+  "active": "e689fe0ca950e951",
   "lastOpenFiles": [
+    "JSDoc - конфигурация.md",
     "Домашняя страница.md",
     "Демо-данные для платформы.md",
     "Переход и миграция с XML на SQL.md",
@@ -287,7 +288,6 @@
     "Каталоги-связки.md",
     "Заметки для диалогов.md",
     "Разворачивание и использование стенда Платформы локально.md",
-    "Пикник(фабула).md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
