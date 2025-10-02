@@ -1,9 +1,9 @@
 ```base
 filters:
   or:
-    - file.hasTag("tag")
+    - file.hasTag("websoft")
     - and:
-        - file.hasTag("book")
+        - file.hasTag("websoft")
         - file.hasLink("Textbook")
     - not:
         - file.hasTag("book")
@@ -21,18 +21,6 @@ properties:
 views:
   - type: table
     name: My table
-    filters:
-      and:
-        - status != "done"
-        - or:
-            - formula.ppu > 5
-            - price > 2.1
-    order:
-      - file.name
-      - file.ext
-      - age
-      - formula.ppu
-      - formula.formatted_price
     sort:
       - property: age
         direction: DESC
