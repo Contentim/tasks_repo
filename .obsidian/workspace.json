@@ -37,18 +37,17 @@
             "id": "2d4d6cb0434fb2fe",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "bases",
               "state": {
-                "file": "Без названия 1.md",
-                "mode": "source",
-                "source": false
+                "file": "Без названия.base",
+                "viewName": "Таблица"
               },
-              "icon": "lucide-file",
-              "title": "Без названия 1"
+              "icon": "lucide-table",
+              "title": "Без названия"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -79,7 +78,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "sha",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -105,7 +104,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 311.5
+    "width": 311.5,
+    "collapsed": true
   },
   "right": {
     "id": "48de7d3b65b3d124",
@@ -192,13 +192,23 @@
               "icon": "checkmark",
               "title": "Todo List"
             }
+          },
+          {
+            "id": "ee80189e4b9b8151",
+            "type": "leaf",
+            "state": {
+              "type": "deepseek-ai-assistant-itemview",
+              "state": {},
+              "icon": "bot",
+              "title": "Deepseek AI assistant"
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
-    "width": 408.5
+    "width": 800.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -213,8 +223,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "8236fa2e6a4846bb",
+  "active": "ee80189e4b9b8151",
   "lastOpenFiles": [
+    "Без названия.base",
     "Без названия 1.md",
     "Untitled.md",
     "asdasdasd.md",
@@ -242,7 +253,6 @@
     "Пикник - Действующие лица.md",
     "Пикник - финал.md",
     "Пикник - сюжет.md",
-    "Любовная история - свидание.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
@@ -262,7 +272,6 @@
     "Работа/Websoft/attachments",
     "Работа/Websoft/Даты",
     "Ремонт/attachments",
-    "logseq/bak/Книги/Логика/Логика А.М.Руденко",
     "Без названия.canvas"
   ]
 }
