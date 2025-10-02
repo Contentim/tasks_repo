@@ -49,17 +49,17 @@
             }
           },
           {
-            "id": "f284b2c3cca35d23",
+            "id": "78825728364070ee",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "JSDoc - конфигурация.md",
+                "file": "Список задач - Websoft.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "JSDoc - конфигурация"
+              "title": "Список задач - Websoft"
             }
           },
           {
@@ -77,7 +77,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -253,10 +253,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e689fe0ca950e951",
+  "active": "78825728364070ee",
   "lastOpenFiles": [
-    "JSDoc - конфигурация.md",
     "Домашняя страница.md",
+    "Список задач - Websoft.md",
+    "JSDoc - конфигурация.md",
     "Демо-данные для платформы.md",
     "Переход и миграция с XML на SQL.md",
     "Запустить стенд newint.md",
@@ -287,7 +288,6 @@
     "Получить все каталоги.md",
     "Каталоги-связки.md",
     "Заметки для диалогов.md",
-    "Разворачивание и использование стенда Платформы локально.md",
     "attachments/Pasted image 20250514105517.png",
     "attachments/Pasted image 20250407142733.png",
     "attachments/Pasted image 20250407142557.png",
