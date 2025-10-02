@@ -39,15 +39,24 @@
             "state": {
               "type": "bases",
               "state": {
-                "file": "Без названия.base",
+                "file": "Без названия 3.base",
                 "viewName": "Таблица"
               },
               "icon": "lucide-table",
-              "title": "Без названия"
+              "title": "Без названия 3"
+            }
+          },
+          {
+            "id": "e689fe0ca950e951",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Новая вкладка"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -66,7 +75,8 @@
             "state": {
               "type": "file-explorer",
               "state": {
-                "sortOrder": "alphabetical"
+                "sortOrder": "alphabetical",
+                "autoReveal": false
               },
               "icon": "lucide-folder-closed",
               "title": "Файловый менеджер"
@@ -99,13 +109,11 @@
               "title": "Закладки"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
-    "width": 311.5,
-    "collapsed": true
+    "width": 311.5
   },
   "right": {
     "id": "48de7d3b65b3d124",
@@ -208,7 +216,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 800.5
+    "width": 454.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -223,13 +231,16 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "ee80189e4b9b8151",
+  "active": "fa7502b05d7ae2e0",
   "lastOpenFiles": [
+    "Untitled.md",
+    "Домашняя страница.md",
+    "Без названия 3.base",
+    "Без названия 2.base",
+    "Без названия 1.base",
     "Без названия.base",
     "Без названия 1.md",
-    "Untitled.md",
     "asdasdasd.md",
-    "Домашняя страница.md",
     "Регулярные выражения.md",
     "Работа/Websoft/Стенды.md",
     "Задачи для обучения.md",
@@ -269,9 +280,6 @@
     "Ремонт/Без названия.canvas",
     "Работа/Websoft/attachments/course_integral_efficiency_report 1.html",
     "Работа/Websoft/attachments/course_integral_efficiency_report.html",
-    "Работа/Websoft/attachments",
-    "Работа/Websoft/Даты",
-    "Ремонт/attachments",
     "Без названия.canvas"
   ]
 }
