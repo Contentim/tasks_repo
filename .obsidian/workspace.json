@@ -102,7 +102,8 @@
               "title": "Закладки"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -225,7 +226,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "ee80189e4b9b8151",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Откат.md",
     "Домашняя страница.md",
