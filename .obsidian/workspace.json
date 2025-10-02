@@ -54,16 +54,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Переход и миграция с XML на SQL.md",
+                "file": "Демо-данные для платформы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Переход и миграция с XML на SQL"
+              "title": "Демо-данные для платформы"
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -95,7 +95,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "Переход и миграция с XML на SQL",
+                "query": "Демо-данные для платформы",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -239,10 +239,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "f9b62f16bea17b3c",
+  "active": "e689fe0ca950e951",
   "lastOpenFiles": [
-    "Запустить стенд newint.md",
+    "Демо-данные для платформы.md",
+    "Переход и миграция с XML на SQL.md",
     "Домашняя страница.md",
+    "Запустить стенд newint.md",
     "Работа/Websoft/Стенды.md",
     "Test Base.md",
     "Работа/Websoft/Заметка для работы.md",
@@ -266,12 +268,10 @@
     "Фразы для стикеров.md",
     "attachments/Pasted image 20250826152806.png",
     "Иконки для работы.md",
-    "Демо-данные для платформы.md",
     "Округление StrRealFixed.md",
     "Получить все каталоги.md",
     "Каталоги-связки.md",
     "Заметки для диалогов.md",
-    "Переход и миграция с XML на SQL.md",
     "Разворачивание и использование стенда Платформы локально.md",
     "Пикник(фабула).md",
     "attachments/Pasted image 20250514105517.png",
