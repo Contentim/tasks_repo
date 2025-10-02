@@ -157,7 +157,9 @@
               "type": "tag",
               "state": {
                 "sortOrder": "frequency",
-                "useHierarchy": true
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-tags",
               "title": "Теги"
@@ -169,10 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Blender - уроки, советы.md"
+                "file": "Домашняя страница.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Blender - уроки, советы"
+              "title": "Структура Домашняя страница"
             }
           },
           {
@@ -181,18 +186,8 @@
             "state": {
               "type": "git-view",
               "state": {},
-              "icon": "lucide-ghost",
-              "title": "git-view"
-            }
-          },
-          {
-            "id": "ee80189e4b9b8151",
-            "type": "leaf",
-            "state": {
-              "type": "deepseek-ai-assistant-itemview",
-              "state": {},
-              "icon": "bot",
-              "title": "Deepseek AI assistant"
+              "icon": "git-pull-request",
+              "title": "Source Control"
             }
           },
           {
@@ -206,7 +201,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -226,7 +221,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "782fd6f0639a7823",
   "lastOpenFiles": [
     "Откат.md",
     "Домашняя страница.md",
