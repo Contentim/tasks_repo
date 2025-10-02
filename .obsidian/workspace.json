@@ -180,18 +180,8 @@
             "state": {
               "type": "git-view",
               "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
-            }
-          },
-          {
-            "id": "8a26c168c8f53b21",
-            "type": "leaf",
-            "state": {
-              "type": "todo",
-              "state": {},
-              "icon": "checkmark",
-              "title": "Todo List"
+              "icon": "lucide-ghost",
+              "title": "git-view"
             }
           },
           {
@@ -200,8 +190,18 @@
             "state": {
               "type": "deepseek-ai-assistant-itemview",
               "state": {},
-              "icon": "bot",
-              "title": "Deepseek AI assistant"
+              "icon": "lucide-ghost",
+              "title": "deepseek-ai-assistant-itemview"
+            }
+          },
+          {
+            "id": "eab4147d5838ea95",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {},
+              "icon": "checkmark",
+              "title": "Todo List"
             }
           }
         ],
@@ -221,10 +221,11 @@
       "daily-notes:Сегодняшняя заметка": false,
       "templates:Вставить шаблон": false,
       "command-palette:Открыть палитру команд": false,
-      "homepage:Open homepage": false
+      "homepage:Open homepage": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "eab4147d5838ea95",
   "lastOpenFiles": [
     "Откат.md",
     "Домашняя страница.md",

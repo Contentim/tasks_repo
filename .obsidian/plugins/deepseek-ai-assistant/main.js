@@ -1007,6 +1007,23 @@ var stringifySymbol = (v3, i = "") => {
     isSymbol(v3) ? `Symbol(${(_a26 = v3.description) != null ? _a26 : i})` : v3
   );
 };
+function normalizeCssVarValue(value) {
+  if (value == null) {
+    return "initial";
+  }
+  if (typeof value === "string") {
+    return value === "" ? " " : value;
+  }
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    if (true) {
+      console.warn(
+        "[Vue warn] Invalid value used for CSS binding. Expected a string or a finite number but received:",
+        value
+      );
+    }
+  }
+  return String(value);
+}
 
 // node_modules/@vue/reactivity/dist/reactivity.esm-bundler.js
 function warn(msg, ...args) {
@@ -1713,7 +1730,7 @@ var arrayInstrumentations = {
   join(separator) {
     return reactiveReadArray(this).join(separator);
   },
-  // keys() iterator only reads `length`, no optimisation required
+  // keys() iterator only reads `length`, no optimization required
   lastIndexOf(...args) {
     return searchProxy(this, "lastIndexOf", args);
   },
@@ -1915,7 +1932,13 @@ var MutableReactiveHandler = class extends BaseReactiveHandler {
       }
       if (!isArray(target2) && isRef2(oldValue) && !isRef2(value)) {
         if (isOldValueReadonly) {
-          return false;
+          if (true) {
+            warn(
+              `Set operation on key "${String(key)}" failed: target is readonly.`,
+              target2[key]
+            );
+          }
+          return true;
         } else {
           oldValue.value = value;
           return true;
@@ -2059,7 +2082,7 @@ function createInstrumentations(readonly2, shallow) {
     get size() {
       const target2 = this["__v_raw"];
       !readonly2 && track(toRaw(target2), "iterate", ITERATE_KEY);
-      return Reflect.get(target2, "size", target2);
+      return target2.size;
     },
     has(key) {
       const target2 = this["__v_raw"];
@@ -2384,6 +2407,20 @@ var RefImpl = class {
     }
   }
 };
+function triggerRef(ref22) {
+  if (ref22.dep) {
+    if (true) {
+      ref22.dep.trigger({
+        target: ref22,
+        type: "set",
+        key: "value",
+        newValue: ref22._value
+      });
+    } else {
+      ref22.dep.trigger();
+    }
+  }
+}
 function unref(ref22) {
   return isRef2(ref22) ? ref22.value : ref22;
 }
@@ -3204,7 +3241,9 @@ function rerender(id2, newRender) {
     }
     instance.renderCache = [];
     isHmrUpdating = true;
-    instance.update();
+    if (!(instance.job.flags & 8)) {
+      instance.update();
+    }
     isHmrUpdating = false;
   });
 }
@@ -3214,9 +3253,9 @@ function reload(id2, newComp) {
     return;
   newComp = normalizeClassComponent(newComp);
   updateComponentDef(record.initialDef, newComp);
-  const instances2 = [...record.instances];
-  for (let i = 0; i < instances2.length; i++) {
-    const instance = instances2[i];
+  const instances = [...record.instances];
+  for (let i = 0; i < instances.length; i++) {
+    const instance = instances[i];
     const oldComp = normalizeClassComponent(instance.type);
     let dirtyInstances = hmrDirtyComponents.get(oldComp);
     if (!dirtyInstances) {
@@ -4233,7 +4272,7 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
   const refs = owner.refs === EMPTY_OBJ ? owner.refs = {} : owner.refs;
   const setupState = owner.setupState;
   const rawSetupState = toRaw(setupState);
-  const canSetSetupRef = setupState === EMPTY_OBJ ? () => false : (key) => {
+  const canSetSetupRef = setupState === EMPTY_OBJ ? NO : (key) => {
     if (true) {
       if (hasOwn(rawSetupState, key) && !isRef2(rawSetupState[key])) {
         warn$1(
@@ -4246,6 +4285,9 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
     }
     return hasOwn(rawSetupState, key);
   };
+  const canSetRef = (ref22) => {
+    return !knownTemplateRefs.has(ref22);
+  };
   if (oldRef != null && oldRef !== ref3) {
     if (isString(oldRef)) {
       refs[oldRef] = null;
@@ -4253,7 +4295,12 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
         setupState[oldRef] = null;
       }
     } else if (isRef2(oldRef)) {
-      oldRef.value = null;
+      if (canSetRef(oldRef)) {
+        oldRef.value = null;
+      }
+      const oldRawRefAtom = oldRawRef;
+      if (oldRawRefAtom.k)
+        refs[oldRawRefAtom.k] = null;
     }
   }
   if (isFunction(ref3)) {
@@ -4264,7 +4311,7 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
     if (_isString || _isRef) {
       const doSet = () => {
         if (rawRef.f) {
-          const existing = _isString ? canSetSetupRef(ref3) ? setupState[ref3] : refs[ref3] : ref3.value;
+          const existing = _isString ? canSetSetupRef(ref3) ? setupState[ref3] : refs[ref3] : canSetRef(ref3) || !rawRef.k ? ref3.value : refs[rawRef.k];
           if (isUnmount) {
             isArray(existing) && remove(existing, refValue);
           } else {
@@ -4275,9 +4322,12 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
                   setupState[ref3] = refs[ref3];
                 }
               } else {
-                ref3.value = [refValue];
+                const newVal = [refValue];
+                if (canSetRef(ref3)) {
+                  ref3.value = newVal;
+                }
                 if (rawRef.k)
-                  refs[rawRef.k] = ref3.value;
+                  refs[rawRef.k] = newVal;
               }
             } else if (!existing.includes(refValue)) {
               existing.push(refValue);
@@ -4289,7 +4339,9 @@ function setRef(rawRef, oldRawRef, parentSuspense, vnode, isUnmount = false) {
             setupState[ref3] = value;
           }
         } else if (_isRef) {
-          ref3.value = value;
+          if (canSetRef(ref3)) {
+            ref3.value = value;
+          }
           if (rawRef.k)
             refs[rawRef.k] = value;
         } else if (true) {
@@ -4736,10 +4788,10 @@ var PublicInstanceProxyHandlers = {
     return true;
   },
   has({
-    _: { data, setupState, accessCache, ctx, appContext, propsOptions }
+    _: { data, setupState, accessCache, ctx, appContext, propsOptions, type: type5 }
   }, key) {
-    let normalizedProps;
-    return !!accessCache[key] || data !== EMPTY_OBJ && hasOwn(data, key) || hasSetupBinding(setupState, key) || (normalizedProps = propsOptions[0]) && hasOwn(normalizedProps, key) || hasOwn(ctx, key) || hasOwn(publicPropertiesMap, key) || hasOwn(appContext.config.globalProperties, key);
+    let normalizedProps, cssModules;
+    return !!(accessCache[key] || data !== EMPTY_OBJ && key[0] !== "$" && hasOwn(data, key) || hasSetupBinding(setupState, key) || (normalizedProps = propsOptions[0]) && hasOwn(normalizedProps, key) || hasOwn(ctx, key) || hasOwn(publicPropertiesMap, key) || hasOwn(appContext.config.globalProperties, key) || (cssModules = type5.__cssModules) && cssModules[key]);
   },
   defineProperty(target2, key, descriptor) {
     if (descriptor.get != null) {
@@ -4815,15 +4867,15 @@ function exposeSetupStateOnRenderContext(instance) {
   });
 }
 function useSlots() {
-  return getContext().slots;
+  return getContext("useSlots").slots;
 }
 function useAttrs() {
-  return getContext().attrs;
+  return getContext("useAttrs").attrs;
 }
-function getContext() {
+function getContext(calledFunctionName) {
   const i = getCurrentInstance();
   if (!i) {
-    warn$1(`useContext() called without active instance.`);
+    warn$1(`${calledFunctionName}() called without active instance.`);
   }
   return i.setupContext || (i.setupContext = createSetupContext(i));
 }
@@ -5019,7 +5071,8 @@ function applyOptions(instance) {
       expose.forEach((key) => {
         Object.defineProperty(exposed, key, {
           get: () => publicThis[key],
-          set: (val) => publicThis[key] = val
+          set: (val) => publicThis[key] = val,
+          enumerable: true
         });
       });
     } else if (!instance.exposed) {
@@ -5473,7 +5526,7 @@ function provide(key, value) {
   }
 }
 function inject(key, defaultValue, treatDefaultAsFactory = false) {
-  const instance = currentInstance || currentRenderingInstance;
+  const instance = getCurrentInstance();
   if (instance || currentApp) {
     let provides = currentApp ? currentApp._context.provides : instance ? instance.parent == null || instance.ce ? instance.vnode.appContext && instance.vnode.appContext.provides : instance.parent.provides : void 0;
     if (provides && key in provides) {
@@ -5488,7 +5541,7 @@ function inject(key, defaultValue, treatDefaultAsFactory = false) {
   }
 }
 function hasInjectionContext() {
-  return !!(currentInstance || currentRenderingInstance || currentApp);
+  return !!(getCurrentInstance() || currentApp);
 }
 var internalObjectProto = {};
 var createInternalObject = () => Object.create(internalObjectProto);
@@ -5914,7 +5967,7 @@ function isExplicable(type5) {
 function isBoolean(...args) {
   return args.some((elem) => elem.toLowerCase() === "boolean");
 }
-var isInternalKey = (key) => key[0] === "_" || key === "$stable";
+var isInternalKey = (key) => key === "_" || key === "_ctx" || key === "$stable";
 var normalizeSlotValue = (value) => isArray(value) ? value.map(normalizeVNode) : [normalizeVNode(value)];
 var normalizeSlot = (key, rawSlot, ctx) => {
   if (rawSlot._n) {
@@ -5969,9 +6022,6 @@ var assignSlots = (slots, children2, optimized) => {
 var initSlots = (instance, children2, optimized) => {
   const slots = instance.slots = createInternalObject();
   if (instance.vnode.shapeFlag & 32) {
-    const cacheIndexes = children2.__;
-    if (cacheIndexes)
-      def(slots, "__", cacheIndexes, true);
     const type5 = children2._;
     if (type5) {
       assignSlots(slots, children2, optimized);
@@ -6031,12 +6081,10 @@ function endMeasure(instance, type5) {
   if (instance.appContext.config.performance && isSupported()) {
     const startTag = `vue-${type5}-${instance.uid}`;
     const endTag = startTag + `:end`;
+    const measureName = `<${formatComponentName(instance, instance.type)}> ${type5}`;
     perf.mark(endTag);
-    perf.measure(
-      `<${formatComponentName(instance, instance.type)}> ${type5}`,
-      startTag,
-      endTag
-    );
+    perf.measure(measureName, startTag, endTag);
+    perf.clearMeasures(measureName);
     perf.clearMarks(startTag);
     perf.clearMarks(endTag);
   }
@@ -6694,6 +6742,7 @@ function baseCreateRenderer(options, createHydrationFns) {
       if (!initialVNode.el) {
         const placeholder = instance.subTree = createVNode(Comment);
         processCommentNode(null, placeholder, container, anchor);
+        initialVNode.placeholder = placeholder.el;
       }
     } else {
       setupRenderEffect(
@@ -7196,7 +7245,11 @@ function baseCreateRenderer(options, createHydrationFns) {
       for (i = toBePatched - 1; i >= 0; i--) {
         const nextIndex = s22 + i;
         const nextChild = c22[nextIndex];
-        const anchor = nextIndex + 1 < l2 ? c22[nextIndex + 1].el : parentAnchor;
+        const anchorVNode = c22[nextIndex + 1];
+        const anchor = nextIndex + 1 < l2 ? (
+          // #13559, fallback to el placeholder for unresolved async component
+          anchorVNode.el || anchorVNode.placeholder
+        ) : parentAnchor;
         if (newIndexToOldIndexMap[i] === 0) {
           patch(
             null,
@@ -7261,6 +7314,12 @@ function baseCreateRenderer(options, createHydrationFns) {
           }
         };
         const performLeave = () => {
+          if (el._isLeaving) {
+            el[leaveCbKey](
+              true
+              /* cancelled */
+            );
+          }
           leave(el, () => {
             remove22();
             afterLeave && afterLeave();
@@ -7406,26 +7465,11 @@ function baseCreateRenderer(options, createHydrationFns) {
     if (instance.type.__hmrId) {
       unregisterHMR(instance);
     }
-    const {
-      bum,
-      scope,
-      job,
-      subTree,
-      um,
-      m: m4,
-      a: a5,
-      parent: parent2,
-      slots: { __: slotCacheKeys }
-    } = instance;
+    const { bum, scope, job, subTree, um, m: m4, a: a5 } = instance;
     invalidateMount(m4);
     invalidateMount(a5);
     if (bum) {
       invokeArrayFns(bum);
-    }
-    if (parent2 && isArray(slotCacheKeys)) {
-      slotCacheKeys.forEach((v3) => {
-        parent2.renderCache[v3] = void 0;
-      });
     }
     scope.stop();
     if (job) {
@@ -7438,12 +7482,6 @@ function baseCreateRenderer(options, createHydrationFns) {
     queuePostRenderEffect(() => {
       instance.isUnmounted = true;
     }, parentSuspense);
-    if (parentSuspense && parentSuspense.pendingBranch && !parentSuspense.isUnmounted && instance.asyncDep && !instance.asyncResolved && instance.suspenseId === parentSuspense.pendingId) {
-      parentSuspense.deps--;
-      if (parentSuspense.deps === 0) {
-        parentSuspense.resolve();
-      }
-    }
     if (true) {
       devtoolsComponentRemoved(instance);
     }
@@ -7544,7 +7582,8 @@ function traverseStaticChildren(n1, n2, shallow = false) {
         if (!shallow && c22.patchFlag !== -2)
           traverseStaticChildren(c1, c22);
       }
-      if (c22.type === Text) {
+      if (c22.type === Text && // avoid cached text nodes retaining detached dom nodes
+      c22.patchFlag !== -1) {
         c22.el = c1.el;
       }
       if (c22.type === Comment && !c22.el) {
@@ -8425,6 +8464,7 @@ function cloneVNode(vnode, extraProps, mergeRef = false, cloneTransition = false
     suspense: vnode.suspense,
     ssContent: vnode.ssContent && cloneVNode(vnode.ssContent),
     ssFallback: vnode.ssFallback && cloneVNode(vnode.ssFallback),
+    placeholder: vnode.placeholder,
     el: vnode.el,
     anchor: vnode.anchor,
     ctx: vnode.ctx,
@@ -9189,7 +9229,7 @@ function initCustomFormatter() {
     window.devtoolsFormatters = [formatter2];
   }
 }
-var version = "3.5.17";
+var version = "3.5.20";
 var warn2 = true ? warn$1 : NOOP;
 
 // node_modules/@vue/runtime-dom/dist/runtime-dom.esm-bundler.js
@@ -9570,6 +9610,8 @@ function patchClass(el, value, isSVG) {
 var vShowOriginalDisplay = Symbol("_vod");
 var vShowHidden = Symbol("_vsh");
 var vShow = {
+  // used for prop mismatch check during hydration
+  name: "show",
   beforeMount(el, { value }, { transition: transition2 }) {
     el[vShowOriginalDisplay] = el.style.display === "none" ? "" : el.style.display;
     if (transition2 && value) {
@@ -9604,9 +9646,6 @@ var vShow = {
     setDisplay(el, value);
   }
 };
-if (true) {
-  vShow.name = "show";
-}
 function setDisplay(el, value) {
   el.style.display = value ? el[vShowOriginalDisplay] : "none";
   el[vShowHidden] = !value;
@@ -9677,8 +9716,9 @@ function setVarsOnNode(el, vars) {
     const style = el.style;
     let cssText = "";
     for (const key in vars) {
-      style.setProperty(`--${key}`, vars[key]);
-      cssText += `--${key}: ${vars[key]};`;
+      const value = normalizeCssVarValue(vars[key]);
+      style.setProperty(`--${key}`, value);
+      cssText += `--${key}: ${value};`;
     }
     style[CSS_VAR_TEXT] = cssText;
   }
@@ -16826,7 +16866,7 @@ OpenAI.EvalListResponsesPage = EvalListResponsesPage;
 OpenAI.Containers = Containers;
 OpenAI.ContainerListResponsesPage = ContainerListResponsesPage;
 
-// sfc-script:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/AICard.vue?type=script
+// sfc-script:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/AICard.vue?type=script
 var import_obsidian2 = require("obsidian");
 
 // node_modules/@vue/devtools-shared/dist/index.js
@@ -19678,8 +19718,8 @@ function createDevToolsCtxHooks() {
     if (!appRecord)
       return null;
     const appId = appRecord.id.toString();
-    const instances2 = [...appRecord.instanceMap].filter(([key]) => key.split(":")[0] === appId).map(([, instance]) => instance);
-    return instances2;
+    const instances = [...appRecord.instanceMap].filter(([key]) => key.split(":")[0] === appId).map(([, instance]) => instance);
+    return instances;
   });
   hooks2.hook("getComponentBounds", async ({ instance }) => {
     const bounds = getComponentBoundingRect(instance);
@@ -22551,7 +22591,7 @@ var usePromptStore = defineStore("prompts", () => {
 });
 
 // node_modules/element-plus/es/version.mjs
-var version2 = "2.10.2";
+var version2 = "2.11.1";
 
 // node_modules/element-plus/es/constants/key.mjs
 var INSTALLED_KEY = Symbol("INSTALLED_KEY");
@@ -25456,6 +25496,41 @@ function tryOnScopeDispose(fn2) {
   }
   return false;
 }
+function toReactive2(objectRef) {
+  if (!isRef2(objectRef))
+    return reactive(objectRef);
+  const proxy = new Proxy({}, {
+    get(_2, p3, receiver) {
+      return unref(Reflect.get(objectRef.value, p3, receiver));
+    },
+    set(_2, p3, value) {
+      if (isRef2(objectRef.value[p3]) && !isRef2(value))
+        objectRef.value[p3].value = value;
+      else
+        objectRef.value[p3] = value;
+      return true;
+    },
+    deleteProperty(_2, p3) {
+      return Reflect.deleteProperty(objectRef.value, p3);
+    },
+    has(_2, p3) {
+      return Reflect.has(objectRef.value, p3);
+    },
+    ownKeys() {
+      return Object.keys(objectRef.value);
+    },
+    getOwnPropertyDescriptor() {
+      return {
+        enumerable: true,
+        configurable: true
+      };
+    }
+  });
+  return reactive(proxy);
+}
+function reactiveComputed(fn2) {
+  return toReactive2(computed2(fn2));
+}
 function useDebounceFn(fn2, ms = 200, options = {}) {
   return createFilterWrapper(debounceFilter(ms, options), fn2);
 }
@@ -25818,6 +25893,43 @@ function useElementSize(target2, initialSize = { width: 0, height: 0 }, options 
     height
   };
 }
+function useIntersectionObserver(target2, callback, options = {}) {
+  const {
+    root: root4,
+    rootMargin = "0px",
+    threshold: threshold2 = 0.1,
+    window: window2 = defaultWindow
+  } = options;
+  const isSupported2 = useSupported(() => window2 && "IntersectionObserver" in window2);
+  let cleanup = noop3;
+  const stopWatch = isSupported2.value ? watch2(() => ({
+    el: unrefElement(target2),
+    root: unrefElement(root4)
+  }), ({ el, root: root22 }) => {
+    cleanup();
+    if (!el)
+      return;
+    const observer = new IntersectionObserver(callback, {
+      root: root22,
+      rootMargin,
+      threshold: threshold2
+    });
+    observer.observe(el);
+    cleanup = () => {
+      observer.disconnect();
+      cleanup = noop3;
+    };
+  }, { immediate: true, flush: "post" }) : noop3;
+  const stop2 = () => {
+    cleanup();
+    stopWatch();
+  };
+  tryOnScopeDispose(stop2);
+  return {
+    isSupported: isSupported2,
+    stop: stop2
+  };
+}
 var __getOwnPropSymbols$8 = Object.getOwnPropertySymbols;
 var __hasOwnProp$8 = Object.prototype.hasOwnProperty;
 var __propIsEnum$8 = Object.prototype.propertyIsEnumerable;
@@ -25999,23 +26111,6 @@ function useWindowSize(options = {}) {
   return { width, height };
 }
 
-// node_modules/element-plus/es/utils/error.mjs
-var ElementPlusError = class extends Error {
-  constructor(m4) {
-    super(m4);
-    this.name = "ElementPlusError";
-  }
-};
-function throwError(scope, m4) {
-  throw new ElementPlusError(`[${scope}] ${m4}`);
-}
-function debugWarn(scope, message2) {
-  if (true) {
-    const error = isString(scope) ? new ElementPlusError(`[${scope}] ${message2}`) : scope;
-    console.warn(error);
-  }
-}
-
 // node_modules/element-plus/es/hooks/use-z-index/index.mjs
 var initial = {
   current: 0
@@ -26037,10 +26132,8 @@ var useZIndex = (zIndexOverrides) => {
     zIndex.value = increasingInjection.current;
     return currentZIndex.value;
   };
-  if (!isClient && !inject(ZINDEX_INJECTION_KEY)) {
-    debugWarn("ZIndexInjection", `Looks like you are using server rendering, you must provide a z-index provider to ensure the hydration process to be succeed
-usage: app.provide(ZINDEX_INJECTION_KEY, { current: 0 })`);
-  }
+  if (!isClient && !inject(ZINDEX_INJECTION_KEY))
+    ;
   return {
     initialZIndex,
     currentZIndex,
@@ -26310,13 +26403,17 @@ var useGlobalSize = () => {
 
 // node_modules/element-plus/es/hooks/use-empty-values/index.mjs
 var emptyValuesContextKey = Symbol("emptyValuesContextKey");
-var SCOPE = "use-empty-values";
 var DEFAULT_EMPTY_VALUES = ["", void 0, null];
 var DEFAULT_VALUE_ON_CLEAR = void 0;
 var useEmptyValuesProps = buildProps({
   emptyValues: Array,
   valueOnClear: {
-    type: [String, Number, Boolean, Function],
+    type: definePropType([
+      String,
+      Number,
+      Boolean,
+      Function
+    ]),
     default: void 0,
     validator: (val) => isFunction(val) ? !val() : !val
   }
@@ -26339,9 +26436,8 @@ var useEmptyValues = (props2, defaultValue) => {
   const isEmptyValue2 = (value) => {
     return emptyValues.value.includes(value);
   };
-  if (!emptyValues.value.includes(valueOnClear.value)) {
-    debugWarn(SCOPE, "value-on-clear should be a value of empty-values");
-  }
+  if (!emptyValues.value.includes(valueOnClear.value))
+    ;
   return {
     emptyValues,
     valueOnClear,
@@ -26408,7 +26504,6 @@ var provideGlobalConfig = (config, app, global2 = false) => {
   const oldConfig = inSetup ? useGlobalConfig() : void 0;
   const provideFn = (_a26 = app == null ? void 0 : app.provide) != null ? _a26 : inSetup ? provide : void 0;
   if (!provideFn) {
-    debugWarn("provideGlobalConfig", "provideGlobalConfig() can only be used inside setup().");
     return;
   }
   const context = computed2(() => {
@@ -26512,7 +26607,6 @@ var rAF = (fn2) => isClient ? window.requestAnimationFrame(fn2) : setTimeout(fn2
 var cAF = (handle) => isClient ? window.cancelAnimationFrame(handle) : clearTimeout(handle);
 
 // node_modules/element-plus/es/utils/dom/style.mjs
-var SCOPE2 = "utils/dom/style";
 var classNameToArray = (cls = "") => cls.split(" ").filter((item) => !!item.trim());
 var hasClass = (el, cls) => {
   if (!el || !cls)
@@ -26566,7 +26660,6 @@ function addUnit(value, defaultUnit = "px") {
   } else if (isString(value)) {
     return value;
   }
-  debugWarn(SCOPE2, "binding value must be a string or number");
 }
 
 // node_modules/element-plus/es/utils/dom/scroll.mjs
@@ -26677,6 +26770,19 @@ var getScrollTop = (container) => {
   return container.scrollTop;
 };
 
+// node_modules/element-plus/es/utils/error.mjs
+var ElementPlusError = class extends Error {
+  constructor(m4) {
+    super(m4);
+    this.name = "ElementPlusError";
+  }
+};
+function throwError(scope, m4) {
+  throw new ElementPlusError(`[${scope}] ${m4}`);
+}
+function debugWarn(scope, message2) {
+}
+
 // node_modules/element-plus/es/components/affix/src/affix2.mjs
 var COMPONENT_NAME = "ElAffix";
 var __default__ = defineComponent({
@@ -26745,6 +26851,16 @@ var _sfc_main = /* @__PURE__ */ defineComponent({
         fixed.value = windowHeight.value - offset3 < rootBottom.value;
       }
     };
+    const updateRootRect = async () => {
+      if (!fixed.value) {
+        updateRoot();
+        return;
+      }
+      fixed.value = false;
+      await nextTick();
+      updateRoot();
+      fixed.value = true;
+    };
     const handleScroll2 = async () => {
       updateRoot();
       await nextTick();
@@ -26770,7 +26886,7 @@ var _sfc_main = /* @__PURE__ */ defineComponent({
     watchEffect(update2);
     expose({
       update: update2,
-      updateRoot
+      updateRoot: updateRootRect
     });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
@@ -27233,7 +27349,7 @@ __export(dist_exports, {
   ZoomIn: () => zoom_in_default,
   ZoomOut: () => zoom_out_default
 });
-var add_location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var _sfc_main3 = /* @__PURE__ */ defineComponent({
   name: "AddLocation",
   __name: "add-location",
   setup(__props) {
@@ -27256,8 +27372,8 @@ var add_location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var add_location_default = add_location_vue_vue_type_script_setup_true_lang_default;
-var aim_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var add_location_default = _sfc_main3;
+var _sfc_main22 = /* @__PURE__ */ defineComponent({
   name: "Aim",
   __name: "aim",
   setup(__props) {
@@ -27276,8 +27392,8 @@ var aim_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     ]));
   }
 });
-var aim_default = aim_vue_vue_type_script_setup_true_lang_default;
-var alarm_clock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var aim_default = _sfc_main22;
+var _sfc_main32 = /* @__PURE__ */ defineComponent({
   name: "AlarmClock",
   __name: "alarm-clock",
   setup(__props) {
@@ -27296,8 +27412,8 @@ var alarm_clock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var alarm_clock_default = alarm_clock_vue_vue_type_script_setup_true_lang_default;
-var apple_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var alarm_clock_default = _sfc_main32;
+var _sfc_main4 = /* @__PURE__ */ defineComponent({
   name: "Apple",
   __name: "apple",
   setup(__props) {
@@ -27307,13 +27423,13 @@ var apple_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M599.872 203.776a189.44 189.44 0 0 1 64.384-4.672l2.624.128c31.168 1.024 51.2 4.096 79.488 16.32 37.632 16.128 74.496 45.056 111.488 89.344 96.384 115.264 82.752 372.8-34.752 521.728-7.68 9.728-32 41.6-30.72 39.936a426.624 426.624 0 0 1-30.08 35.776c-31.232 32.576-65.28 49.216-110.08 50.048-31.36.64-53.568-5.312-84.288-18.752l-6.528-2.88c-20.992-9.216-30.592-11.904-47.296-11.904-18.112 0-28.608 2.88-51.136 12.672l-6.464 2.816c-28.416 12.224-48.32 18.048-76.16 19.2-74.112 2.752-116.928-38.08-180.672-132.16-96.64-142.08-132.608-349.312-55.04-486.4 46.272-81.92 129.92-133.632 220.672-135.04 32.832-.576 60.288 6.848 99.648 22.72 27.136 10.88 34.752 13.76 37.376 14.272 16.256-20.16 27.776-36.992 34.56-50.24 13.568-26.304 27.2-59.968 40.704-100.8a32 32 0 1 1 60.8 20.224c-12.608 37.888-25.408 70.4-38.528 97.664zm-51.52 78.08c-14.528 17.792-31.808 37.376-51.904 58.816a32 32 0 1 1-46.72-43.776l12.288-13.248c-28.032-11.2-61.248-26.688-95.68-26.112-70.4 1.088-135.296 41.6-171.648 105.792C121.6 492.608 176 684.16 247.296 788.992c34.816 51.328 76.352 108.992 130.944 106.944 52.48-2.112 72.32-34.688 135.872-34.688 63.552 0 81.28 34.688 136.96 33.536 56.448-1.088 75.776-39.04 126.848-103.872 107.904-136.768 107.904-362.752 35.776-449.088-72.192-86.272-124.672-84.096-151.68-85.12-41.472-4.288-81.6 12.544-113.664 25.152z"
+        d: "M599.872 203.776a189.4 189.4 0 0 1 64.384-4.672l2.624.128c31.168 1.024 51.2 4.096 79.488 16.32 37.632 16.128 74.496 45.056 111.488 89.344 96.384 115.264 82.752 372.8-34.752 521.728-7.68 9.728-32 41.6-30.72 39.936a427 427 0 0 1-30.08 35.776c-31.232 32.576-65.28 49.216-110.08 50.048-31.36.64-53.568-5.312-84.288-18.752l-6.528-2.88c-20.992-9.216-30.592-11.904-47.296-11.904-18.112 0-28.608 2.88-51.136 12.672l-6.464 2.816c-28.416 12.224-48.32 18.048-76.16 19.2-74.112 2.752-116.928-38.08-180.672-132.16-96.64-142.08-132.608-349.312-55.04-486.4 46.272-81.92 129.92-133.632 220.672-135.04 32.832-.576 60.288 6.848 99.648 22.72 27.136 10.88 34.752 13.76 37.376 14.272 16.256-20.16 27.776-36.992 34.56-50.24 13.568-26.304 27.2-59.968 40.704-100.8a32 32 0 1 1 60.8 20.224c-12.608 37.888-25.408 70.4-38.528 97.664m-51.52 78.08c-14.528 17.792-31.808 37.376-51.904 58.816a32 32 0 1 1-46.72-43.776l12.288-13.248c-28.032-11.2-61.248-26.688-95.68-26.112-70.4 1.088-135.296 41.6-171.648 105.792C121.6 492.608 176 684.16 247.296 788.992c34.816 51.328 76.352 108.992 130.944 106.944 52.48-2.112 72.32-34.688 135.872-34.688s81.28 34.688 136.96 33.536c56.448-1.088 75.776-39.04 126.848-103.872 107.904-136.768 107.904-362.752 35.776-449.088-72.192-86.272-124.672-84.096-151.68-85.12-41.472-4.288-81.6 12.544-113.664 25.152"
       })
     ]));
   }
 });
-var apple_default = apple_vue_vue_type_script_setup_true_lang_default;
-var arrow_down_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var apple_default = _sfc_main4;
+var _sfc_main5 = /* @__PURE__ */ defineComponent({
   name: "ArrowDownBold",
   __name: "arrow-down-bold",
   setup(__props) {
@@ -27323,13 +27439,13 @@ var arrow_down_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M104.704 338.752a64 64 0 0 1 90.496 0l316.8 316.8 316.8-316.8a64 64 0 0 1 90.496 90.496L557.248 791.296a64 64 0 0 1-90.496 0L104.704 429.248a64 64 0 0 1 0-90.496z"
+        d: "M104.704 338.752a64 64 0 0 1 90.496 0l316.8 316.8 316.8-316.8a64 64 0 0 1 90.496 90.496L557.248 791.296a64 64 0 0 1-90.496 0L104.704 429.248a64 64 0 0 1 0-90.496"
       })
     ]));
   }
 });
-var arrow_down_bold_default = arrow_down_bold_vue_vue_type_script_setup_true_lang_default;
-var arrow_down_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_down_bold_default = _sfc_main5;
+var _sfc_main6 = /* @__PURE__ */ defineComponent({
   name: "ArrowDown",
   __name: "arrow-down",
   setup(__props) {
@@ -27339,13 +27455,13 @@ var arrow_down_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M831.872 340.864 512 652.672 192.128 340.864a30.592 30.592 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.592 30.592 0 0 0-42.752 0z"
+        d: "M831.872 340.864 512 652.672 192.128 340.864a30.59 30.59 0 0 0-42.752 0 29.12 29.12 0 0 0 0 41.6L489.664 714.24a32 32 0 0 0 44.672 0l340.288-331.712a29.12 29.12 0 0 0 0-41.728 30.59 30.59 0 0 0-42.752 0z"
       })
     ]));
   }
 });
-var arrow_down_default = arrow_down_vue_vue_type_script_setup_true_lang_default;
-var arrow_left_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_down_default = _sfc_main6;
+var _sfc_main7 = /* @__PURE__ */ defineComponent({
   name: "ArrowLeftBold",
   __name: "arrow-left-bold",
   setup(__props) {
@@ -27355,13 +27471,13 @@ var arrow_left_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M685.248 104.704a64 64 0 0 1 0 90.496L368.448 512l316.8 316.8a64 64 0 0 1-90.496 90.496L232.704 557.248a64 64 0 0 1 0-90.496l362.048-362.048a64 64 0 0 1 90.496 0z"
+        d: "M685.248 104.704a64 64 0 0 1 0 90.496L368.448 512l316.8 316.8a64 64 0 0 1-90.496 90.496L232.704 557.248a64 64 0 0 1 0-90.496l362.048-362.048a64 64 0 0 1 90.496 0"
       })
     ]));
   }
 });
-var arrow_left_bold_default = arrow_left_bold_vue_vue_type_script_setup_true_lang_default;
-var arrow_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_left_bold_default = _sfc_main7;
+var _sfc_main8 = /* @__PURE__ */ defineComponent({
   name: "ArrowLeft",
   __name: "arrow-left",
   setup(__props) {
@@ -27371,13 +27487,13 @@ var arrow_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M609.408 149.376 277.76 489.6a32 32 0 0 0 0 44.672l331.648 340.352a29.12 29.12 0 0 0 41.728 0 30.592 30.592 0 0 0 0-42.752L339.264 511.936l311.872-319.872a30.592 30.592 0 0 0 0-42.688 29.12 29.12 0 0 0-41.728 0z"
+        d: "M609.408 149.376 277.76 489.6a32 32 0 0 0 0 44.672l331.648 340.352a29.12 29.12 0 0 0 41.728 0 30.59 30.59 0 0 0 0-42.752L339.264 511.936l311.872-319.872a30.59 30.59 0 0 0 0-42.688 29.12 29.12 0 0 0-41.728 0"
       })
     ]));
   }
 });
-var arrow_left_default = arrow_left_vue_vue_type_script_setup_true_lang_default;
-var arrow_right_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_left_default = _sfc_main8;
+var _sfc_main9 = /* @__PURE__ */ defineComponent({
   name: "ArrowRightBold",
   __name: "arrow-right-bold",
   setup(__props) {
@@ -27387,13 +27503,13 @@ var arrow_right_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0z"
+        d: "M338.752 104.704a64 64 0 0 0 0 90.496l316.8 316.8-316.8 316.8a64 64 0 0 0 90.496 90.496l362.048-362.048a64 64 0 0 0 0-90.496L429.248 104.704a64 64 0 0 0-90.496 0"
       })
     ]));
   }
 });
-var arrow_right_bold_default = arrow_right_bold_vue_vue_type_script_setup_true_lang_default;
-var arrow_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_right_bold_default = _sfc_main9;
+var _sfc_main10 = /* @__PURE__ */ defineComponent({
   name: "ArrowRight",
   __name: "arrow-right",
   setup(__props) {
@@ -27403,13 +27519,13 @@ var arrow_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M340.864 149.312a30.592 30.592 0 0 0 0 42.752L652.736 512 340.864 831.872a30.592 30.592 0 0 0 0 42.752 29.12 29.12 0 0 0 41.728 0L714.24 534.336a32 32 0 0 0 0-44.672L382.592 149.376a29.12 29.12 0 0 0-41.728 0z"
+        d: "M340.864 149.312a30.59 30.59 0 0 0 0 42.752L652.736 512 340.864 831.872a30.59 30.59 0 0 0 0 42.752 29.12 29.12 0 0 0 41.728 0L714.24 534.336a32 32 0 0 0 0-44.672L382.592 149.376a29.12 29.12 0 0 0-41.728 0z"
       })
     ]));
   }
 });
-var arrow_right_default = arrow_right_vue_vue_type_script_setup_true_lang_default;
-var arrow_up_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_right_default = _sfc_main10;
+var _sfc_main11 = /* @__PURE__ */ defineComponent({
   name: "ArrowUpBold",
   __name: "arrow-up-bold",
   setup(__props) {
@@ -27419,13 +27535,13 @@ var arrow_up_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M104.704 685.248a64 64 0 0 0 90.496 0l316.8-316.8 316.8 316.8a64 64 0 0 0 90.496-90.496L557.248 232.704a64 64 0 0 0-90.496 0L104.704 594.752a64 64 0 0 0 0 90.496z"
+        d: "M104.704 685.248a64 64 0 0 0 90.496 0l316.8-316.8 316.8 316.8a64 64 0 0 0 90.496-90.496L557.248 232.704a64 64 0 0 0-90.496 0L104.704 594.752a64 64 0 0 0 0 90.496"
       })
     ]));
   }
 });
-var arrow_up_bold_default = arrow_up_bold_vue_vue_type_script_setup_true_lang_default;
-var arrow_up_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_up_bold_default = _sfc_main11;
+var _sfc_main12 = /* @__PURE__ */ defineComponent({
   name: "ArrowUp",
   __name: "arrow-up",
   setup(__props) {
@@ -27440,8 +27556,8 @@ var arrow_up_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var arrow_up_default = arrow_up_vue_vue_type_script_setup_true_lang_default;
-var avatar_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var arrow_up_default = _sfc_main12;
+var _sfc_main13 = /* @__PURE__ */ defineComponent({
   name: "Avatar",
   __name: "avatar",
   setup(__props) {
@@ -27451,13 +27567,13 @@ var avatar_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M628.736 528.896A416 416 0 0 1 928 928H96a415.872 415.872 0 0 1 299.264-399.104L512 704zM720 304a208 208 0 1 1-416 0 208 208 0 0 1 416 0"
+        d: "M628.736 528.896A416 416 0 0 1 928 928H96a415.87 415.87 0 0 1 299.264-399.104L512 704zM720 304a208 208 0 1 1-416 0 208 208 0 0 1 416 0"
       })
     ]));
   }
 });
-var avatar_default = avatar_vue_vue_type_script_setup_true_lang_default;
-var back_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var avatar_default = _sfc_main13;
+var _sfc_main14 = /* @__PURE__ */ defineComponent({
   name: "Back",
   __name: "back",
   setup(__props) {
@@ -27476,8 +27592,8 @@ var back_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var back_default = back_vue_vue_type_script_setup_true_lang_default;
-var baseball_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var back_default = _sfc_main14;
+var _sfc_main15 = /* @__PURE__ */ defineComponent({
   name: "Baseball",
   __name: "baseball",
   setup(__props) {
@@ -27487,17 +27603,17 @@ var baseball_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M195.2 828.8a448 448 0 1 1 633.6-633.6 448 448 0 0 1-633.6 633.6zm45.248-45.248a384 384 0 1 0 543.104-543.104 384 384 0 0 0-543.104 543.104"
+        d: "M195.2 828.8a448 448 0 1 1 633.6-633.6 448 448 0 0 1-633.6 633.6m45.248-45.248a384 384 0 1 0 543.104-543.104 384 384 0 0 0-543.104 543.104"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M497.472 96.896c22.784 4.672 44.416 9.472 64.896 14.528a256.128 256.128 0 0 0 350.208 350.208c5.056 20.48 9.856 42.112 14.528 64.896A320.128 320.128 0 0 1 497.472 96.896zM108.48 491.904a320.128 320.128 0 0 1 423.616 423.68c-23.04-3.648-44.992-7.424-65.728-11.52a256.128 256.128 0 0 0-346.496-346.432 1736.64 1736.64 0 0 1-11.392-65.728z"
+        d: "M497.472 96.896c22.784 4.672 44.416 9.472 64.896 14.528a256.128 256.128 0 0 0 350.208 350.208c5.056 20.48 9.856 42.112 14.528 64.896A320.128 320.128 0 0 1 497.472 96.896M108.48 491.904a320.128 320.128 0 0 1 423.616 423.68c-23.04-3.648-44.992-7.424-65.728-11.52a256.128 256.128 0 0 0-346.496-346.432 1737 1737 0 0 1-11.392-65.728"
       })
     ]));
   }
 });
-var baseball_default = baseball_vue_vue_type_script_setup_true_lang_default;
-var basketball_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var baseball_default = _sfc_main15;
+var _sfc_main16 = /* @__PURE__ */ defineComponent({
   name: "Basketball",
   __name: "basketball",
   setup(__props) {
@@ -27507,13 +27623,13 @@ var basketball_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M778.752 788.224a382.464 382.464 0 0 0 116.032-245.632 256.512 256.512 0 0 0-241.728-13.952 762.88 762.88 0 0 1 125.696 259.584zm-55.04 44.224a699.648 699.648 0 0 0-125.056-269.632 256.128 256.128 0 0 0-56.064 331.968 382.72 382.72 0 0 0 181.12-62.336m-254.08 61.248A320.128 320.128 0 0 1 557.76 513.6a715.84 715.84 0 0 0-48.192-48.128 320.128 320.128 0 0 1-379.264 88.384 382.4 382.4 0 0 0 110.144 229.696 382.4 382.4 0 0 0 229.184 110.08zM129.28 481.088a256.128 256.128 0 0 0 331.072-56.448 699.648 699.648 0 0 0-268.8-124.352 382.656 382.656 0 0 0-62.272 180.8m106.56-235.84a762.88 762.88 0 0 1 258.688 125.056 256.512 256.512 0 0 0-13.44-241.088A382.464 382.464 0 0 0 235.84 245.248zm318.08-114.944c40.576 89.536 37.76 193.92-8.448 281.344a779.84 779.84 0 0 1 66.176 66.112 320.832 320.832 0 0 1 282.112-8.128 382.4 382.4 0 0 0-110.144-229.12 382.4 382.4 0 0 0-229.632-110.208zM828.8 828.8a448 448 0 1 1-633.6-633.6 448 448 0 0 1 633.6 633.6"
+        d: "M778.752 788.224a382.46 382.46 0 0 0 116.032-245.632 256.51 256.51 0 0 0-241.728-13.952 762.9 762.9 0 0 1 125.696 259.584m-55.04 44.224a699.65 699.65 0 0 0-125.056-269.632 256.13 256.13 0 0 0-56.064 331.968 382.7 382.7 0 0 0 181.12-62.336m-254.08 61.248A320.13 320.13 0 0 1 557.76 513.6a716 716 0 0 0-48.192-48.128 320.13 320.13 0 0 1-379.264 88.384 382.4 382.4 0 0 0 110.144 229.696 382.4 382.4 0 0 0 229.184 110.08zM129.28 481.088a256.13 256.13 0 0 0 331.072-56.448 699.65 699.65 0 0 0-268.8-124.352 382.66 382.66 0 0 0-62.272 180.8m106.56-235.84a762.9 762.9 0 0 1 258.688 125.056 256.51 256.51 0 0 0-13.44-241.088A382.46 382.46 0 0 0 235.84 245.248m318.08-114.944c40.576 89.536 37.76 193.92-8.448 281.344a780 780 0 0 1 66.176 66.112 320.83 320.83 0 0 1 282.112-8.128 382.4 382.4 0 0 0-110.144-229.12 382.4 382.4 0 0 0-229.632-110.208zM828.8 828.8a448 448 0 1 1-633.6-633.6 448 448 0 0 1 633.6 633.6"
       })
     ]));
   }
 });
-var basketball_default = basketball_vue_vue_type_script_setup_true_lang_default;
-var bell_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var basketball_default = _sfc_main16;
+var _sfc_main17 = /* @__PURE__ */ defineComponent({
   name: "BellFilled",
   __name: "bell-filled",
   setup(__props) {
@@ -27523,13 +27639,13 @@ var bell_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M640 832a128 128 0 0 1-256 0zm192-64H134.4a38.4 38.4 0 0 1 0-76.8H192V448c0-154.88 110.08-284.16 256.32-313.6a64 64 0 1 1 127.36 0A320.128 320.128 0 0 1 832 448v243.2h57.6a38.4 38.4 0 0 1 0 76.8z"
+        d: "M640 832a128 128 0 0 1-256 0zm192-64H134.4a38.4 38.4 0 0 1 0-76.8H192V448c0-154.88 110.08-284.16 256.32-313.6a64 64 0 1 1 127.36 0A320.13 320.13 0 0 1 832 448v243.2h57.6a38.4 38.4 0 0 1 0 76.8z"
       })
     ]));
   }
 });
-var bell_filled_default = bell_filled_vue_vue_type_script_setup_true_lang_default;
-var bell_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var bell_filled_default = _sfc_main17;
+var _sfc_main18 = /* @__PURE__ */ defineComponent({
   name: "Bell",
   __name: "bell",
   setup(__props) {
@@ -27552,8 +27668,8 @@ var bell_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var bell_default = bell_vue_vue_type_script_setup_true_lang_default;
-var bicycle_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var bell_default = _sfc_main18;
+var _sfc_main19 = /* @__PURE__ */ defineComponent({
   name: "Bicycle",
   __name: "bicycle",
   setup(__props) {
@@ -27584,8 +27700,8 @@ var bicycle_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var bicycle_default = bicycle_vue_vue_type_script_setup_true_lang_default;
-var bottom_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var bicycle_default = _sfc_main19;
+var _sfc_main20 = /* @__PURE__ */ defineComponent({
   name: "BottomLeft",
   __name: "bottom-left",
   setup(__props) {
@@ -27599,13 +27715,13 @@ var bottom_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M246.656 822.656a32 32 0 0 1-45.312-45.312l544-544a32 32 0 0 1 45.312 45.312l-544 544z"
+        d: "M246.656 822.656a32 32 0 0 1-45.312-45.312l544-544a32 32 0 0 1 45.312 45.312z"
       })
     ]));
   }
 });
-var bottom_left_default = bottom_left_vue_vue_type_script_setup_true_lang_default;
-var bottom_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var bottom_left_default = _sfc_main20;
+var _sfc_main21 = /* @__PURE__ */ defineComponent({
   name: "BottomRight",
   __name: "bottom-right",
   setup(__props) {
@@ -27624,8 +27740,8 @@ var bottom_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var bottom_right_default = bottom_right_vue_vue_type_script_setup_true_lang_default;
-var bottom_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var bottom_right_default = _sfc_main21;
+var _sfc_main222 = /* @__PURE__ */ defineComponent({
   name: "Bottom",
   __name: "bottom",
   setup(__props) {
@@ -27640,8 +27756,8 @@ var bottom_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var bottom_default = bottom_vue_vue_type_script_setup_true_lang_default;
-var bowl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var bottom_default = _sfc_main222;
+var _sfc_main23 = /* @__PURE__ */ defineComponent({
   name: "Bowl",
   __name: "bowl",
   setup(__props) {
@@ -27651,13 +27767,13 @@ var bowl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M714.432 704a351.744 351.744 0 0 0 148.16-256H161.408a351.744 351.744 0 0 0 148.16 256zM288 766.592A415.68 415.68 0 0 1 96 416a32 32 0 0 1 32-32h768a32 32 0 0 1 32 32 415.68 415.68 0 0 1-192 350.592V832a64 64 0 0 1-64 64H352a64 64 0 0 1-64-64zM493.248 320h-90.496l254.4-254.4a32 32 0 1 1 45.248 45.248zm187.328 0h-128l269.696-155.712a32 32 0 0 1 32 55.424zM352 768v64h320v-64z"
+        d: "M714.432 704a351.74 351.74 0 0 0 148.16-256H161.408a351.74 351.74 0 0 0 148.16 256zM288 766.592A415.68 415.68 0 0 1 96 416a32 32 0 0 1 32-32h768a32 32 0 0 1 32 32 415.68 415.68 0 0 1-192 350.592V832a64 64 0 0 1-64 64H352a64 64 0 0 1-64-64zM493.248 320h-90.496l254.4-254.4a32 32 0 1 1 45.248 45.248zm187.328 0h-128l269.696-155.712a32 32 0 0 1 32 55.424zM352 768v64h320v-64z"
       })
     ]));
   }
 });
-var bowl_default = bowl_vue_vue_type_script_setup_true_lang_default;
-var box_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var bowl_default = _sfc_main23;
+var _sfc_main24 = /* @__PURE__ */ defineComponent({
   name: "Box",
   __name: "box",
   setup(__props) {
@@ -27667,7 +27783,7 @@ var box_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M317.056 128 128 344.064V896h768V344.064L706.944 128zm-14.528-64h418.944a32 32 0 0 1 24.064 10.88l206.528 236.096A32 32 0 0 1 960 332.032V928a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V332.032a32 32 0 0 1 7.936-21.12L278.4 75.008A32 32 0 0 1 302.528 64z"
+        d: "M317.056 128 128 344.064V896h768V344.064L706.944 128zm-14.528-64h418.944a32 32 0 0 1 24.064 10.88l206.528 236.096A32 32 0 0 1 960 332.032V928a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V332.032a32 32 0 0 1 7.936-21.12L278.4 75.008A32 32 0 0 1 302.528 64"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -27680,8 +27796,8 @@ var box_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     ]));
   }
 });
-var box_default = box_vue_vue_type_script_setup_true_lang_default;
-var briefcase_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var box_default = _sfc_main24;
+var _sfc_main25 = /* @__PURE__ */ defineComponent({
   name: "Briefcase",
   __name: "briefcase",
   setup(__props) {
@@ -27696,8 +27812,8 @@ var briefcase_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var briefcase_default = briefcase_vue_vue_type_script_setup_true_lang_default;
-var brush_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var briefcase_default = _sfc_main25;
+var _sfc_main26 = /* @__PURE__ */ defineComponent({
   name: "BrushFilled",
   __name: "brush-filled",
   setup(__props) {
@@ -27712,8 +27828,8 @@ var brush_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var brush_filled_default = brush_filled_vue_vue_type_script_setup_true_lang_default;
-var brush_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var brush_filled_default = _sfc_main26;
+var _sfc_main27 = /* @__PURE__ */ defineComponent({
   name: "Brush",
   __name: "brush",
   setup(__props) {
@@ -27723,13 +27839,13 @@ var brush_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M896 448H128v192a64 64 0 0 0 64 64h192v192h256V704h192a64 64 0 0 0 64-64zm-770.752-64c0-47.552 5.248-90.24 15.552-128 14.72-54.016 42.496-107.392 83.2-160h417.28l-15.36 70.336L736 96h211.2c-24.832 42.88-41.92 96.256-51.2 160a663.872 663.872 0 0 0-6.144 128H960v256a128 128 0 0 1-128 128H704v160a32 32 0 0 1-32 32H352a32 32 0 0 1-32-32V768H192A128 128 0 0 1 64 640V384h61.248zm64 0h636.544c-2.048-45.824.256-91.584 6.848-137.216 4.48-30.848 10.688-59.776 18.688-86.784h-96.64l-221.12 141.248L561.92 160H256.512c-25.856 37.888-43.776 75.456-53.952 112.832-8.768 32.064-13.248 69.12-13.312 111.168z"
+        d: "M896 448H128v192a64 64 0 0 0 64 64h192v192h256V704h192a64 64 0 0 0 64-64zm-770.752-64c0-47.552 5.248-90.24 15.552-128 14.72-54.016 42.496-107.392 83.2-160h417.28l-15.36 70.336L736 96h211.2c-24.832 42.88-41.92 96.256-51.2 160a664 664 0 0 0-6.144 128H960v256a128 128 0 0 1-128 128H704v160a32 32 0 0 1-32 32H352a32 32 0 0 1-32-32V768H192A128 128 0 0 1 64 640V384zm64 0h636.544c-2.048-45.824.256-91.584 6.848-137.216 4.48-30.848 10.688-59.776 18.688-86.784h-96.64l-221.12 141.248L561.92 160H256.512c-25.856 37.888-43.776 75.456-53.952 112.832-8.768 32.064-13.248 69.12-13.312 111.168"
       })
     ]));
   }
 });
-var brush_default = brush_vue_vue_type_script_setup_true_lang_default;
-var burger_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var brush_default = _sfc_main27;
+var _sfc_main28 = /* @__PURE__ */ defineComponent({
   name: "Burger",
   __name: "burger",
   setup(__props) {
@@ -27744,8 +27860,8 @@ var burger_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var burger_default = burger_vue_vue_type_script_setup_true_lang_default;
-var calendar_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var burger_default = _sfc_main28;
+var _sfc_main29 = /* @__PURE__ */ defineComponent({
   name: "Calendar",
   __name: "calendar",
   setup(__props) {
@@ -27760,8 +27876,8 @@ var calendar_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var calendar_default = calendar_vue_vue_type_script_setup_true_lang_default;
-var camera_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var calendar_default = _sfc_main29;
+var _sfc_main30 = /* @__PURE__ */ defineComponent({
   name: "CameraFilled",
   __name: "camera-filled",
   setup(__props) {
@@ -27776,8 +27892,8 @@ var camera_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var camera_filled_default = camera_filled_vue_vue_type_script_setup_true_lang_default;
-var camera_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var camera_filled_default = _sfc_main30;
+var _sfc_main31 = /* @__PURE__ */ defineComponent({
   name: "Camera",
   __name: "camera",
   setup(__props) {
@@ -27792,8 +27908,8 @@ var camera_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var camera_default = camera_vue_vue_type_script_setup_true_lang_default;
-var caret_bottom_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var camera_default = _sfc_main31;
+var _sfc_main322 = /* @__PURE__ */ defineComponent({
   name: "CaretBottom",
   __name: "caret-bottom",
   setup(__props) {
@@ -27808,8 +27924,8 @@ var caret_bottom_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var caret_bottom_default = caret_bottom_vue_vue_type_script_setup_true_lang_default;
-var caret_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var caret_bottom_default = _sfc_main322;
+var _sfc_main33 = /* @__PURE__ */ defineComponent({
   name: "CaretLeft",
   __name: "caret-left",
   setup(__props) {
@@ -27824,8 +27940,8 @@ var caret_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var caret_left_default = caret_left_vue_vue_type_script_setup_true_lang_default;
-var caret_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var caret_left_default = _sfc_main33;
+var _sfc_main34 = /* @__PURE__ */ defineComponent({
   name: "CaretRight",
   __name: "caret-right",
   setup(__props) {
@@ -27840,8 +27956,8 @@ var caret_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var caret_right_default = caret_right_vue_vue_type_script_setup_true_lang_default;
-var caret_top_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var caret_right_default = _sfc_main34;
+var _sfc_main35 = /* @__PURE__ */ defineComponent({
   name: "CaretTop",
   __name: "caret-top",
   setup(__props) {
@@ -27856,8 +27972,8 @@ var caret_top_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var caret_top_default = caret_top_vue_vue_type_script_setup_true_lang_default;
-var cellphone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var caret_top_default = _sfc_main35;
+var _sfc_main36 = /* @__PURE__ */ defineComponent({
   name: "Cellphone",
   __name: "cellphone",
   setup(__props) {
@@ -27872,8 +27988,8 @@ var cellphone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var cellphone_default = cellphone_vue_vue_type_script_setup_true_lang_default;
-var chat_dot_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var cellphone_default = _sfc_main36;
+var _sfc_main37 = /* @__PURE__ */ defineComponent({
   name: "ChatDotRound",
   __name: "chat-dot-round",
   setup(__props) {
@@ -27883,7 +27999,7 @@ var chat_dot_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m174.72 855.68 135.296-45.12 23.68 11.84C388.096 849.536 448.576 864 512 864c211.84 0 384-166.784 384-352S723.84 160 512 160 128 326.784 128 512c0 69.12 24.96 139.264 70.848 199.232l22.08 28.8-46.272 115.584zm-45.248 82.56A32 32 0 0 1 89.6 896l58.368-145.92C94.72 680.32 64 596.864 64 512 64 299.904 256 96 512 96s448 203.904 448 416-192 416-448 416a461.056 461.056 0 0 1-206.912-48.384l-175.616 58.56z"
+        d: "m174.72 855.68 135.296-45.12 23.68 11.84C388.096 849.536 448.576 864 512 864c211.84 0 384-166.784 384-352S723.84 160 512 160 128 326.784 128 512c0 69.12 24.96 139.264 70.848 199.232l22.08 28.8-46.272 115.584zm-45.248 82.56A32 32 0 0 1 89.6 896l58.368-145.92C94.72 680.32 64 596.864 64 512 64 299.904 256 96 512 96s448 203.904 448 416-192 416-448 416a461.06 461.06 0 0 1-206.912-48.384l-175.616 58.56z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -27892,8 +28008,8 @@ var chat_dot_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
     ]));
   }
 });
-var chat_dot_round_default = chat_dot_round_vue_vue_type_script_setup_true_lang_default;
-var chat_dot_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chat_dot_round_default = _sfc_main37;
+var _sfc_main38 = /* @__PURE__ */ defineComponent({
   name: "ChatDotSquare",
   __name: "chat-dot-square",
   setup(__props) {
@@ -27907,13 +28023,13 @@ var chat_dot_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 499.2a51.2 51.2 0 1 1 0-102.4 51.2 51.2 0 0 1 0 102.4zm192 0a51.2 51.2 0 1 1 0-102.4 51.2 51.2 0 0 1 0 102.4zm-384 0a51.2 51.2 0 1 1 0-102.4 51.2 51.2 0 0 1 0 102.4z"
+        d: "M512 499.2a51.2 51.2 0 1 1 0-102.4 51.2 51.2 0 0 1 0 102.4m192 0a51.2 51.2 0 1 1 0-102.4 51.2 51.2 0 0 1 0 102.4m-384 0a51.2 51.2 0 1 1 0-102.4 51.2 51.2 0 0 1 0 102.4"
       })
     ]));
   }
 });
-var chat_dot_square_default = chat_dot_square_vue_vue_type_script_setup_true_lang_default;
-var chat_line_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chat_dot_square_default = _sfc_main38;
+var _sfc_main39 = /* @__PURE__ */ defineComponent({
   name: "ChatLineRound",
   __name: "chat-line-round",
   setup(__props) {
@@ -27923,7 +28039,7 @@ var chat_line_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m174.72 855.68 135.296-45.12 23.68 11.84C388.096 849.536 448.576 864 512 864c211.84 0 384-166.784 384-352S723.84 160 512 160 128 326.784 128 512c0 69.12 24.96 139.264 70.848 199.232l22.08 28.8-46.272 115.584zm-45.248 82.56A32 32 0 0 1 89.6 896l58.368-145.92C94.72 680.32 64 596.864 64 512 64 299.904 256 96 512 96s448 203.904 448 416-192 416-448 416a461.056 461.056 0 0 1-206.912-48.384l-175.616 58.56z"
+        d: "m174.72 855.68 135.296-45.12 23.68 11.84C388.096 849.536 448.576 864 512 864c211.84 0 384-166.784 384-352S723.84 160 512 160 128 326.784 128 512c0 69.12 24.96 139.264 70.848 199.232l22.08 28.8-46.272 115.584zm-45.248 82.56A32 32 0 0 1 89.6 896l58.368-145.92C94.72 680.32 64 596.864 64 512 64 299.904 256 96 512 96s448 203.904 448 416-192 416-448 416a461.06 461.06 0 0 1-206.912-48.384l-175.616 58.56z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -27932,8 +28048,8 @@ var chat_line_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     ]));
   }
 });
-var chat_line_round_default = chat_line_round_vue_vue_type_script_setup_true_lang_default;
-var chat_line_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chat_line_round_default = _sfc_main39;
+var _sfc_main40 = /* @__PURE__ */ defineComponent({
   name: "ChatLineSquare",
   __name: "chat-line-square",
   setup(__props) {
@@ -27952,8 +28068,8 @@ var chat_line_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     ]));
   }
 });
-var chat_line_square_default = chat_line_square_vue_vue_type_script_setup_true_lang_default;
-var chat_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chat_line_square_default = _sfc_main40;
+var _sfc_main41 = /* @__PURE__ */ defineComponent({
   name: "ChatRound",
   __name: "chat-round",
   setup(__props) {
@@ -27968,8 +28084,8 @@ var chat_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var chat_round_default = chat_round_vue_vue_type_script_setup_true_lang_default;
-var chat_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chat_round_default = _sfc_main41;
+var _sfc_main42 = /* @__PURE__ */ defineComponent({
   name: "ChatSquare",
   __name: "chat-square",
   setup(__props) {
@@ -27984,8 +28100,8 @@ var chat_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var chat_square_default = chat_square_vue_vue_type_script_setup_true_lang_default;
-var check_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chat_square_default = _sfc_main42;
+var _sfc_main43 = /* @__PURE__ */ defineComponent({
   name: "Check",
   __name: "check",
   setup(__props) {
@@ -28000,8 +28116,8 @@ var check_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var check_default = check_vue_vue_type_script_setup_true_lang_default;
-var checked_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var check_default = _sfc_main43;
+var _sfc_main44 = /* @__PURE__ */ defineComponent({
   name: "Checked",
   __name: "checked",
   setup(__props) {
@@ -28016,8 +28132,8 @@ var checked_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var checked_default = checked_vue_vue_type_script_setup_true_lang_default;
-var cherry_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var checked_default = _sfc_main44;
+var _sfc_main45 = /* @__PURE__ */ defineComponent({
   name: "Cherry",
   __name: "cherry",
   setup(__props) {
@@ -28027,13 +28143,13 @@ var cherry_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M261.056 449.6c13.824-69.696 34.88-128.96 63.36-177.728 23.744-40.832 61.12-88.64 112.256-143.872H320a32 32 0 0 1 0-64h384a32 32 0 1 1 0 64H554.752c14.912 39.168 41.344 86.592 79.552 141.76 47.36 68.48 84.8 106.752 106.304 114.304a224 224 0 1 1-84.992 14.784c-22.656-22.912-47.04-53.76-73.92-92.608-38.848-56.128-67.008-105.792-84.352-149.312-55.296 58.24-94.528 107.52-117.76 147.2-23.168 39.744-41.088 88.768-53.568 147.072a224.064 224.064 0 1 1-64.96-1.6zM288 832a160 160 0 1 0 0-320 160 160 0 0 0 0 320m448-64a160 160 0 1 0 0-320 160 160 0 0 0 0 320"
+        d: "M261.056 449.6c13.824-69.696 34.88-128.96 63.36-177.728 23.744-40.832 61.12-88.64 112.256-143.872H320a32 32 0 0 1 0-64h384a32 32 0 1 1 0 64H554.752c14.912 39.168 41.344 86.592 79.552 141.76 47.36 68.48 84.8 106.752 106.304 114.304a224 224 0 1 1-84.992 14.784c-22.656-22.912-47.04-53.76-73.92-92.608-38.848-56.128-67.008-105.792-84.352-149.312-55.296 58.24-94.528 107.52-117.76 147.2-23.168 39.744-41.088 88.768-53.568 147.072a224.064 224.064 0 1 1-64.96-1.6M288 832a160 160 0 1 0 0-320 160 160 0 0 0 0 320m448-64a160 160 0 1 0 0-320 160 160 0 0 0 0 320"
       })
     ]));
   }
 });
-var cherry_default = cherry_vue_vue_type_script_setup_true_lang_default;
-var chicken_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var cherry_default = _sfc_main45;
+var _sfc_main46 = /* @__PURE__ */ defineComponent({
   name: "Chicken",
   __name: "chicken",
   setup(__props) {
@@ -28043,39 +28159,38 @@ var chicken_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M349.952 716.992 478.72 588.16a106.688 106.688 0 0 1-26.176-19.072 106.688 106.688 0 0 1-19.072-26.176L304.704 671.744c.768 3.072 1.472 6.144 2.048 9.216l2.048 31.936 31.872 1.984c3.136.64 6.208 1.28 9.28 2.112zm57.344 33.152a128 128 0 1 1-216.32 114.432l-1.92-32-32-1.92a128 128 0 1 1 114.432-216.32L416.64 469.248c-2.432-101.44 58.112-239.104 149.056-330.048 107.328-107.328 231.296-85.504 316.8 0 85.44 85.44 107.328 209.408 0 316.8-91.008 90.88-228.672 151.424-330.112 149.056L407.296 750.08zm90.496-226.304c49.536 49.536 233.344-7.04 339.392-113.088 78.208-78.208 63.232-163.072 0-226.304-63.168-63.232-148.032-78.208-226.24 0C504.896 290.496 448.32 474.368 497.792 523.84M244.864 708.928a64 64 0 1 0-59.84 59.84l56.32-3.52zm8.064 127.68a64 64 0 1 0 59.84-59.84l-56.32 3.52-3.52 56.32z"
+        d: "M349.952 716.992 478.72 588.16a106.7 106.7 0 0 1-26.176-19.072 106.7 106.7 0 0 1-19.072-26.176L304.704 671.744c.768 3.072 1.472 6.144 2.048 9.216l2.048 31.936 31.872 1.984c3.136.64 6.208 1.28 9.28 2.112m57.344 33.152a128 128 0 1 1-216.32 114.432l-1.92-32-32-1.92a128 128 0 1 1 114.432-216.32L416.64 469.248c-2.432-101.44 58.112-239.104 149.056-330.048 107.328-107.328 231.296-85.504 316.8 0 85.44 85.44 107.328 209.408 0 316.8-91.008 90.88-228.672 151.424-330.112 149.056L407.296 750.08zm90.496-226.304c49.536 49.536 233.344-7.04 339.392-113.088 78.208-78.208 63.232-163.072 0-226.304-63.168-63.232-148.032-78.208-226.24 0C504.896 290.496 448.32 474.368 497.792 523.84M244.864 708.928a64 64 0 1 0-59.84 59.84l56.32-3.52zm8.064 127.68a64 64 0 1 0 59.84-59.84l-56.32 3.52z"
       })
     ]));
   }
 });
-var chicken_default = chicken_vue_vue_type_script_setup_true_lang_default;
-var chrome_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chicken_default = _sfc_main46;
+var _sfc_main47 = /* @__PURE__ */ defineComponent({
   name: "ChromeFilled",
   __name: "chrome-filled",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M938.67 512.01c0-44.59-6.82-87.6-19.54-128H682.67a212.372 212.372 0 0 1 42.67 128c.06 38.71-10.45 76.7-30.42 109.87l-182.91 316.8c235.65-.01 426.66-191.02 426.66-426.67z"
+        d: "M938.67 512.01c0-44.59-6.82-87.6-19.54-128H682.67a212.37 212.37 0 0 1 42.67 128c.06 38.71-10.45 76.7-30.42 109.87l-182.91 316.8c235.65-.01 426.66-191.02 426.66-426.67"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M576.79 401.63a127.92 127.92 0 0 0-63.56-17.6c-22.36-.22-44.39 5.43-63.89 16.38s-35.79 26.82-47.25 46.02a128.005 128.005 0 0 0-2.16 127.44l1.24 2.13a127.906 127.906 0 0 0 46.36 46.61 127.907 127.907 0 0 0 63.38 17.44c22.29.2 44.24-5.43 63.68-16.33a127.94 127.94 0 0 0 47.16-45.79v-.01l1.11-1.92a127.984 127.984 0 0 0 .29-127.46 127.957 127.957 0 0 0-46.36-46.91"
+        d: "M576.79 401.63a127.9 127.9 0 0 0-63.56-17.6c-22.36-.22-44.39 5.43-63.89 16.38s-35.79 26.82-47.25 46.02a128 128 0 0 0-2.16 127.44l1.24 2.13a127.9 127.9 0 0 0 46.36 46.61 127.9 127.9 0 0 0 63.38 17.44c22.29.2 44.24-5.43 63.68-16.33a127.94 127.94 0 0 0 47.16-45.79v-.01l1.11-1.92a127.98 127.98 0 0 0 .29-127.46 127.96 127.96 0 0 0-46.36-46.91"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M394.45 333.96A213.336 213.336 0 0 1 512 298.67h369.58A426.503 426.503 0 0 0 512 85.34a425.598 425.598 0 0 0-171.74 35.98 425.644 425.644 0 0 0-142.62 102.22l118.14 204.63a213.397 213.397 0 0 1 78.67-94.21m117.56 604.72H512zm-97.25-236.73a213.284 213.284 0 0 1-89.54-86.81L142.48 298.6c-36.35 62.81-57.13 135.68-57.13 213.42 0 203.81 142.93 374.22 333.95 416.55h.04l118.19-204.71a213.315 213.315 0 0 1-122.77-21.91z"
+        d: "M394.45 333.96A213.34 213.34 0 0 1 512 298.67h369.58A426.5 426.5 0 0 0 512 85.34a425.6 425.6 0 0 0-171.74 35.98 425.6 425.6 0 0 0-142.62 102.22l118.14 204.63a213.4 213.4 0 0 1 78.67-94.21m117.56 604.72H512zm-97.25-236.73a213.3 213.3 0 0 1-89.54-86.81L142.48 298.6c-36.35 62.81-57.13 135.68-57.13 213.42 0 203.81 142.93 374.22 333.95 416.55h.04l118.19-204.71a213.3 213.3 0 0 1-122.77-21.91"
       })
     ]));
   }
 });
-var chrome_filled_default = chrome_filled_vue_vue_type_script_setup_true_lang_default;
-var circle_check_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var chrome_filled_default = _sfc_main47;
+var _sfc_main48 = /* @__PURE__ */ defineComponent({
   name: "CircleCheckFilled",
   __name: "circle-check-filled",
   setup(__props) {
@@ -28085,13 +28200,13 @@ var circle_check_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336z"
+        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.27 38.27 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336z"
       })
     ]));
   }
 });
-var circle_check_filled_default = circle_check_filled_vue_vue_type_script_setup_true_lang_default;
-var circle_check_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var circle_check_filled_default = _sfc_main48;
+var _sfc_main49 = /* @__PURE__ */ defineComponent({
   name: "CircleCheck",
   __name: "circle-check",
   setup(__props) {
@@ -28105,13 +28220,13 @@ var circle_check_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M745.344 361.344a32 32 0 0 1 45.312 45.312l-288 288a32 32 0 0 1-45.312 0l-160-160a32 32 0 1 1 45.312-45.312L480 626.752l265.344-265.408z"
+        d: "M745.344 361.344a32 32 0 0 1 45.312 45.312l-288 288a32 32 0 0 1-45.312 0l-160-160a32 32 0 1 1 45.312-45.312L480 626.752z"
       })
     ]));
   }
 });
-var circle_check_default = circle_check_vue_vue_type_script_setup_true_lang_default;
-var circle_close_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var circle_check_default = _sfc_main49;
+var _sfc_main50 = /* @__PURE__ */ defineComponent({
   name: "CircleCloseFilled",
   __name: "circle-close-filled",
   setup(__props) {
@@ -28126,8 +28241,8 @@ var circle_close_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE
     ]));
   }
 });
-var circle_close_filled_default = circle_close_filled_vue_vue_type_script_setup_true_lang_default;
-var circle_close_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var circle_close_filled_default = _sfc_main50;
+var _sfc_main51 = /* @__PURE__ */ defineComponent({
   name: "CircleClose",
   __name: "circle-close",
   setup(__props) {
@@ -28146,8 +28261,8 @@ var circle_close_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var circle_close_default = circle_close_vue_vue_type_script_setup_true_lang_default;
-var circle_plus_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var circle_close_default = _sfc_main51;
+var _sfc_main52 = /* @__PURE__ */ defineComponent({
   name: "CirclePlusFilled",
   __name: "circle-plus-filled",
   setup(__props) {
@@ -28157,13 +28272,13 @@ var circle_plus_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE_
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m-38.4 409.6H326.4a38.4 38.4 0 1 0 0 76.8h147.2v147.2a38.4 38.4 0 0 0 76.8 0V550.4h147.2a38.4 38.4 0 0 0 0-76.8H550.4V326.4a38.4 38.4 0 1 0-76.8 0v147.2z"
+        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m-38.4 409.6H326.4a38.4 38.4 0 1 0 0 76.8h147.2v147.2a38.4 38.4 0 0 0 76.8 0V550.4h147.2a38.4 38.4 0 0 0 0-76.8H550.4V326.4a38.4 38.4 0 1 0-76.8 0z"
       })
     ]));
   }
 });
-var circle_plus_filled_default = circle_plus_filled_vue_vue_type_script_setup_true_lang_default;
-var circle_plus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var circle_plus_filled_default = _sfc_main52;
+var _sfc_main53 = /* @__PURE__ */ defineComponent({
   name: "CirclePlus",
   __name: "circle-plus",
   setup(__props) {
@@ -28186,8 +28301,8 @@ var circle_plus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var circle_plus_default = circle_plus_vue_vue_type_script_setup_true_lang_default;
-var clock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var circle_plus_default = _sfc_main53;
+var _sfc_main54 = /* @__PURE__ */ defineComponent({
   name: "Clock",
   __name: "clock",
   setup(__props) {
@@ -28210,8 +28325,8 @@ var clock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var clock_default = clock_vue_vue_type_script_setup_true_lang_default;
-var close_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var clock_default = _sfc_main54;
+var _sfc_main55 = /* @__PURE__ */ defineComponent({
   name: "CloseBold",
   __name: "close-bold",
   setup(__props) {
@@ -28221,13 +28336,13 @@ var close_bold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"
+        d: "M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496"
       })
     ]));
   }
 });
-var close_bold_default = close_bold_vue_vue_type_script_setup_true_lang_default;
-var close_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var close_bold_default = _sfc_main55;
+var _sfc_main56 = /* @__PURE__ */ defineComponent({
   name: "Close",
   __name: "close",
   setup(__props) {
@@ -28242,8 +28357,8 @@ var close_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var close_default = close_vue_vue_type_script_setup_true_lang_default;
-var cloudy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var close_default = _sfc_main56;
+var _sfc_main57 = /* @__PURE__ */ defineComponent({
   name: "Cloudy",
   __name: "cloudy",
   setup(__props) {
@@ -28258,8 +28373,8 @@ var cloudy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var cloudy_default = cloudy_vue_vue_type_script_setup_true_lang_default;
-var coffee_cup_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var cloudy_default = _sfc_main57;
+var _sfc_main58 = /* @__PURE__ */ defineComponent({
   name: "CoffeeCup",
   __name: "coffee-cup",
   setup(__props) {
@@ -28269,13 +28384,13 @@ var coffee_cup_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M768 192a192 192 0 1 1-8 383.808A256.128 256.128 0 0 1 512 768H320A256 256 0 0 1 64 512V160a32 32 0 0 1 32-32h640a32 32 0 0 1 32 32zm0 64v256a128 128 0 1 0 0-256M96 832h640a32 32 0 1 1 0 64H96a32 32 0 1 1 0-64m32-640v320a192 192 0 0 0 192 192h192a192 192 0 0 0 192-192V192z"
+        d: "M768 192a192 192 0 1 1-8 383.808A256.13 256.13 0 0 1 512 768H320A256 256 0 0 1 64 512V160a32 32 0 0 1 32-32h640a32 32 0 0 1 32 32zm0 64v256a128 128 0 1 0 0-256M96 832h640a32 32 0 1 1 0 64H96a32 32 0 1 1 0-64m32-640v320a192 192 0 0 0 192 192h192a192 192 0 0 0 192-192V192z"
       })
     ]));
   }
 });
-var coffee_cup_default = coffee_cup_vue_vue_type_script_setup_true_lang_default;
-var coffee_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var coffee_cup_default = _sfc_main58;
+var _sfc_main59 = /* @__PURE__ */ defineComponent({
   name: "Coffee",
   __name: "coffee",
   setup(__props) {
@@ -28285,13 +28400,13 @@ var coffee_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M822.592 192h14.272a32 32 0 0 1 31.616 26.752l21.312 128A32 32 0 0 1 858.24 384h-49.344l-39.04 546.304A32 32 0 0 1 737.92 960H285.824a32 32 0 0 1-32-29.696L214.912 384H165.76a32 32 0 0 1-31.552-37.248l21.312-128A32 32 0 0 1 187.136 192h14.016l-6.72-93.696A32 32 0 0 1 226.368 64h571.008a32 32 0 0 1 31.936 34.304zm-64.128 0 4.544-64H260.736l4.544 64h493.184m-548.16 128H820.48l-10.688-64H214.208l-10.688 64h6.784m68.736 64 36.544 512H708.16l36.544-512z"
+        d: "M822.592 192h14.272a32 32 0 0 1 31.616 26.752l21.312 128A32 32 0 0 1 858.24 384h-49.344l-39.04 546.304A32 32 0 0 1 737.92 960H285.824a32 32 0 0 1-32-29.696L214.912 384H165.76a32 32 0 0 1-31.552-37.248l21.312-128A32 32 0 0 1 187.136 192h14.016l-6.72-93.696A32 32 0 0 1 226.368 64h571.008a32 32 0 0 1 31.936 34.304zm-64.128 0 4.544-64H260.736l4.544 64zm-548.16 128H820.48l-10.688-64H214.208l-10.688 64zm68.736 64 36.544 512H708.16l36.544-512z"
       })
     ]));
   }
 });
-var coffee_default = coffee_vue_vue_type_script_setup_true_lang_default;
-var coin_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var coffee_default = _sfc_main59;
+var _sfc_main60 = /* @__PURE__ */ defineComponent({
   name: "Coin",
   __name: "coin",
   setup(__props) {
@@ -28301,11 +28416,11 @@ var coin_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m161.92 580.736 29.888 58.88C171.328 659.776 160 681.728 160 704c0 82.304 155.328 160 352 160s352-77.696 352-160c0-22.272-11.392-44.16-31.808-64.32l30.464-58.432C903.936 615.808 928 657.664 928 704c0 129.728-188.544 224-416 224S96 833.728 96 704c0-46.592 24.32-88.576 65.92-123.264z"
+        d: "m161.92 580.736 29.888 58.88C171.328 659.776 160 681.728 160 704c0 82.304 155.328 160 352 160s352-77.696 352-160c0-22.272-11.392-44.16-31.808-64.32l30.464-58.432C903.936 615.808 928 657.664 928 704c0 129.728-188.544 224-416 224S96 833.728 96 704c0-46.592 24.32-88.576 65.92-123.264"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m161.92 388.736 29.888 58.88C171.328 467.84 160 489.792 160 512c0 82.304 155.328 160 352 160s352-77.696 352-160c0-22.272-11.392-44.16-31.808-64.32l30.464-58.432C903.936 423.808 928 465.664 928 512c0 129.728-188.544 224-416 224S96 641.728 96 512c0-46.592 24.32-88.576 65.92-123.264z"
+        d: "m161.92 388.736 29.888 58.88C171.328 467.84 160 489.792 160 512c0 82.304 155.328 160 352 160s352-77.696 352-160c0-22.272-11.392-44.16-31.808-64.32l30.464-58.432C903.936 423.808 928 465.664 928 512c0 129.728-188.544 224-416 224S96 641.728 96 512c0-46.592 24.32-88.576 65.92-123.264"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -28314,8 +28429,8 @@ var coin_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var coin_default = coin_vue_vue_type_script_setup_true_lang_default;
-var cold_drink_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var coin_default = _sfc_main60;
+var _sfc_main61 = /* @__PURE__ */ defineComponent({
   name: "ColdDrink",
   __name: "cold-drink",
   setup(__props) {
@@ -28325,13 +28440,13 @@ var cold_drink_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M768 64a192 192 0 1 1-69.952 370.88L480 725.376V896h96a32 32 0 1 1 0 64H320a32 32 0 1 1 0-64h96V725.376L76.8 273.536a64 64 0 0 1-12.8-38.4v-10.688a32 32 0 0 1 32-32h71.808l-65.536-83.84a32 32 0 0 1 50.432-39.424l96.256 123.264h337.728A192.064 192.064 0 0 1 768 64M656.896 192.448H800a32 32 0 0 1 32 32v10.624a64 64 0 0 1-12.8 38.4l-80.448 107.2a128 128 0 1 0-81.92-188.16v-.064zm-357.888 64 129.472 165.76a32 32 0 0 1-50.432 39.36l-160.256-205.12H144l304 404.928 304-404.928z"
+        d: "M768 64a192 192 0 1 1-69.952 370.88L480 725.376V896h96a32 32 0 1 1 0 64H320a32 32 0 1 1 0-64h96V725.376L76.8 273.536a64 64 0 0 1-12.8-38.4v-10.688a32 32 0 0 1 32-32h71.808l-65.536-83.84a32 32 0 0 1 50.432-39.424l96.256 123.264h337.728A192.06 192.06 0 0 1 768 64M656.896 192.448H800a32 32 0 0 1 32 32v10.624a64 64 0 0 1-12.8 38.4l-80.448 107.2a128 128 0 1 0-81.92-188.16v-.064zm-357.888 64 129.472 165.76a32 32 0 0 1-50.432 39.36l-160.256-205.12H144l304 404.928 304-404.928z"
       })
     ]));
   }
 });
-var cold_drink_default = cold_drink_vue_vue_type_script_setup_true_lang_default;
-var collection_tag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var cold_drink_default = _sfc_main61;
+var _sfc_main62 = /* @__PURE__ */ defineComponent({
   name: "CollectionTag",
   __name: "collection-tag",
   setup(__props) {
@@ -28346,8 +28461,8 @@ var collection_tag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
     ]));
   }
 });
-var collection_tag_default = collection_tag_vue_vue_type_script_setup_true_lang_default;
-var collection_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var collection_tag_default = _sfc_main62;
+var _sfc_main63 = /* @__PURE__ */ defineComponent({
   name: "Collection",
   __name: "collection",
   setup(__props) {
@@ -28366,8 +28481,8 @@ var collection_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var collection_default = collection_vue_vue_type_script_setup_true_lang_default;
-var comment_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var collection_default = _sfc_main63;
+var _sfc_main64 = /* @__PURE__ */ defineComponent({
   name: "Comment",
   __name: "comment",
   setup(__props) {
@@ -28382,8 +28497,8 @@ var comment_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var comment_default = comment_vue_vue_type_script_setup_true_lang_default;
-var compass_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var comment_default = _sfc_main64;
+var _sfc_main65 = /* @__PURE__ */ defineComponent({
   name: "Compass",
   __name: "compass",
   setup(__props) {
@@ -28402,8 +28517,8 @@ var compass_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var compass_default = compass_vue_vue_type_script_setup_true_lang_default;
-var connection_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var compass_default = _sfc_main65;
+var _sfc_main66 = /* @__PURE__ */ defineComponent({
   name: "Connection",
   __name: "connection",
   setup(__props) {
@@ -28417,13 +28532,13 @@ var connection_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M384 640v-64h192a128 128 0 0 0 128-128V320a128 128 0 0 0-128-128H256a128 128 0 0 0-128 128v128a128 128 0 0 0 64 110.848v70.272A192.064 192.064 0 0 1 64 448V320a192 192 0 0 1 192-192h320a192 192 0 0 1 192 192v128a192 192 0 0 1-192 192z"
+        d: "M384 640v-64h192a128 128 0 0 0 128-128V320a128 128 0 0 0-128-128H256a128 128 0 0 0-128 128v128a128 128 0 0 0 64 110.848v70.272A192.06 192.06 0 0 1 64 448V320a192 192 0 0 1 192-192h320a192 192 0 0 1 192 192v128a192 192 0 0 1-192 192z"
       })
     ]));
   }
 });
-var connection_default = connection_vue_vue_type_script_setup_true_lang_default;
-var coordinate_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var connection_default = _sfc_main66;
+var _sfc_main67 = /* @__PURE__ */ defineComponent({
   name: "Coordinate",
   __name: "coordinate",
   setup(__props) {
@@ -28442,8 +28557,8 @@ var coordinate_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var coordinate_default = coordinate_vue_vue_type_script_setup_true_lang_default;
-var copy_document_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var coordinate_default = _sfc_main67;
+var _sfc_main68 = /* @__PURE__ */ defineComponent({
   name: "CopyDocument",
   __name: "copy-document",
   setup(__props) {
@@ -28462,8 +28577,8 @@ var copy_document_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var copy_document_default = copy_document_vue_vue_type_script_setup_true_lang_default;
-var cpu_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var copy_document_default = _sfc_main68;
+var _sfc_main69 = /* @__PURE__ */ defineComponent({
   name: "Cpu",
   __name: "cpu",
   setup(__props) {
@@ -28482,8 +28597,8 @@ var cpu_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     ]));
   }
 });
-var cpu_default = cpu_vue_vue_type_script_setup_true_lang_default;
-var credit_card_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var cpu_default = _sfc_main69;
+var _sfc_main70 = /* @__PURE__ */ defineComponent({
   name: "CreditCard",
   __name: "credit-card",
   setup(__props) {
@@ -28493,7 +28608,7 @@ var credit_card_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M896 324.096c0-42.368-2.496-55.296-9.536-68.48a52.352 52.352 0 0 0-22.144-22.08c-13.12-7.04-26.048-9.536-68.416-9.536H228.096c-42.368 0-55.296 2.496-68.48 9.536a52.352 52.352 0 0 0-22.08 22.144c-7.04 13.12-9.536 26.048-9.536 68.416v375.808c0 42.368 2.496 55.296 9.536 68.48a52.352 52.352 0 0 0 22.144 22.08c13.12 7.04 26.048 9.536 68.416 9.536h567.808c42.368 0 55.296-2.496 68.48-9.536a52.352 52.352 0 0 0 22.08-22.144c7.04-13.12 9.536-26.048 9.536-68.416zm64 0v375.808c0 57.088-5.952 77.76-17.088 98.56-11.136 20.928-27.52 37.312-48.384 48.448-20.864 11.136-41.6 17.088-98.56 17.088H228.032c-57.088 0-77.76-5.952-98.56-17.088a116.288 116.288 0 0 1-48.448-48.384c-11.136-20.864-17.088-41.6-17.088-98.56V324.032c0-57.088 5.952-77.76 17.088-98.56 11.136-20.928 27.52-37.312 48.384-48.448 20.864-11.136 41.6-17.088 98.56-17.088H795.84c57.088 0 77.76 5.952 98.56 17.088 20.928 11.136 37.312 27.52 48.448 48.384 11.136 20.864 17.088 41.6 17.088 98.56z"
+        d: "M896 324.096c0-42.368-2.496-55.296-9.536-68.48a52.35 52.35 0 0 0-22.144-22.08c-13.12-7.04-26.048-9.536-68.416-9.536H228.096c-42.368 0-55.296 2.496-68.48 9.536a52.35 52.35 0 0 0-22.08 22.144c-7.04 13.12-9.536 26.048-9.536 68.416v375.808c0 42.368 2.496 55.296 9.536 68.48a52.35 52.35 0 0 0 22.144 22.08c13.12 7.04 26.048 9.536 68.416 9.536h567.808c42.368 0 55.296-2.496 68.48-9.536a52.35 52.35 0 0 0 22.08-22.144c7.04-13.12 9.536-26.048 9.536-68.416zm64 0v375.808c0 57.088-5.952 77.76-17.088 98.56-11.136 20.928-27.52 37.312-48.384 48.448S852.928 864 795.968 864H228.032c-57.088 0-77.76-5.952-98.56-17.088a116.3 116.3 0 0 1-48.448-48.384c-11.136-20.864-17.088-41.6-17.088-98.56V324.032c0-57.088 5.952-77.76 17.088-98.56 11.136-20.928 27.52-37.312 48.384-48.448s41.6-17.088 98.56-17.088H795.84c57.088 0 77.76 5.952 98.56 17.088 20.928 11.136 37.312 27.52 48.448 48.384s17.088 41.6 17.088 98.56z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -28502,8 +28617,8 @@ var credit_card_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var credit_card_default = credit_card_vue_vue_type_script_setup_true_lang_default;
-var crop_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var credit_card_default = _sfc_main70;
+var _sfc_main71 = /* @__PURE__ */ defineComponent({
   name: "Crop",
   __name: "crop",
   setup(__props) {
@@ -28522,8 +28637,8 @@ var crop_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var crop_default = crop_vue_vue_type_script_setup_true_lang_default;
-var d_arrow_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var crop_default = _sfc_main71;
+var _sfc_main72 = /* @__PURE__ */ defineComponent({
   name: "DArrowLeft",
   __name: "d-arrow-left",
   setup(__props) {
@@ -28533,13 +28648,13 @@ var d_arrow_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M529.408 149.376a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L259.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L197.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224zm256 0a29.12 29.12 0 0 1 41.728 0 30.592 30.592 0 0 1 0 42.688L515.264 511.936l311.872 319.936a30.592 30.592 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L453.76 534.272a32 32 0 0 1 0-44.672l331.648-340.224z"
+        d: "M529.408 149.376a29.12 29.12 0 0 1 41.728 0 30.59 30.59 0 0 1 0 42.688L259.264 511.936l311.872 319.936a30.59 30.59 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L197.76 534.272a32 32 0 0 1 0-44.672zm256 0a29.12 29.12 0 0 1 41.728 0 30.59 30.59 0 0 1 0 42.688L515.264 511.936l311.872 319.936a30.59 30.59 0 0 1-.512 43.264 29.12 29.12 0 0 1-41.216-.512L453.76 534.272a32 32 0 0 1 0-44.672z"
       })
     ]));
   }
 });
-var d_arrow_left_default = d_arrow_left_vue_vue_type_script_setup_true_lang_default;
-var d_arrow_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var d_arrow_left_default = _sfc_main72;
+var _sfc_main73 = /* @__PURE__ */ defineComponent({
   name: "DArrowRight",
   __name: "d-arrow-right",
   setup(__props) {
@@ -28549,13 +28664,13 @@ var d_arrow_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M452.864 149.312a29.12 29.12 0 0 1 41.728.064L826.24 489.664a32 32 0 0 1 0 44.672L494.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L764.736 512 452.864 192a30.592 30.592 0 0 1 0-42.688m-256 0a29.12 29.12 0 0 1 41.728.064L570.24 489.664a32 32 0 0 1 0 44.672L238.592 874.624a29.12 29.12 0 0 1-41.728 0 30.592 30.592 0 0 1 0-42.752L508.736 512 196.864 192a30.592 30.592 0 0 1 0-42.688z"
+        d: "M452.864 149.312a29.12 29.12 0 0 1 41.728.064L826.24 489.664a32 32 0 0 1 0 44.672L494.592 874.624a29.12 29.12 0 0 1-41.728 0 30.59 30.59 0 0 1 0-42.752L764.736 512 452.864 192a30.59 30.59 0 0 1 0-42.688m-256 0a29.12 29.12 0 0 1 41.728.064L570.24 489.664a32 32 0 0 1 0 44.672L238.592 874.624a29.12 29.12 0 0 1-41.728 0 30.59 30.59 0 0 1 0-42.752L508.736 512 196.864 192a30.59 30.59 0 0 1 0-42.688"
       })
     ]));
   }
 });
-var d_arrow_right_default = d_arrow_right_vue_vue_type_script_setup_true_lang_default;
-var d_caret_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var d_arrow_right_default = _sfc_main73;
+var _sfc_main74 = /* @__PURE__ */ defineComponent({
   name: "DCaret",
   __name: "d-caret",
   setup(__props) {
@@ -28570,8 +28685,8 @@ var d_caret_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var d_caret_default = d_caret_vue_vue_type_script_setup_true_lang_default;
-var data_analysis_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var d_caret_default = _sfc_main74;
+var _sfc_main75 = /* @__PURE__ */ defineComponent({
   name: "DataAnalysis",
   __name: "data-analysis",
   setup(__props) {
@@ -28586,8 +28701,8 @@ var data_analysis_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var data_analysis_default = data_analysis_vue_vue_type_script_setup_true_lang_default;
-var data_board_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var data_analysis_default = _sfc_main75;
+var _sfc_main76 = /* @__PURE__ */ defineComponent({
   name: "DataBoard",
   __name: "data-board",
   setup(__props) {
@@ -28610,8 +28725,8 @@ var data_board_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var data_board_default = data_board_vue_vue_type_script_setup_true_lang_default;
-var data_line_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var data_board_default = _sfc_main76;
+var _sfc_main77 = /* @__PURE__ */ defineComponent({
   name: "DataLine",
   __name: "data-line",
   setup(__props) {
@@ -28626,8 +28741,8 @@ var data_line_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var data_line_default = data_line_vue_vue_type_script_setup_true_lang_default;
-var delete_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var data_line_default = _sfc_main77;
+var _sfc_main78 = /* @__PURE__ */ defineComponent({
   name: "DeleteFilled",
   __name: "delete-filled",
   setup(__props) {
@@ -28642,8 +28757,8 @@ var delete_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var delete_filled_default = delete_filled_vue_vue_type_script_setup_true_lang_default;
-var delete_location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var delete_filled_default = _sfc_main78;
+var _sfc_main79 = /* @__PURE__ */ defineComponent({
   name: "DeleteLocation",
   __name: "delete-location",
   setup(__props) {
@@ -28666,8 +28781,8 @@ var delete_location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     ]));
   }
 });
-var delete_location_default = delete_location_vue_vue_type_script_setup_true_lang_default;
-var delete_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var delete_location_default = _sfc_main79;
+var _sfc_main80 = /* @__PURE__ */ defineComponent({
   name: "Delete",
   __name: "delete",
   setup(__props) {
@@ -28682,8 +28797,8 @@ var delete_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var delete_default = delete_vue_vue_type_script_setup_true_lang_default;
-var dessert_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var delete_default = _sfc_main80;
+var _sfc_main81 = /* @__PURE__ */ defineComponent({
   name: "Dessert",
   __name: "dessert",
   setup(__props) {
@@ -28693,13 +28808,13 @@ var dessert_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M128 416v-48a144 144 0 0 1 168.64-141.888 224.128 224.128 0 0 1 430.72 0A144 144 0 0 1 896 368v48a384 384 0 0 1-352 382.72V896h-64v-97.28A384 384 0 0 1 128 416m287.104-32.064h193.792a143.808 143.808 0 0 1 58.88-132.736 160.064 160.064 0 0 0-311.552 0 143.808 143.808 0 0 1 58.88 132.8zm-72.896 0a72 72 0 1 0-140.48 0h140.48m339.584 0h140.416a72 72 0 1 0-140.48 0zM512 736a320 320 0 0 0 318.4-288.064H193.6A320 320 0 0 0 512 736M384 896.064h256a32 32 0 1 1 0 64H384a32 32 0 1 1 0-64"
+        d: "M128 416v-48a144 144 0 0 1 168.64-141.888 224.128 224.128 0 0 1 430.72 0A144 144 0 0 1 896 368v48a384 384 0 0 1-352 382.72V896h-64v-97.28A384 384 0 0 1 128 416m287.104-32.064h193.792a143.81 143.81 0 0 1 58.88-132.736 160.064 160.064 0 0 0-311.552 0 143.81 143.81 0 0 1 58.88 132.8zm-72.896 0a72 72 0 1 0-140.48 0zm339.584 0h140.416a72 72 0 1 0-140.48 0zM512 736a320 320 0 0 0 318.4-288.064H193.6A320 320 0 0 0 512 736M384 896.064h256a32 32 0 1 1 0 64H384a32 32 0 1 1 0-64"
       })
     ]));
   }
 });
-var dessert_default = dessert_vue_vue_type_script_setup_true_lang_default;
-var discount_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var dessert_default = _sfc_main81;
+var _sfc_main82 = /* @__PURE__ */ defineComponent({
   name: "Discount",
   __name: "discount",
   setup(__props) {
@@ -28718,8 +28833,8 @@ var discount_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var discount_default = discount_vue_vue_type_script_setup_true_lang_default;
-var dish_dot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var discount_default = _sfc_main82;
+var _sfc_main83 = /* @__PURE__ */ defineComponent({
   name: "DishDot",
   __name: "dish-dot",
   setup(__props) {
@@ -28729,13 +28844,13 @@ var dish_dot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m384.064 274.56.064-50.688A128 128 0 0 1 512.128 96c70.528 0 127.68 57.152 127.68 127.68v50.752A448.192 448.192 0 0 1 955.392 768H68.544A448.192 448.192 0 0 1 384 274.56zM96 832h832a32 32 0 1 1 0 64H96a32 32 0 1 1 0-64m32-128h768a384 384 0 1 0-768 0m447.808-448v-32.32a63.68 63.68 0 0 0-63.68-63.68 64 64 0 0 0-64 63.936V256z"
+        d: "m384.064 274.56.064-50.688A128 128 0 0 1 512.128 96c70.528 0 127.68 57.152 127.68 127.68v50.752A448.19 448.19 0 0 1 955.392 768H68.544A448.19 448.19 0 0 1 384 274.56zM96 832h832a32 32 0 1 1 0 64H96a32 32 0 1 1 0-64m32-128h768a384 384 0 1 0-768 0m447.808-448v-32.32a63.68 63.68 0 0 0-63.68-63.68 64 64 0 0 0-64 63.936V256z"
       })
     ]));
   }
 });
-var dish_dot_default = dish_dot_vue_vue_type_script_setup_true_lang_default;
-var dish_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var dish_dot_default = _sfc_main83;
+var _sfc_main84 = /* @__PURE__ */ defineComponent({
   name: "Dish",
   __name: "dish",
   setup(__props) {
@@ -28750,8 +28865,8 @@ var dish_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var dish_default = dish_vue_vue_type_script_setup_true_lang_default;
-var document_add_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var dish_default = _sfc_main84;
+var _sfc_main85 = /* @__PURE__ */ defineComponent({
   name: "DocumentAdd",
   __name: "document-add",
   setup(__props) {
@@ -28766,8 +28881,8 @@ var document_add_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var document_add_default = document_add_vue_vue_type_script_setup_true_lang_default;
-var document_checked_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var document_add_default = _sfc_main85;
+var _sfc_main86 = /* @__PURE__ */ defineComponent({
   name: "DocumentChecked",
   __name: "document-checked",
   setup(__props) {
@@ -28782,8 +28897,8 @@ var document_checked_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     ]));
   }
 });
-var document_checked_default = document_checked_vue_vue_type_script_setup_true_lang_default;
-var document_copy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var document_checked_default = _sfc_main86;
+var _sfc_main87 = /* @__PURE__ */ defineComponent({
   name: "DocumentCopy",
   __name: "document-copy",
   setup(__props) {
@@ -28798,8 +28913,8 @@ var document_copy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var document_copy_default = document_copy_vue_vue_type_script_setup_true_lang_default;
-var document_delete_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var document_copy_default = _sfc_main87;
+var _sfc_main88 = /* @__PURE__ */ defineComponent({
   name: "DocumentDelete",
   __name: "document-delete",
   setup(__props) {
@@ -28809,13 +28924,13 @@ var document_delete_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M805.504 320 640 154.496V320zM832 384H576V128H192v768h640zM160 64h480l256 256v608a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V96a32 32 0 0 1 32-32m308.992 546.304-90.496-90.624 45.248-45.248 90.56 90.496 90.496-90.432 45.248 45.248-90.496 90.56 90.496 90.496-45.248 45.248-90.496-90.496-90.56 90.496-45.248-45.248 90.496-90.496z"
+        d: "M805.504 320 640 154.496V320zM832 384H576V128H192v768h640zM160 64h480l256 256v608a32 32 0 0 1-32 32H160a32 32 0 0 1-32-32V96a32 32 0 0 1 32-32m308.992 546.304-90.496-90.624 45.248-45.248 90.56 90.496 90.496-90.432 45.248 45.248-90.496 90.56 90.496 90.496-45.248 45.248-90.496-90.496-90.56 90.496-45.248-45.248z"
       })
     ]));
   }
 });
-var document_delete_default = document_delete_vue_vue_type_script_setup_true_lang_default;
-var document_remove_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var document_delete_default = _sfc_main88;
+var _sfc_main89 = /* @__PURE__ */ defineComponent({
   name: "DocumentRemove",
   __name: "document-remove",
   setup(__props) {
@@ -28830,8 +28945,8 @@ var document_remove_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     ]));
   }
 });
-var document_remove_default = document_remove_vue_vue_type_script_setup_true_lang_default;
-var document_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var document_remove_default = _sfc_main89;
+var _sfc_main90 = /* @__PURE__ */ defineComponent({
   name: "Document",
   __name: "document",
   setup(__props) {
@@ -28846,8 +28961,8 @@ var document_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var document_default = document_vue_vue_type_script_setup_true_lang_default;
-var download_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var document_default = _sfc_main90;
+var _sfc_main91 = /* @__PURE__ */ defineComponent({
   name: "Download",
   __name: "download",
   setup(__props) {
@@ -28862,8 +28977,8 @@ var download_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var download_default = download_vue_vue_type_script_setup_true_lang_default;
-var drizzling_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var download_default = _sfc_main91;
+var _sfc_main92 = /* @__PURE__ */ defineComponent({
   name: "Drizzling",
   __name: "drizzling",
   setup(__props) {
@@ -28873,13 +28988,13 @@ var drizzling_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m739.328 291.328-35.2-6.592-12.8-33.408a192.064 192.064 0 0 0-365.952 23.232l-9.92 40.896-41.472 7.04a176.32 176.32 0 0 0-146.24 173.568c0 97.28 78.72 175.936 175.808 175.936h400a192 192 0 0 0 35.776-380.672zM959.552 480a256 256 0 0 1-256 256h-400A239.808 239.808 0 0 1 63.744 496.192a240.32 240.32 0 0 1 199.488-236.8 256.128 256.128 0 0 1 487.872-30.976A256.064 256.064 0 0 1 959.552 480M288 800h64v64h-64zm192 0h64v64h-64zm-96 96h64v64h-64zm192 0h64v64h-64zm96-96h64v64h-64z"
+        d: "m739.328 291.328-35.2-6.592-12.8-33.408a192.064 192.064 0 0 0-365.952 23.232l-9.92 40.896-41.472 7.04a176.32 176.32 0 0 0-146.24 173.568c0 97.28 78.72 175.936 175.808 175.936h400a192 192 0 0 0 35.776-380.672M959.552 480a256 256 0 0 1-256 256h-400A239.81 239.81 0 0 1 63.744 496.192a240.32 240.32 0 0 1 199.488-236.8 256.128 256.128 0 0 1 487.872-30.976A256.064 256.064 0 0 1 959.552 480M288 800h64v64h-64zm192 0h64v64h-64zm-96 96h64v64h-64zm192 0h64v64h-64zm96-96h64v64h-64z"
       })
     ]));
   }
 });
-var drizzling_default = drizzling_vue_vue_type_script_setup_true_lang_default;
-var edit_pen_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var drizzling_default = _sfc_main92;
+var _sfc_main93 = /* @__PURE__ */ defineComponent({
   name: "EditPen",
   __name: "edit-pen",
   setup(__props) {
@@ -28889,13 +29004,13 @@ var edit_pen_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m199.04 672.64 193.984 112 224-387.968-193.92-112-224 388.032zm-23.872 60.16 32.896 148.288 144.896-45.696zM455.04 229.248l193.92 112 56.704-98.112-193.984-112-56.64 98.112zM104.32 708.8l384-665.024 304.768 175.936L409.152 884.8h.064l-248.448 78.336zm384 254.272v-64h448v64h-448z"
+        d: "m199.04 672.64 193.984 112 224-387.968-193.92-112-224 388.032zm-23.872 60.16 32.896 148.288 144.896-45.696zM455.04 229.248l193.92 112 56.704-98.112-193.984-112zM104.32 708.8l384-665.024 304.768 175.936L409.152 884.8h.064l-248.448 78.336zm384 254.272v-64h448v64z"
       })
     ]));
   }
 });
-var edit_pen_default = edit_pen_vue_vue_type_script_setup_true_lang_default;
-var edit_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var edit_pen_default = _sfc_main93;
+var _sfc_main94 = /* @__PURE__ */ defineComponent({
   name: "Edit",
   __name: "edit",
   setup(__props) {
@@ -28914,8 +29029,8 @@ var edit_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var edit_default = edit_vue_vue_type_script_setup_true_lang_default;
-var eleme_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var edit_default = _sfc_main94;
+var _sfc_main95 = /* @__PURE__ */ defineComponent({
   name: "ElemeFilled",
   __name: "eleme-filled",
   setup(__props) {
@@ -28925,13 +29040,13 @@ var eleme_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M176 64h672c61.824 0 112 50.176 112 112v672a112 112 0 0 1-112 112H176A112 112 0 0 1 64 848V176c0-61.824 50.176-112 112-112m150.528 173.568c-152.896 99.968-196.544 304.064-97.408 456.96a330.688 330.688 0 0 0 456.96 96.64c9.216-5.888 17.6-11.776 25.152-18.56a18.24 18.24 0 0 0 4.224-24.32L700.352 724.8a47.552 47.552 0 0 0-65.536-14.272A234.56 234.56 0 0 1 310.592 641.6C240 533.248 271.104 387.968 379.456 316.48a234.304 234.304 0 0 1 276.352 15.168c1.664.832 2.56 2.56 3.392 4.224 5.888 8.384 3.328 19.328-5.12 25.216L456.832 489.6a47.552 47.552 0 0 0-14.336 65.472l16 24.384c5.888 8.384 16.768 10.88 25.216 5.056l308.224-199.936a19.584 19.584 0 0 0 6.72-23.488v-.896c-4.992-9.216-10.048-17.6-15.104-26.88-99.968-151.168-304.064-194.88-456.96-95.744zM786.88 504.704l-62.208 40.32c-8.32 5.888-10.88 16.768-4.992 25.216L760 632.32c5.888 8.448 16.768 11.008 25.152 5.12l31.104-20.16a55.36 55.36 0 0 0 16-76.48l-20.224-31.04a19.52 19.52 0 0 0-25.152-5.12z"
+        d: "M176 64h672c61.824 0 112 50.176 112 112v672a112 112 0 0 1-112 112H176A112 112 0 0 1 64 848V176c0-61.824 50.176-112 112-112m150.528 173.568c-152.896 99.968-196.544 304.064-97.408 456.96a330.69 330.69 0 0 0 456.96 96.64c9.216-5.888 17.6-11.776 25.152-18.56a18.24 18.24 0 0 0 4.224-24.32L700.352 724.8a47.55 47.55 0 0 0-65.536-14.272A234.56 234.56 0 0 1 310.592 641.6C240 533.248 271.104 387.968 379.456 316.48a234.3 234.3 0 0 1 276.352 15.168c1.664.832 2.56 2.56 3.392 4.224 5.888 8.384 3.328 19.328-5.12 25.216L456.832 489.6a47.55 47.55 0 0 0-14.336 65.472l16 24.384c5.888 8.384 16.768 10.88 25.216 5.056l308.224-199.936a19.584 19.584 0 0 0 6.72-23.488v-.896c-4.992-9.216-10.048-17.6-15.104-26.88-99.968-151.168-304.064-194.88-456.96-95.744zM786.88 504.704l-62.208 40.32c-8.32 5.888-10.88 16.768-4.992 25.216L760 632.32c5.888 8.448 16.768 11.008 25.152 5.12l31.104-20.16a55.36 55.36 0 0 0 16-76.48l-20.224-31.04a19.52 19.52 0 0 0-25.152-5.12z"
       })
     ]));
   }
 });
-var eleme_filled_default = eleme_filled_vue_vue_type_script_setup_true_lang_default;
-var eleme_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var eleme_filled_default = _sfc_main95;
+var _sfc_main96 = /* @__PURE__ */ defineComponent({
   name: "Eleme",
   __name: "eleme",
   setup(__props) {
@@ -28941,13 +29056,13 @@ var eleme_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M300.032 188.8c174.72-113.28 408-63.36 522.24 109.44 5.76 10.56 11.52 20.16 17.28 30.72v.96a22.4 22.4 0 0 1-7.68 26.88l-352.32 228.48c-9.6 6.72-22.08 3.84-28.8-5.76l-18.24-27.84a54.336 54.336 0 0 1 16.32-74.88l225.6-146.88c9.6-6.72 12.48-19.2 5.76-28.8-.96-1.92-1.92-3.84-3.84-4.8a267.84 267.84 0 0 0-315.84-17.28c-123.84 81.6-159.36 247.68-78.72 371.52a268.096 268.096 0 0 0 370.56 78.72 54.336 54.336 0 0 1 74.88 16.32l17.28 26.88c5.76 9.6 3.84 21.12-4.8 27.84-8.64 7.68-18.24 14.4-28.8 21.12a377.92 377.92 0 0 1-522.24-110.4c-113.28-174.72-63.36-408 111.36-522.24zm526.08 305.28a22.336 22.336 0 0 1 28.8 5.76l23.04 35.52a63.232 63.232 0 0 1-18.24 87.36l-35.52 23.04c-9.6 6.72-22.08 3.84-28.8-5.76l-46.08-71.04c-6.72-9.6-3.84-22.08 5.76-28.8l71.04-46.08z"
+        d: "M300.032 188.8c174.72-113.28 408-63.36 522.24 109.44 5.76 10.56 11.52 20.16 17.28 30.72v.96a22.4 22.4 0 0 1-7.68 26.88l-352.32 228.48c-9.6 6.72-22.08 3.84-28.8-5.76l-18.24-27.84a54.336 54.336 0 0 1 16.32-74.88l225.6-146.88c9.6-6.72 12.48-19.2 5.76-28.8-.96-1.92-1.92-3.84-3.84-4.8a267.84 267.84 0 0 0-315.84-17.28c-123.84 81.6-159.36 247.68-78.72 371.52a268.096 268.096 0 0 0 370.56 78.72 54.336 54.336 0 0 1 74.88 16.32l17.28 26.88c5.76 9.6 3.84 21.12-4.8 27.84-8.64 7.68-18.24 14.4-28.8 21.12a377.92 377.92 0 0 1-522.24-110.4c-113.28-174.72-63.36-408 111.36-522.24m526.08 305.28a22.336 22.336 0 0 1 28.8 5.76l23.04 35.52a63.23 63.23 0 0 1-18.24 87.36l-35.52 23.04c-9.6 6.72-22.08 3.84-28.8-5.76l-46.08-71.04c-6.72-9.6-3.84-22.08 5.76-28.8z"
       })
     ]));
   }
 });
-var eleme_default = eleme_vue_vue_type_script_setup_true_lang_default;
-var element_plus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var eleme_default = _sfc_main96;
+var _sfc_main97 = /* @__PURE__ */ defineComponent({
   name: "ElementPlus",
   __name: "element-plus",
   setup(__props) {
@@ -28957,13 +29072,13 @@ var element_plus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M839.7 734.7c0 33.3-17.9 41-17.9 41S519.7 949.8 499.2 960c-10.2 5.1-20.5 5.1-30.7 0 0 0-314.9-184.3-325.1-192-5.1-5.1-10.2-12.8-12.8-20.5V368.6c0-17.9 20.5-28.2 20.5-28.2L466 158.6c12.8-5.1 25.6-5.1 38.4 0 0 0 279 161.3 309.8 179.2 17.9 7.7 28.2 25.6 25.6 46.1-.1-5-.1 317.5-.1 350.8M714.2 371.2c-64-35.8-217.6-125.4-217.6-125.4-7.7-5.1-20.5-5.1-30.7 0L217.6 389.1s-17.9 10.2-17.9 23v297c0 5.1 5.1 12.8 7.7 17.9 7.7 5.1 256 148.5 256 148.5 7.7 5.1 17.9 5.1 25.6 0 15.4-7.7 250.9-145.9 250.9-145.9s12.8-5.1 12.8-30.7v-74.2l-276.5 169v-64c0-17.9 7.7-30.7 20.5-46.1L745 535c5.1-7.7 10.2-20.5 10.2-30.7v-66.6l-279 169v-69.1c0-15.4 5.1-30.7 17.9-38.4l220.1-128zM919 135.7c0-5.1-5.1-7.7-7.7-7.7h-58.9V66.6c0-5.1-5.1-5.1-10.2-5.1l-30.7 5.1c-5.1 0-5.1 2.6-5.1 5.1V128h-56.3c-5.1 0-5.1 5.1-7.7 5.1v38.4h69.1v64c0 5.1 5.1 5.1 10.2 5.1l30.7-5.1c5.1 0 5.1-2.6 5.1-5.1v-56.3h64l-2.5-38.4z"
+        d: "M839.7 734.7c0 33.3-17.9 41-17.9 41S519.7 949.8 499.2 960c-10.2 5.1-20.5 5.1-30.7 0 0 0-314.9-184.3-325.1-192-5.1-5.1-10.2-12.8-12.8-20.5V368.6c0-17.9 20.5-28.2 20.5-28.2L466 158.6q19.2-7.65 38.4 0s279 161.3 309.8 179.2c17.9 7.7 28.2 25.6 25.6 46.1-.1-5-.1 317.5-.1 350.8M714.2 371.2c-64-35.8-217.6-125.4-217.6-125.4-7.7-5.1-20.5-5.1-30.7 0L217.6 389.1s-17.9 10.2-17.9 23v297c0 5.1 5.1 12.8 7.7 17.9 7.7 5.1 256 148.5 256 148.5 7.7 5.1 17.9 5.1 25.6 0 15.4-7.7 250.9-145.9 250.9-145.9s12.8-5.1 12.8-30.7v-74.2l-276.5 169v-64c0-17.9 7.7-30.7 20.5-46.1L745 535c5.1-7.7 10.2-20.5 10.2-30.7v-66.6l-279 169v-69.1c0-15.4 5.1-30.7 17.9-38.4zM919 135.7c0-5.1-5.1-7.7-7.7-7.7h-58.9V66.6c0-5.1-5.1-5.1-10.2-5.1l-30.7 5.1c-5.1 0-5.1 2.6-5.1 5.1V128h-56.3c-5.1 0-5.1 5.1-7.7 5.1v38.4h69.1v64c0 5.1 5.1 5.1 10.2 5.1l30.7-5.1c5.1 0 5.1-2.6 5.1-5.1v-56.3h64z"
       })
     ]));
   }
 });
-var element_plus_default = element_plus_vue_vue_type_script_setup_true_lang_default;
-var expand_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var element_plus_default = _sfc_main97;
+var _sfc_main98 = /* @__PURE__ */ defineComponent({
   name: "Expand",
   __name: "expand",
   setup(__props) {
@@ -28978,8 +29093,8 @@ var expand_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var expand_default = expand_vue_vue_type_script_setup_true_lang_default;
-var failed_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var expand_default = _sfc_main98;
+var _sfc_main99 = /* @__PURE__ */ defineComponent({
   name: "Failed",
   __name: "failed",
   setup(__props) {
@@ -28994,8 +29109,8 @@ var failed_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var failed_default = failed_vue_vue_type_script_setup_true_lang_default;
-var female_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var failed_default = _sfc_main99;
+var _sfc_main100 = /* @__PURE__ */ defineComponent({
   name: "Female",
   __name: "female",
   setup(__props) {
@@ -29018,8 +29133,8 @@ var female_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var female_default = female_vue_vue_type_script_setup_true_lang_default;
-var files_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var female_default = _sfc_main100;
+var _sfc_main101 = /* @__PURE__ */ defineComponent({
   name: "Files",
   __name: "files",
   setup(__props) {
@@ -29034,8 +29149,8 @@ var files_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var files_default = files_vue_vue_type_script_setup_true_lang_default;
-var film_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var files_default = _sfc_main101;
+var _sfc_main102 = /* @__PURE__ */ defineComponent({
   name: "Film",
   __name: "film",
   setup(__props) {
@@ -29054,8 +29169,8 @@ var film_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var film_default = film_vue_vue_type_script_setup_true_lang_default;
-var filter_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var film_default = _sfc_main102;
+var _sfc_main103 = /* @__PURE__ */ defineComponent({
   name: "Filter",
   __name: "filter",
   setup(__props) {
@@ -29070,8 +29185,8 @@ var filter_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var filter_default = filter_vue_vue_type_script_setup_true_lang_default;
-var finished_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var filter_default = _sfc_main103;
+var _sfc_main104 = /* @__PURE__ */ defineComponent({
   name: "Finished",
   __name: "finished",
   setup(__props) {
@@ -29081,13 +29196,13 @@ var finished_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M280.768 753.728 691.456 167.04a32 32 0 1 1 52.416 36.672L314.24 817.472a32 32 0 0 1-45.44 7.296l-230.4-172.8a32 32 0 0 1 38.4-51.2l203.968 152.96zM736 448a32 32 0 1 1 0-64h192a32 32 0 1 1 0 64zM608 640a32 32 0 0 1 0-64h319.936a32 32 0 1 1 0 64zM480 832a32 32 0 1 1 0-64h447.936a32 32 0 1 1 0 64z"
+        d: "M280.768 753.728 691.456 167.04a32 32 0 1 1 52.416 36.672L314.24 817.472a32 32 0 0 1-45.44 7.296l-230.4-172.8a32 32 0 0 1 38.4-51.2zM736 448a32 32 0 1 1 0-64h192a32 32 0 1 1 0 64zM608 640a32 32 0 0 1 0-64h319.936a32 32 0 1 1 0 64zM480 832a32 32 0 1 1 0-64h447.936a32 32 0 1 1 0 64z"
       })
     ]));
   }
 });
-var finished_default = finished_vue_vue_type_script_setup_true_lang_default;
-var first_aid_kit_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var finished_default = _sfc_main104;
+var _sfc_main105 = /* @__PURE__ */ defineComponent({
   name: "FirstAidKit",
   __name: "first-aid-kit",
   setup(__props) {
@@ -29106,8 +29221,8 @@ var first_aid_kit_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var first_aid_kit_default = first_aid_kit_vue_vue_type_script_setup_true_lang_default;
-var flag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var first_aid_kit_default = _sfc_main105;
+var _sfc_main106 = /* @__PURE__ */ defineComponent({
   name: "Flag",
   __name: "flag",
   setup(__props) {
@@ -29122,8 +29237,8 @@ var flag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var flag_default = flag_vue_vue_type_script_setup_true_lang_default;
-var fold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var flag_default = _sfc_main106;
+var _sfc_main107 = /* @__PURE__ */ defineComponent({
   name: "Fold",
   __name: "fold",
   setup(__props) {
@@ -29138,8 +29253,8 @@ var fold_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var fold_default = fold_vue_vue_type_script_setup_true_lang_default;
-var folder_add_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var fold_default = _sfc_main107;
+var _sfc_main108 = /* @__PURE__ */ defineComponent({
   name: "FolderAdd",
   __name: "folder-add",
   setup(__props) {
@@ -29154,8 +29269,8 @@ var folder_add_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var folder_add_default = folder_add_vue_vue_type_script_setup_true_lang_default;
-var folder_checked_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var folder_add_default = _sfc_main108;
+var _sfc_main109 = /* @__PURE__ */ defineComponent({
   name: "FolderChecked",
   __name: "folder-checked",
   setup(__props) {
@@ -29170,8 +29285,8 @@ var folder_checked_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
     ]));
   }
 });
-var folder_checked_default = folder_checked_vue_vue_type_script_setup_true_lang_default;
-var folder_delete_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var folder_checked_default = _sfc_main109;
+var _sfc_main110 = /* @__PURE__ */ defineComponent({
   name: "FolderDelete",
   __name: "folder-delete",
   setup(__props) {
@@ -29186,8 +29301,8 @@ var folder_delete_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var folder_delete_default = folder_delete_vue_vue_type_script_setup_true_lang_default;
-var folder_opened_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var folder_delete_default = _sfc_main110;
+var _sfc_main111 = /* @__PURE__ */ defineComponent({
   name: "FolderOpened",
   __name: "folder-opened",
   setup(__props) {
@@ -29197,13 +29312,13 @@ var folder_opened_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M878.08 448H241.92l-96 384h636.16l96-384zM832 384v-64H485.76L357.504 192H128v448l57.92-231.744A32 32 0 0 1 216.96 384zm-24.96 512H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h287.872l128.384 128H864a32 32 0 0 1 32 32v96h23.04a32 32 0 0 1 31.04 39.744l-112 448A32 32 0 0 1 807.04 896"
+        d: "M878.08 448H241.92l-96 384h636.16zM832 384v-64H485.76L357.504 192H128v448l57.92-231.744A32 32 0 0 1 216.96 384zm-24.96 512H96a32 32 0 0 1-32-32V160a32 32 0 0 1 32-32h287.872l128.384 128H864a32 32 0 0 1 32 32v96h23.04a32 32 0 0 1 31.04 39.744l-112 448A32 32 0 0 1 807.04 896"
       })
     ]));
   }
 });
-var folder_opened_default = folder_opened_vue_vue_type_script_setup_true_lang_default;
-var folder_remove_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var folder_opened_default = _sfc_main111;
+var _sfc_main112 = /* @__PURE__ */ defineComponent({
   name: "FolderRemove",
   __name: "folder-remove",
   setup(__props) {
@@ -29218,8 +29333,8 @@ var folder_remove_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var folder_remove_default = folder_remove_vue_vue_type_script_setup_true_lang_default;
-var folder_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var folder_remove_default = _sfc_main112;
+var _sfc_main113 = /* @__PURE__ */ defineComponent({
   name: "Folder",
   __name: "folder",
   setup(__props) {
@@ -29234,8 +29349,8 @@ var folder_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var folder_default = folder_vue_vue_type_script_setup_true_lang_default;
-var food_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var folder_default = _sfc_main113;
+var _sfc_main114 = /* @__PURE__ */ defineComponent({
   name: "Food",
   __name: "food",
   setup(__props) {
@@ -29250,8 +29365,8 @@ var food_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var food_default = food_vue_vue_type_script_setup_true_lang_default;
-var football_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var food_default = _sfc_main114;
+var _sfc_main115 = /* @__PURE__ */ defineComponent({
   name: "Football",
   __name: "football",
   setup(__props) {
@@ -29265,13 +29380,13 @@ var football_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M186.816 268.288c16-16.384 31.616-31.744 46.976-46.08 17.472 30.656 39.808 58.112 65.984 81.28l-32.512 56.448a385.984 385.984 0 0 1-80.448-91.648zm653.696-5.312a385.92 385.92 0 0 1-83.776 96.96l-32.512-56.384a322.923 322.923 0 0 0 68.48-85.76c15.552 14.08 31.488 29.12 47.808 45.184zM465.984 445.248l11.136-63.104a323.584 323.584 0 0 0 69.76 0l11.136 63.104a387.968 387.968 0 0 1-92.032 0m-62.72-12.8A381.824 381.824 0 0 1 320 396.544l32-55.424a319.885 319.885 0 0 0 62.464 27.712l-11.2 63.488zm300.8-35.84a381.824 381.824 0 0 1-83.328 35.84l-11.2-63.552A319.885 319.885 0 0 0 672 341.184l32 55.424zm-520.768 364.8a385.92 385.92 0 0 1 83.968-97.28l32.512 56.32c-26.88 23.936-49.856 52.352-67.52 84.032-16-13.44-32.32-27.712-48.96-43.072zm657.536.128a1442.759 1442.759 0 0 1-49.024 43.072 321.408 321.408 0 0 0-67.584-84.16l32.512-56.32c33.216 27.456 61.696 60.352 84.096 97.408zM465.92 578.752a387.968 387.968 0 0 1 92.032 0l-11.136 63.104a323.584 323.584 0 0 0-69.76 0zm-62.72 12.8 11.2 63.552a319.885 319.885 0 0 0-62.464 27.712L320 627.392a381.824 381.824 0 0 1 83.264-35.84zm300.8 35.84-32 55.424a318.272 318.272 0 0 0-62.528-27.712l11.2-63.488c29.44 8.64 57.28 20.736 83.264 35.776z"
+        d: "M186.816 268.288c16-16.384 31.616-31.744 46.976-46.08 17.472 30.656 39.808 58.112 65.984 81.28l-32.512 56.448a386 386 0 0 1-80.448-91.648m653.696-5.312a385.9 385.9 0 0 1-83.776 96.96l-32.512-56.384a322.9 322.9 0 0 0 68.48-85.76c15.552 14.08 31.488 29.12 47.808 45.184M465.984 445.248l11.136-63.104a323.6 323.6 0 0 0 69.76 0l11.136 63.104a388 388 0 0 1-92.032 0m-62.72-12.8A381.8 381.8 0 0 1 320 396.544l32-55.424a320 320 0 0 0 62.464 27.712l-11.2 63.488zm300.8-35.84a381.8 381.8 0 0 1-83.328 35.84l-11.2-63.552A320 320 0 0 0 672 341.184l32 55.424zm-520.768 364.8a385.9 385.9 0 0 1 83.968-97.28l32.512 56.32c-26.88 23.936-49.856 52.352-67.52 84.032-16-13.44-32.32-27.712-48.96-43.072m657.536.128a1443 1443 0 0 1-49.024 43.072 321.4 321.4 0 0 0-67.584-84.16l32.512-56.32c33.216 27.456 61.696 60.352 84.096 97.408M465.92 578.752a388 388 0 0 1 92.032 0l-11.136 63.104a323.6 323.6 0 0 0-69.76 0zm-62.72 12.8 11.2 63.552a320 320 0 0 0-62.464 27.712L320 627.392a381.8 381.8 0 0 1 83.264-35.84zm300.8 35.84-32 55.424a318.3 318.3 0 0 0-62.528-27.712l11.2-63.488c29.44 8.64 57.28 20.736 83.264 35.776z"
       })
     ]));
   }
 });
-var football_default = football_vue_vue_type_script_setup_true_lang_default;
-var fork_spoon_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var football_default = _sfc_main115;
+var _sfc_main116 = /* @__PURE__ */ defineComponent({
   name: "ForkSpoon",
   __name: "fork-spoon",
   setup(__props) {
@@ -29281,13 +29396,13 @@ var fork_spoon_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M256 410.304V96a32 32 0 0 1 64 0v314.304a96 96 0 0 0 64-90.56V96a32 32 0 0 1 64 0v223.744a160 160 0 0 1-128 156.8V928a32 32 0 1 1-64 0V476.544a160 160 0 0 1-128-156.8V96a32 32 0 0 1 64 0v223.744a96 96 0 0 0 64 90.56zM672 572.48C581.184 552.128 512 446.848 512 320c0-141.44 85.952-256 192-256s192 114.56 192 256c0 126.848-69.184 232.128-160 252.48V928a32 32 0 1 1-64 0zM704 512c66.048 0 128-82.56 128-192s-61.952-192-128-192-128 82.56-128 192 61.952 192 128 192"
+        d: "M256 410.304V96a32 32 0 0 1 64 0v314.304a96 96 0 0 0 64-90.56V96a32 32 0 0 1 64 0v223.744a160 160 0 0 1-128 156.8V928a32 32 0 1 1-64 0V476.544a160 160 0 0 1-128-156.8V96a32 32 0 0 1 64 0v223.744a96 96 0 0 0 64 90.56M672 572.48C581.184 552.128 512 446.848 512 320c0-141.44 85.952-256 192-256s192 114.56 192 256c0 126.848-69.184 232.128-160 252.48V928a32 32 0 1 1-64 0zM704 512c66.048 0 128-82.56 128-192s-61.952-192-128-192-128 82.56-128 192 61.952 192 128 192"
       })
     ]));
   }
 });
-var fork_spoon_default = fork_spoon_vue_vue_type_script_setup_true_lang_default;
-var fries_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var fork_spoon_default = _sfc_main116;
+var _sfc_main117 = /* @__PURE__ */ defineComponent({
   name: "Fries",
   __name: "fries",
   setup(__props) {
@@ -29297,13 +29412,13 @@ var fries_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M608 224v-64a32 32 0 0 0-64 0v336h26.88A64 64 0 0 0 608 484.096zm101.12 160A64 64 0 0 0 672 395.904V384h64V224a32 32 0 1 0-64 0v160zm74.88 0a92.928 92.928 0 0 1 91.328 110.08l-60.672 323.584A96 96 0 0 1 720.32 896H303.68a96 96 0 0 1-94.336-78.336L148.672 494.08A92.928 92.928 0 0 1 240 384h-16V224a96 96 0 0 1 188.608-25.28A95.744 95.744 0 0 1 480 197.44V160a96 96 0 0 1 188.608-25.28A96 96 0 0 1 800 224v160zM670.784 512a128 128 0 0 1-99.904 48H453.12a128 128 0 0 1-99.84-48H352v-1.536a128.128 128.128 0 0 1-9.984-14.976L314.88 448H240a28.928 28.928 0 0 0-28.48 34.304L241.088 640h541.824l29.568-157.696A28.928 28.928 0 0 0 784 448h-74.88l-27.136 47.488A132.405 132.405 0 0 1 672 510.464V512zM480 288a32 32 0 0 0-64 0v196.096A64 64 0 0 0 453.12 496H480zm-128 96V224a32 32 0 0 0-64 0v160zh-37.12A64 64 0 0 1 352 395.904zm-98.88 320 19.072 101.888A32 32 0 0 0 303.68 832h416.64a32 32 0 0 0 31.488-26.112L770.88 704z"
+        d: "M608 224v-64a32 32 0 0 0-64 0v336h26.88A64 64 0 0 0 608 484.096zm101.12 160A64 64 0 0 0 672 395.904V384h64V224a32 32 0 1 0-64 0v160zm74.88 0a92.928 92.928 0 0 1 91.328 110.08l-60.672 323.584A96 96 0 0 1 720.32 896H303.68a96 96 0 0 1-94.336-78.336L148.672 494.08A92.928 92.928 0 0 1 240 384h-16V224a96 96 0 0 1 188.608-25.28A95.74 95.74 0 0 1 480 197.44V160a96 96 0 0 1 188.608-25.28A96 96 0 0 1 800 224v160zM670.784 512a128 128 0 0 1-99.904 48H453.12a128 128 0 0 1-99.84-48H352v-1.536a128 128 0 0 1-9.984-14.976L314.88 448H240a28.928 28.928 0 0 0-28.48 34.304L241.088 640h541.824l29.568-157.696A28.928 28.928 0 0 0 784 448h-74.88l-27.136 47.488A132 132 0 0 1 672 510.464V512zM480 288a32 32 0 0 0-64 0v196.096A64 64 0 0 0 453.12 496H480zm-128 96V224a32 32 0 0 0-64 0v160zh-37.12A64 64 0 0 1 352 395.904zm-98.88 320 19.072 101.888A32 32 0 0 0 303.68 832h416.64a32 32 0 0 0 31.488-26.112L770.88 704z"
       })
     ]));
   }
 });
-var fries_default = fries_vue_vue_type_script_setup_true_lang_default;
-var full_screen_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var fries_default = _sfc_main117;
+var _sfc_main118 = /* @__PURE__ */ defineComponent({
   name: "FullScreen",
   __name: "full-screen",
   setup(__props) {
@@ -29313,13 +29428,13 @@ var full_screen_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m160 96.064 192 .192a32 32 0 0 1 0 64l-192-.192V352a32 32 0 0 1-64 0V96h64zm0 831.872V928H96V672a32 32 0 1 1 64 0v191.936l192-.192a32 32 0 1 1 0 64zM864 96.064V96h64v256a32 32 0 1 1-64 0V160.064l-192 .192a32 32 0 1 1 0-64l192-.192zm0 831.872-192-.192a32 32 0 0 1 0-64l192 .192V672a32 32 0 1 1 64 0v256h-64z"
+        d: "m160 96.064 192 .192a32 32 0 0 1 0 64l-192-.192V352a32 32 0 0 1-64 0V96h64zm0 831.872V928H96V672a32 32 0 1 1 64 0v191.936l192-.192a32 32 0 1 1 0 64zM864 96.064V96h64v256a32 32 0 1 1-64 0V160.064l-192 .192a32 32 0 1 1 0-64zm0 831.872-192-.192a32 32 0 0 1 0-64l192 .192V672a32 32 0 1 1 64 0v256h-64z"
       })
     ]));
   }
 });
-var full_screen_default = full_screen_vue_vue_type_script_setup_true_lang_default;
-var goblet_full_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var full_screen_default = _sfc_main118;
+var _sfc_main119 = /* @__PURE__ */ defineComponent({
   name: "GobletFull",
   __name: "goblet-full",
   setup(__props) {
@@ -29329,13 +29444,13 @@ var goblet_full_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M256 320h512c0-78.592-12.608-142.4-36.928-192h-434.24C269.504 192.384 256 256.256 256 320m503.936 64H264.064a256.128 256.128 0 0 0 495.872 0zM544 638.4V896h96a32 32 0 1 1 0 64H384a32 32 0 1 1 0-64h96V638.4A320 320 0 0 1 192 320c0-85.632 21.312-170.944 64-256h512c42.688 64.32 64 149.632 64 256a320 320 0 0 1-288 318.4"
+        d: "M256 320h512c0-78.592-12.608-142.4-36.928-192h-434.24C269.504 192.384 256 256.256 256 320m503.936 64H264.064a256.128 256.128 0 0 0 495.872 0M544 638.4V896h96a32 32 0 1 1 0 64H384a32 32 0 1 1 0-64h96V638.4A320 320 0 0 1 192 320c0-85.632 21.312-170.944 64-256h512c42.688 64.32 64 149.632 64 256a320 320 0 0 1-288 318.4"
       })
     ]));
   }
 });
-var goblet_full_default = goblet_full_vue_vue_type_script_setup_true_lang_default;
-var goblet_square_full_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var goblet_full_default = _sfc_main119;
+var _sfc_main120 = /* @__PURE__ */ defineComponent({
   name: "GobletSquareFull",
   __name: "goblet-square-full",
   setup(__props) {
@@ -29345,13 +29460,13 @@ var goblet_square_full_vue_vue_type_script_setup_true_lang_default = /* @__PURE_
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M256 270.912c10.048 6.72 22.464 14.912 28.992 18.624a220.16 220.16 0 0 0 114.752 30.72c30.592 0 49.408-9.472 91.072-41.152l.64-.448c52.928-40.32 82.368-55.04 132.288-54.656 55.552.448 99.584 20.8 142.72 57.408l1.536 1.28V128H256v142.912zm.96 76.288C266.368 482.176 346.88 575.872 512 576c157.44.064 237.952-85.056 253.248-209.984a952.32 952.32 0 0 1-40.192-35.712c-32.704-27.776-63.36-41.92-101.888-42.24-31.552-.256-50.624 9.28-93.12 41.6l-.576.448c-52.096 39.616-81.024 54.208-129.792 54.208-54.784 0-100.48-13.376-142.784-37.056zM480 638.848C250.624 623.424 192 442.496 192 319.68V96a32 32 0 0 1 32-32h576a32 32 0 0 1 32 32v224c0 122.816-58.624 303.68-288 318.912V896h96a32 32 0 1 1 0 64H384a32 32 0 1 1 0-64h96z"
+        d: "M256 270.912c10.048 6.72 22.464 14.912 28.992 18.624a220.16 220.16 0 0 0 114.752 30.72c30.592 0 49.408-9.472 91.072-41.152l.64-.448c52.928-40.32 82.368-55.04 132.288-54.656 55.552.448 99.584 20.8 142.72 57.408l1.536 1.28V128H256zm.96 76.288C266.368 482.176 346.88 575.872 512 576c157.44.064 237.952-85.056 253.248-209.984a952 952 0 0 1-40.192-35.712c-32.704-27.776-63.36-41.92-101.888-42.24-31.552-.256-50.624 9.28-93.12 41.6l-.576.448c-52.096 39.616-81.024 54.208-129.792 54.208-54.784 0-100.48-13.376-142.784-37.056zM480 638.848C250.624 623.424 192 442.496 192 319.68V96a32 32 0 0 1 32-32h576a32 32 0 0 1 32 32v224c0 122.816-58.624 303.68-288 318.912V896h96a32 32 0 1 1 0 64H384a32 32 0 1 1 0-64h96z"
       })
     ]));
   }
 });
-var goblet_square_full_default = goblet_square_full_vue_vue_type_script_setup_true_lang_default;
-var goblet_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var goblet_square_full_default = _sfc_main120;
+var _sfc_main121 = /* @__PURE__ */ defineComponent({
   name: "GobletSquare",
   __name: "goblet-square",
   setup(__props) {
@@ -29366,8 +29481,8 @@ var goblet_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var goblet_square_default = goblet_square_vue_vue_type_script_setup_true_lang_default;
-var goblet_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var goblet_square_default = _sfc_main121;
+var _sfc_main122 = /* @__PURE__ */ defineComponent({
   name: "Goblet",
   __name: "goblet",
   setup(__props) {
@@ -29382,20 +29497,19 @@ var goblet_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var goblet_default = goblet_vue_vue_type_script_setup_true_lang_default;
-var gold_medal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var goblet_default = _sfc_main122;
+var _sfc_main123 = /* @__PURE__ */ defineComponent({
   name: "GoldMedal",
   __name: "gold-medal",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m772.13 452.84 53.86-351.81c1.32-10.01-1.17-18.68-7.49-26.02S804.35 64 795.01 64H228.99v-.01h-.06c-9.33 0-17.15 3.67-23.49 11.01s-8.83 16.01-7.49 26.02l53.87 351.89C213.54 505.73 193.59 568.09 192 640c2 90.67 33.17 166.17 93.5 226.5S421.33 957.99 512 960c90.67-2 166.17-33.17 226.5-93.5 60.33-60.34 91.49-135.83 93.5-226.5-1.59-71.94-21.56-134.32-59.87-187.16zM640.01 128h117.02l-39.01 254.02c-20.75-10.64-40.74-19.73-59.94-27.28-5.92-3-11.95-5.8-18.08-8.41V128h.01zM576 128v198.76c-13.18-2.58-26.74-4.43-40.67-5.55-8.07-.8-15.85-1.2-23.33-1.2-10.54 0-21.09.66-31.64 1.96a359.844 359.844 0 0 0-32.36 4.79V128zm-192 0h.04v218.3c-6.22 2.66-12.34 5.5-18.36 8.56-19.13 7.54-39.02 16.6-59.66 27.16L267.01 128zm308.99 692.99c-48 48-108.33 73-180.99 75.01-72.66-2.01-132.99-27.01-180.99-75.01S258.01 712.66 256 640c2.01-72.66 27.01-132.99 75.01-180.99 19.67-19.67 41.41-35.47 65.22-47.41 38.33-15.04 71.15-23.92 98.44-26.65 5.07-.41 10.2-.7 15.39-.88.63-.01 1.28-.03 1.91-.03.66 0 1.35.03 2.02.04 5.11.17 10.15.46 15.13.86 27.4 2.71 60.37 11.65 98.91 26.79 23.71 11.93 45.36 27.69 64.96 47.29 48 48 73 108.33 75.01 180.99-2.01 72.65-27.01 132.98-75.01 180.98z"
+        d: "m772.13 452.84 53.86-351.81c1.32-10.01-1.17-18.68-7.49-26.02S804.35 64 795.01 64H228.99v-.01h-.06c-9.33 0-17.15 3.67-23.49 11.01s-8.83 16.01-7.49 26.02l53.87 351.89C213.54 505.73 193.59 568.09 192 640c2 90.67 33.17 166.17 93.5 226.5S421.33 957.99 512 960c90.67-2 166.17-33.17 226.5-93.5 60.33-60.34 91.49-135.83 93.5-226.5-1.59-71.94-21.56-134.32-59.87-187.16M640.01 128h117.02l-39.01 254.02c-20.75-10.64-40.74-19.73-59.94-27.28-5.92-3-11.95-5.8-18.08-8.41V128zM576 128v198.76c-13.18-2.58-26.74-4.43-40.67-5.55-8.07-.8-15.85-1.2-23.33-1.2-10.54 0-21.09.66-31.64 1.96a360 360 0 0 0-32.36 4.79V128zm-192 0h.04v218.3c-6.22 2.66-12.34 5.5-18.36 8.56-19.13 7.54-39.02 16.6-59.66 27.16L267.01 128zm308.99 692.99c-48 48-108.33 73-180.99 75.01-72.66-2.01-132.99-27.01-180.99-75.01S258.01 712.66 256 640c2.01-72.66 27.01-132.99 75.01-180.99 19.67-19.67 41.41-35.47 65.22-47.41 38.33-15.04 71.15-23.92 98.44-26.65 5.07-.41 10.2-.7 15.39-.88.63-.01 1.28-.03 1.91-.03.66 0 1.35.03 2.02.04 5.11.17 10.15.46 15.13.86 27.4 2.71 60.37 11.65 98.91 26.79 23.71 11.93 45.36 27.69 64.96 47.29 48 48 73 108.33 75.01 180.99-2.01 72.65-27.01 132.98-75.01 180.98"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -29404,8 +29518,8 @@ var gold_medal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var gold_medal_default = gold_medal_vue_vue_type_script_setup_true_lang_default;
-var goods_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var gold_medal_default = _sfc_main123;
+var _sfc_main124 = /* @__PURE__ */ defineComponent({
   name: "GoodsFilled",
   __name: "goods-filled",
   setup(__props) {
@@ -29420,8 +29534,8 @@ var goods_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var goods_filled_default = goods_filled_vue_vue_type_script_setup_true_lang_default;
-var goods_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var goods_filled_default = _sfc_main124;
+var _sfc_main125 = /* @__PURE__ */ defineComponent({
   name: "Goods",
   __name: "goods",
   setup(__props) {
@@ -29431,13 +29545,13 @@ var goods_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M320 288v-22.336C320 154.688 405.504 64 512 64s192 90.688 192 201.664v22.4h131.072a32 32 0 0 1 31.808 28.8l57.6 576a32 32 0 0 1-31.808 35.2H131.328a32 32 0 0 1-31.808-35.2l57.6-576a32 32 0 0 1 31.808-28.8H320zm64 0h256v-22.336C640 189.248 582.272 128 512 128c-70.272 0-128 61.248-128 137.664v22.4zm-64 64H217.92l-51.2 512h690.56l-51.264-512H704v96a32 32 0 1 1-64 0v-96H384v96a32 32 0 0 1-64 0z"
+        d: "M320 288v-22.336C320 154.688 405.504 64 512 64s192 90.688 192 201.664v22.4h131.072a32 32 0 0 1 31.808 28.8l57.6 576a32 32 0 0 1-31.808 35.2H131.328a32 32 0 0 1-31.808-35.2l57.6-576a32 32 0 0 1 31.808-28.8H320zm64 0h256v-22.336C640 189.248 582.272 128 512 128s-128 61.248-128 137.664v22.4zm-64 64H217.92l-51.2 512h690.56l-51.264-512H704v96a32 32 0 1 1-64 0v-96H384v96a32 32 0 0 1-64 0z"
       })
     ]));
   }
 });
-var goods_default = goods_vue_vue_type_script_setup_true_lang_default;
-var grape_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var goods_default = _sfc_main125;
+var _sfc_main126 = /* @__PURE__ */ defineComponent({
   name: "Grape",
   __name: "grape",
   setup(__props) {
@@ -29452,8 +29566,8 @@ var grape_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var grape_default = grape_vue_vue_type_script_setup_true_lang_default;
-var grid_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var grape_default = _sfc_main126;
+var _sfc_main127 = /* @__PURE__ */ defineComponent({
   name: "Grid",
   __name: "grid",
   setup(__props) {
@@ -29468,8 +29582,8 @@ var grid_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var grid_default = grid_vue_vue_type_script_setup_true_lang_default;
-var guide_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var grid_default = _sfc_main127;
+var _sfc_main128 = /* @__PURE__ */ defineComponent({
   name: "Guide",
   __name: "guide",
   setup(__props) {
@@ -29483,20 +29597,19 @@ var guide_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m220.8 256-71.232 80 71.168 80H768V256H220.8zm-14.4-64H800a32 32 0 0 1 32 32v224a32 32 0 0 1-32 32H206.4a32 32 0 0 1-23.936-10.752l-99.584-112a32 32 0 0 1 0-42.496l99.584-112A32 32 0 0 1 206.4 192m678.784 496-71.104 80H266.816V608h547.2l71.168 80zm-56.768-144H234.88a32 32 0 0 0-32 32v224a32 32 0 0 0 32 32h593.6a32 32 0 0 0 23.936-10.752l99.584-112a32 32 0 0 0 0-42.496l-99.584-112A32 32 0 0 0 828.48 544z"
+        d: "m220.8 256-71.232 80 71.168 80H768V256zm-14.4-64H800a32 32 0 0 1 32 32v224a32 32 0 0 1-32 32H206.4a32 32 0 0 1-23.936-10.752l-99.584-112a32 32 0 0 1 0-42.496l99.584-112A32 32 0 0 1 206.4 192m678.784 496-71.104 80H266.816V608h547.2zm-56.768-144H234.88a32 32 0 0 0-32 32v224a32 32 0 0 0 32 32h593.6a32 32 0 0 0 23.936-10.752l99.584-112a32 32 0 0 0 0-42.496l-99.584-112A32 32 0 0 0 828.48 544z"
       })
     ]));
   }
 });
-var guide_default = guide_vue_vue_type_script_setup_true_lang_default;
-var handbag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var guide_default = _sfc_main128;
+var _sfc_main129 = /* @__PURE__ */ defineComponent({
   name: "Handbag",
   __name: "handbag",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
@@ -29506,8 +29619,8 @@ var handbag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var handbag_default = handbag_vue_vue_type_script_setup_true_lang_default;
-var headset_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var handbag_default = _sfc_main129;
+var _sfc_main130 = /* @__PURE__ */ defineComponent({
   name: "Headset",
   __name: "headset",
   setup(__props) {
@@ -29522,8 +29635,8 @@ var headset_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var headset_default = headset_vue_vue_type_script_setup_true_lang_default;
-var help_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var headset_default = _sfc_main130;
+var _sfc_main131 = /* @__PURE__ */ defineComponent({
   name: "HelpFilled",
   __name: "help-filled",
   setup(__props) {
@@ -29533,13 +29646,13 @@ var help_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M926.784 480H701.312A192.512 192.512 0 0 0 544 322.688V97.216A416.064 416.064 0 0 1 926.784 480m0 64A416.064 416.064 0 0 1 544 926.784V701.312A192.512 192.512 0 0 0 701.312 544zM97.28 544h225.472A192.512 192.512 0 0 0 480 701.312v225.472A416.064 416.064 0 0 1 97.216 544zm0-64A416.064 416.064 0 0 1 480 97.216v225.472A192.512 192.512 0 0 0 322.688 480H97.216z"
+        d: "M926.784 480H701.312A192.51 192.51 0 0 0 544 322.688V97.216A416.064 416.064 0 0 1 926.784 480m0 64A416.064 416.064 0 0 1 544 926.784V701.312A192.51 192.51 0 0 0 701.312 544zM97.28 544h225.472A192.51 192.51 0 0 0 480 701.312v225.472A416.064 416.064 0 0 1 97.216 544zm0-64A416.064 416.064 0 0 1 480 97.216v225.472A192.51 192.51 0 0 0 322.688 480H97.216z"
       })
     ]));
   }
 });
-var help_filled_default = help_filled_vue_vue_type_script_setup_true_lang_default;
-var help_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var help_filled_default = _sfc_main131;
+var _sfc_main132 = /* @__PURE__ */ defineComponent({
   name: "Help",
   __name: "help",
   setup(__props) {
@@ -29549,13 +29662,13 @@ var help_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m759.936 805.248-90.944-91.008A254.912 254.912 0 0 1 512 768a254.912 254.912 0 0 1-156.992-53.76l-90.944 91.008A382.464 382.464 0 0 0 512 896c94.528 0 181.12-34.176 247.936-90.752m45.312-45.312A382.464 382.464 0 0 0 896 512c0-94.528-34.176-181.12-90.752-247.936l-91.008 90.944C747.904 398.4 768 452.864 768 512c0 59.136-20.096 113.6-53.76 156.992l91.008 90.944zm-45.312-541.184A382.464 382.464 0 0 0 512 128c-94.528 0-181.12 34.176-247.936 90.752l90.944 91.008A254.912 254.912 0 0 1 512 256c59.136 0 113.6 20.096 156.992 53.76l90.944-91.008zm-541.184 45.312A382.464 382.464 0 0 0 128 512c0 94.528 34.176 181.12 90.752 247.936l91.008-90.944A254.912 254.912 0 0 1 256 512c0-59.136 20.096-113.6 53.76-156.992zm417.28 394.496a194.56 194.56 0 0 0 22.528-22.528C686.912 602.56 704 559.232 704 512a191.232 191.232 0 0 0-67.968-146.56A191.296 191.296 0 0 0 512 320a191.232 191.232 0 0 0-146.56 67.968C337.088 421.44 320 464.768 320 512a191.232 191.232 0 0 0 67.968 146.56C421.44 686.912 464.768 704 512 704c47.296 0 90.56-17.088 124.032-45.44zM512 960a448 448 0 1 1 0-896 448 448 0 0 1 0 896"
+        d: "m759.936 805.248-90.944-91.008A254.9 254.9 0 0 1 512 768a254.9 254.9 0 0 1-156.992-53.76l-90.944 91.008A382.46 382.46 0 0 0 512 896c94.528 0 181.12-34.176 247.936-90.752m45.312-45.312A382.46 382.46 0 0 0 896 512c0-94.528-34.176-181.12-90.752-247.936l-91.008 90.944C747.904 398.4 768 452.864 768 512s-20.096 113.6-53.76 156.992zm-45.312-541.184A382.46 382.46 0 0 0 512 128c-94.528 0-181.12 34.176-247.936 90.752l90.944 91.008A254.9 254.9 0 0 1 512 256c59.136 0 113.6 20.096 156.992 53.76zm-541.184 45.312A382.46 382.46 0 0 0 128 512c0 94.528 34.176 181.12 90.752 247.936l91.008-90.944A254.9 254.9 0 0 1 256 512c0-59.136 20.096-113.6 53.76-156.992zm417.28 394.496a194.6 194.6 0 0 0 22.528-22.528C686.912 602.56 704 559.232 704 512a191.23 191.23 0 0 0-67.968-146.56A191.3 191.3 0 0 0 512 320a191.23 191.23 0 0 0-146.56 67.968C337.088 421.44 320 464.768 320 512a191.23 191.23 0 0 0 67.968 146.56C421.44 686.912 464.768 704 512 704c47.296 0 90.56-17.088 124.032-45.44M512 960a448 448 0 1 1 0-896 448 448 0 0 1 0 896"
       })
     ]));
   }
 });
-var help_default = help_vue_vue_type_script_setup_true_lang_default;
-var hide_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var help_default = _sfc_main132;
+var _sfc_main133 = /* @__PURE__ */ defineComponent({
   name: "Hide",
   __name: "hide",
   setup(__props) {
@@ -29565,17 +29678,17 @@ var hide_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M876.8 156.8c0-9.6-3.2-16-9.6-22.4-6.4-6.4-12.8-9.6-22.4-9.6-9.6 0-16 3.2-22.4 9.6L736 220.8c-64-32-137.6-51.2-224-60.8-160 16-288 73.6-377.6 176C44.8 438.4 0 496 0 512s48 73.6 134.4 176c22.4 25.6 44.8 48 73.6 67.2l-86.4 89.6c-6.4 6.4-9.6 12.8-9.6 22.4 0 9.6 3.2 16 9.6 22.4 6.4 6.4 12.8 9.6 22.4 9.6 9.6 0 16-3.2 22.4-9.6l704-710.4c3.2-6.4 6.4-12.8 6.4-22.4Zm-646.4 528c-76.8-70.4-128-128-153.6-172.8 28.8-48 80-105.6 153.6-172.8C304 272 400 230.4 512 224c64 3.2 124.8 19.2 176 44.8l-54.4 54.4C598.4 300.8 560 288 512 288c-64 0-115.2 22.4-160 64s-64 96-64 160c0 48 12.8 89.6 35.2 124.8L256 707.2c-9.6-6.4-19.2-16-25.6-22.4Zm140.8-96c-12.8-22.4-19.2-48-19.2-76.8 0-44.8 16-83.2 48-112 32-28.8 67.2-48 112-48 28.8 0 54.4 6.4 73.6 19.2zM889.599 336c-12.8-16-28.8-28.8-41.6-41.6l-48 48c73.6 67.2 124.8 124.8 150.4 169.6-28.8 48-80 105.6-153.6 172.8-73.6 67.2-172.8 108.8-284.8 115.2-51.2-3.2-99.2-12.8-140.8-28.8l-48 48c57.6 22.4 118.4 38.4 188.8 44.8 160-16 288-73.6 377.6-176C979.199 585.6 1024 528 1024 512s-48.001-73.6-134.401-176Z"
+        d: "M876.8 156.8c0-9.6-3.2-16-9.6-22.4s-12.8-9.6-22.4-9.6-16 3.2-22.4 9.6L736 220.8c-64-32-137.6-51.2-224-60.8-160 16-288 73.6-377.6 176S0 496 0 512s48 73.6 134.4 176c22.4 25.6 44.8 48 73.6 67.2l-86.4 89.6c-6.4 6.4-9.6 12.8-9.6 22.4s3.2 16 9.6 22.4 12.8 9.6 22.4 9.6 16-3.2 22.4-9.6l704-710.4c3.2-6.4 6.4-12.8 6.4-22.4m-646.4 528Q115.2 579.2 76.8 512q43.2-72 153.6-172.8C304 272 400 230.4 512 224c64 3.2 124.8 19.2 176 44.8l-54.4 54.4C598.4 300.8 560 288 512 288c-64 0-115.2 22.4-160 64s-64 96-64 160c0 48 12.8 89.6 35.2 124.8L256 707.2c-9.6-6.4-19.2-16-25.6-22.4m140.8-96Q352 555.2 352 512c0-44.8 16-83.2 48-112s67.2-48 112-48c28.8 0 54.4 6.4 73.6 19.2zM889.599 336c-12.8-16-28.8-28.8-41.6-41.6l-48 48c73.6 67.2 124.8 124.8 150.4 169.6q-43.2 72-153.6 172.8c-73.6 67.2-172.8 108.8-284.8 115.2-51.2-3.2-99.2-12.8-140.8-28.8l-48 48c57.6 22.4 118.4 38.4 188.8 44.8 160-16 288-73.6 377.6-176S1024 528 1024 512s-48.001-73.6-134.401-176"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M511.998 672c-12.8 0-25.6-3.2-38.4-6.4l-51.2 51.2c28.8 12.8 57.6 19.2 89.6 19.2 64 0 115.2-22.4 160-64 41.6-41.6 64-96 64-160 0-32-6.4-64-19.2-89.6l-51.2 51.2c3.2 12.8 6.4 25.6 6.4 38.4 0 44.8-16 83.2-48 112-32 28.8-67.2 48-112 48Z"
+        d: "M511.998 672c-12.8 0-25.6-3.2-38.4-6.4l-51.2 51.2c28.8 12.8 57.6 19.2 89.6 19.2 64 0 115.2-22.4 160-64 41.6-41.6 64-96 64-160 0-32-6.4-64-19.2-89.6l-51.2 51.2c3.2 12.8 6.4 25.6 6.4 38.4 0 44.8-16 83.2-48 112s-67.2 48-112 48"
       })
     ]));
   }
 });
-var hide_default = hide_vue_vue_type_script_setup_true_lang_default;
-var histogram_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var hide_default = _sfc_main133;
+var _sfc_main134 = /* @__PURE__ */ defineComponent({
   name: "Histogram",
   __name: "histogram",
   setup(__props) {
@@ -29590,8 +29703,8 @@ var histogram_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var histogram_default = histogram_vue_vue_type_script_setup_true_lang_default;
-var home_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var histogram_default = _sfc_main134;
+var _sfc_main135 = /* @__PURE__ */ defineComponent({
   name: "HomeFilled",
   __name: "home-filled",
   setup(__props) {
@@ -29606,8 +29719,8 @@ var home_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var home_filled_default = home_filled_vue_vue_type_script_setup_true_lang_default;
-var hot_water_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var home_filled_default = _sfc_main135;
+var _sfc_main136 = /* @__PURE__ */ defineComponent({
   name: "HotWater",
   __name: "hot-water",
   setup(__props) {
@@ -29617,13 +29730,13 @@ var hot_water_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M273.067 477.867h477.866V409.6H273.067zm0 68.266v51.2A187.733 187.733 0 0 0 460.8 785.067h102.4a187.733 187.733 0 0 0 187.733-187.734v-51.2H273.067zm-34.134-204.8h546.134a34.133 34.133 0 0 1 34.133 34.134v221.866a256 256 0 0 1-256 256H460.8a256 256 0 0 1-256-256V375.467a34.133 34.133 0 0 1 34.133-34.134zM512 34.133a34.133 34.133 0 0 1 34.133 34.134v170.666a34.133 34.133 0 0 1-68.266 0V68.267A34.133 34.133 0 0 1 512 34.133zM375.467 102.4a34.133 34.133 0 0 1 34.133 34.133v102.4a34.133 34.133 0 0 1-68.267 0v-102.4a34.133 34.133 0 0 1 34.134-34.133m273.066 0a34.133 34.133 0 0 1 34.134 34.133v102.4a34.133 34.133 0 1 1-68.267 0v-102.4a34.133 34.133 0 0 1 34.133-34.133M170.667 921.668h682.666a34.133 34.133 0 1 1 0 68.267H170.667a34.133 34.133 0 1 1 0-68.267z"
+        d: "M273.067 477.867h477.866V409.6H273.067zm0 68.266v51.2A187.733 187.733 0 0 0 460.8 785.067h102.4a187.733 187.733 0 0 0 187.733-187.734v-51.2zm-34.134-204.8h546.134a34.133 34.133 0 0 1 34.133 34.134v221.866a256 256 0 0 1-256 256H460.8a256 256 0 0 1-256-256V375.467a34.133 34.133 0 0 1 34.133-34.134M512 34.133a34.133 34.133 0 0 1 34.133 34.134v170.666a34.133 34.133 0 0 1-68.266 0V68.267A34.133 34.133 0 0 1 512 34.133M375.467 102.4a34.133 34.133 0 0 1 34.133 34.133v102.4a34.133 34.133 0 0 1-68.267 0v-102.4a34.133 34.133 0 0 1 34.134-34.133m273.066 0a34.133 34.133 0 0 1 34.134 34.133v102.4a34.133 34.133 0 1 1-68.267 0v-102.4a34.133 34.133 0 0 1 34.133-34.133M170.667 921.668h682.666a34.133 34.133 0 1 1 0 68.267H170.667a34.133 34.133 0 1 1 0-68.267"
       })
     ]));
   }
 });
-var hot_water_default = hot_water_vue_vue_type_script_setup_true_lang_default;
-var house_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var hot_water_default = _sfc_main136;
+var _sfc_main137 = /* @__PURE__ */ defineComponent({
   name: "House",
   __name: "house",
   setup(__props) {
@@ -29638,8 +29751,8 @@ var house_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var house_default = house_vue_vue_type_script_setup_true_lang_default;
-var ice_cream_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var house_default = _sfc_main137;
+var _sfc_main138 = /* @__PURE__ */ defineComponent({
   name: "IceCreamRound",
   __name: "ice-cream-round",
   setup(__props) {
@@ -29649,13 +29762,13 @@ var ice_cream_round_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m308.352 489.344 226.304 226.304a32 32 0 0 0 45.248 0L783.552 512A192 192 0 1 0 512 240.448L308.352 444.16a32 32 0 0 0 0 45.248zm135.744 226.304L308.352 851.392a96 96 0 0 1-135.744-135.744l135.744-135.744-45.248-45.248a96 96 0 0 1 0-135.808L466.752 195.2A256 256 0 0 1 828.8 557.248L625.152 760.96a96 96 0 0 1-135.808 0l-45.248-45.248zM398.848 670.4 353.6 625.152 217.856 760.896a32 32 0 0 0 45.248 45.248zm248.96-384.64a32 32 0 0 1 0 45.248L466.624 512a32 32 0 1 1-45.184-45.248l180.992-181.056a32 32 0 0 1 45.248 0zm90.496 90.496a32 32 0 0 1 0 45.248L557.248 602.496A32 32 0 1 1 512 557.248l180.992-180.992a32 32 0 0 1 45.312 0z"
+        d: "m308.352 489.344 226.304 226.304a32 32 0 0 0 45.248 0L783.552 512A192 192 0 1 0 512 240.448L308.352 444.16a32 32 0 0 0 0 45.248zm135.744 226.304L308.352 851.392a96 96 0 0 1-135.744-135.744l135.744-135.744-45.248-45.248a96 96 0 0 1 0-135.808L466.752 195.2A256 256 0 0 1 828.8 557.248L625.152 760.96a96 96 0 0 1-135.808 0l-45.248-45.248zM398.848 670.4 353.6 625.152 217.856 760.896a32 32 0 0 0 45.248 45.248zm248.96-384.64a32 32 0 0 1 0 45.248L466.624 512a32 32 0 1 1-45.184-45.248l180.992-181.056a32 32 0 0 1 45.248 0zm90.496 90.496a32 32 0 0 1 0 45.248L557.248 602.496A32 32 0 1 1 512 557.248l180.992-180.992a32 32 0 0 1 45.312 0"
       })
     ]));
   }
 });
-var ice_cream_round_default = ice_cream_round_vue_vue_type_script_setup_true_lang_default;
-var ice_cream_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var ice_cream_round_default = _sfc_main138;
+var _sfc_main139 = /* @__PURE__ */ defineComponent({
   name: "IceCreamSquare",
   __name: "ice-cream-square",
   setup(__props) {
@@ -29670,8 +29783,8 @@ var ice_cream_square_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     ]));
   }
 });
-var ice_cream_square_default = ice_cream_square_vue_vue_type_script_setup_true_lang_default;
-var ice_cream_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var ice_cream_square_default = _sfc_main139;
+var _sfc_main140 = /* @__PURE__ */ defineComponent({
   name: "IceCream",
   __name: "ice-cream",
   setup(__props) {
@@ -29681,13 +29794,13 @@ var ice_cream_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M128.64 448a208 208 0 0 1 193.536-191.552 224 224 0 0 1 445.248 15.488A208.128 208.128 0 0 1 894.784 448H896L548.8 983.68a32 32 0 0 1-53.248.704L128 448zm64.256 0h286.208a144 144 0 0 0-286.208 0zm351.36 0h286.272a144 144 0 0 0-286.272 0zm-294.848 64 271.808 396.608L778.24 512H249.408zM511.68 352.64a207.872 207.872 0 0 1 189.184-96.192 160 160 0 0 0-314.752 5.632c52.608 12.992 97.28 46.08 125.568 90.56"
+        d: "M128.64 448a208 208 0 0 1 193.536-191.552 224 224 0 0 1 445.248 15.488A208.13 208.13 0 0 1 894.784 448H896L548.8 983.68a32 32 0 0 1-53.248.704L128 448zm64.256 0h286.208a144 144 0 0 0-286.208 0m351.36 0h286.272a144 144 0 0 0-286.272 0m-294.848 64 271.808 396.608L778.24 512zM511.68 352.64a207.87 207.87 0 0 1 189.184-96.192 160 160 0 0 0-314.752 5.632c52.608 12.992 97.28 46.08 125.568 90.56"
       })
     ]));
   }
 });
-var ice_cream_default = ice_cream_vue_vue_type_script_setup_true_lang_default;
-var ice_drink_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var ice_cream_default = _sfc_main140;
+var _sfc_main141 = /* @__PURE__ */ defineComponent({
   name: "IceDrink",
   __name: "ice-drink",
   setup(__props) {
@@ -29697,13 +29810,13 @@ var ice_drink_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 448v128h239.68l16.064-128zm-64 0H256.256l16.064 128H448zm64-255.36V384h247.744A256.128 256.128 0 0 0 512 192.64m-64 8.064A256.448 256.448 0 0 0 264.256 384H448zm64-72.064A320.128 320.128 0 0 1 825.472 384H896a32 32 0 1 1 0 64h-64v1.92l-56.96 454.016A64 64 0 0 1 711.552 960H312.448a64 64 0 0 1-63.488-56.064L192 449.92V448h-64a32 32 0 0 1 0-64h70.528A320.384 320.384 0 0 1 448 135.04V96a96 96 0 0 1 96-96h128a32 32 0 1 1 0 64H544a32 32 0 0 0-32 32zM743.68 640H280.32l32.128 256h399.104z"
+        d: "M512 448v128h239.68l16.064-128zm-64 0H256.256l16.064 128H448zm64-255.36V384h247.744A256.13 256.13 0 0 0 512 192.64m-64 8.064A256.45 256.45 0 0 0 264.256 384H448zm64-72.064A320.13 320.13 0 0 1 825.472 384H896a32 32 0 1 1 0 64h-64v1.92l-56.96 454.016A64 64 0 0 1 711.552 960H312.448a64 64 0 0 1-63.488-56.064L192 449.92V448h-64a32 32 0 0 1 0-64h70.528A320.38 320.38 0 0 1 448 135.04V96a96 96 0 0 1 96-96h128a32 32 0 1 1 0 64H544a32 32 0 0 0-32 32zM743.68 640H280.32l32.128 256h399.104z"
       })
     ]));
   }
 });
-var ice_drink_default = ice_drink_vue_vue_type_script_setup_true_lang_default;
-var ice_tea_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var ice_drink_default = _sfc_main141;
+var _sfc_main142 = /* @__PURE__ */ defineComponent({
   name: "IceTea",
   __name: "ice-tea",
   setup(__props) {
@@ -29718,8 +29831,8 @@ var ice_tea_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var ice_tea_default = ice_tea_vue_vue_type_script_setup_true_lang_default;
-var info_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var ice_tea_default = _sfc_main142;
+var _sfc_main143 = /* @__PURE__ */ defineComponent({
   name: "InfoFilled",
   __name: "info-filled",
   setup(__props) {
@@ -29729,13 +29842,13 @@ var info_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64m67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344M590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.992 12.992 0 0 1-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 0 1 7.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"
+        d: "M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64m67.2 275.072c33.28 0 60.288-23.104 60.288-57.344s-27.072-57.344-60.288-57.344c-33.28 0-60.16 23.104-60.16 57.344s26.88 57.344 60.16 57.344M590.912 699.2c0-6.848 2.368-24.64 1.024-34.752l-52.608 60.544c-10.88 11.456-24.512 19.392-30.912 17.28a12.99 12.99 0 0 1-8.256-14.72l87.68-276.992c7.168-35.136-12.544-67.2-54.336-71.296-44.096 0-108.992 44.736-148.48 101.504 0 6.784-1.28 23.68.064 33.792l52.544-60.608c10.88-11.328 23.552-19.328 29.952-17.152a12.8 12.8 0 0 1 7.808 16.128L388.48 728.576c-10.048 32.256 8.96 63.872 55.04 71.04 67.84 0 107.904-43.648 147.456-100.416z"
       })
     ]));
   }
 });
-var info_filled_default = info_filled_vue_vue_type_script_setup_true_lang_default;
-var iphone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var info_filled_default = _sfc_main143;
+var _sfc_main144 = /* @__PURE__ */ defineComponent({
   name: "Iphone",
   __name: "iphone",
   setup(__props) {
@@ -29750,8 +29863,8 @@ var iphone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var iphone_default = iphone_vue_vue_type_script_setup_true_lang_default;
-var key_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var iphone_default = _sfc_main144;
+var _sfc_main145 = /* @__PURE__ */ defineComponent({
   name: "Key",
   __name: "key",
   setup(__props) {
@@ -29766,8 +29879,8 @@ var key_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     ]));
   }
 });
-var key_default = key_vue_vue_type_script_setup_true_lang_default;
-var knife_fork_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var key_default = _sfc_main145;
+var _sfc_main146 = /* @__PURE__ */ defineComponent({
   name: "KnifeFork",
   __name: "knife-fork",
   setup(__props) {
@@ -29777,13 +29890,13 @@ var knife_fork_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M256 410.56V96a32 32 0 0 1 64 0v314.56A96 96 0 0 0 384 320V96a32 32 0 0 1 64 0v224a160 160 0 0 1-128 156.8V928a32 32 0 1 1-64 0V476.8A160 160 0 0 1 128 320V96a32 32 0 0 1 64 0v224a96 96 0 0 0 64 90.56m384-250.24V544h126.72c-3.328-78.72-12.928-147.968-28.608-207.744-14.336-54.528-46.848-113.344-98.112-175.872zM640 608v320a32 32 0 1 1-64 0V64h64c85.312 89.472 138.688 174.848 160 256 21.312 81.152 32 177.152 32 288z"
+        d: "M256 410.56V96a32 32 0 0 1 64 0v314.56A96 96 0 0 0 384 320V96a32 32 0 0 1 64 0v224a160 160 0 0 1-128 156.8V928a32 32 0 1 1-64 0V476.8A160 160 0 0 1 128 320V96a32 32 0 0 1 64 0v224a96 96 0 0 0 64 90.56m384-250.24V544h126.72c-3.328-78.72-12.928-147.968-28.608-207.744-14.336-54.528-46.848-113.344-98.112-175.872zM640 608v320a32 32 0 1 1-64 0V64h64c85.312 89.472 138.688 174.848 160 256s32 177.152 32 288z"
       })
     ]));
   }
 });
-var knife_fork_default = knife_fork_vue_vue_type_script_setup_true_lang_default;
-var lightning_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var knife_fork_default = _sfc_main146;
+var _sfc_main147 = /* @__PURE__ */ defineComponent({
   name: "Lightning",
   __name: "lightning",
   setup(__props) {
@@ -29793,7 +29906,7 @@ var lightning_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M288 671.36v64.128A239.808 239.808 0 0 1 63.744 496.192a240.32 240.32 0 0 1 199.488-236.8 256.128 256.128 0 0 1 487.872-30.976A256.064 256.064 0 0 1 736 734.016v-64.768a192 192 0 0 0 3.328-377.92l-35.2-6.592-12.8-33.408a192.064 192.064 0 0 0-365.952 23.232l-9.92 40.896-41.472 7.04a176.32 176.32 0 0 0-146.24 173.568c0 91.968 70.464 167.36 160.256 175.232z"
+        d: "M288 671.36v64.128A239.81 239.81 0 0 1 63.744 496.192a240.32 240.32 0 0 1 199.488-236.8 256.128 256.128 0 0 1 487.872-30.976A256.064 256.064 0 0 1 736 734.016v-64.768a192 192 0 0 0 3.328-377.92l-35.2-6.592-12.8-33.408a192.064 192.064 0 0 0-365.952 23.232l-9.92 40.896-41.472 7.04a176.32 176.32 0 0 0-146.24 173.568c0 91.968 70.464 167.36 160.256 175.232z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -29802,8 +29915,8 @@ var lightning_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var lightning_default = lightning_vue_vue_type_script_setup_true_lang_default;
-var link_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var lightning_default = _sfc_main147;
+var _sfc_main148 = /* @__PURE__ */ defineComponent({
   name: "Link",
   __name: "link",
   setup(__props) {
@@ -29818,8 +29931,8 @@ var link_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var link_default = link_vue_vue_type_script_setup_true_lang_default;
-var list_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var link_default = _sfc_main148;
+var _sfc_main149 = /* @__PURE__ */ defineComponent({
   name: "List",
   __name: "list",
   setup(__props) {
@@ -29834,8 +29947,8 @@ var list_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var list_default = list_vue_vue_type_script_setup_true_lang_default;
-var loading_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var list_default = _sfc_main149;
+var _sfc_main150 = /* @__PURE__ */ defineComponent({
   name: "Loading",
   __name: "loading",
   setup(__props) {
@@ -29845,13 +29958,13 @@ var loading_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 64a32 32 0 0 1 32 32v192a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32m0 640a32 32 0 0 1 32 32v192a32 32 0 1 1-64 0V736a32 32 0 0 1 32-32m448-192a32 32 0 0 1-32 32H736a32 32 0 1 1 0-64h192a32 32 0 0 1 32 32m-640 0a32 32 0 0 1-32 32H96a32 32 0 0 1 0-64h192a32 32 0 0 1 32 32M195.2 195.2a32 32 0 0 1 45.248 0L376.32 331.008a32 32 0 0 1-45.248 45.248L195.2 240.448a32 32 0 0 1 0-45.248zm452.544 452.544a32 32 0 0 1 45.248 0L828.8 783.552a32 32 0 0 1-45.248 45.248L647.744 692.992a32 32 0 0 1 0-45.248zM828.8 195.264a32 32 0 0 1 0 45.184L692.992 376.32a32 32 0 0 1-45.248-45.248l135.808-135.808a32 32 0 0 1 45.248 0m-452.544 452.48a32 32 0 0 1 0 45.248L240.448 828.8a32 32 0 0 1-45.248-45.248l135.808-135.808a32 32 0 0 1 45.248 0z"
+        d: "M512 64a32 32 0 0 1 32 32v192a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32m0 640a32 32 0 0 1 32 32v192a32 32 0 1 1-64 0V736a32 32 0 0 1 32-32m448-192a32 32 0 0 1-32 32H736a32 32 0 1 1 0-64h192a32 32 0 0 1 32 32m-640 0a32 32 0 0 1-32 32H96a32 32 0 0 1 0-64h192a32 32 0 0 1 32 32M195.2 195.2a32 32 0 0 1 45.248 0L376.32 331.008a32 32 0 0 1-45.248 45.248L195.2 240.448a32 32 0 0 1 0-45.248m452.544 452.544a32 32 0 0 1 45.248 0L828.8 783.552a32 32 0 0 1-45.248 45.248L647.744 692.992a32 32 0 0 1 0-45.248M828.8 195.264a32 32 0 0 1 0 45.184L692.992 376.32a32 32 0 0 1-45.248-45.248l135.808-135.808a32 32 0 0 1 45.248 0m-452.544 452.48a32 32 0 0 1 0 45.248L240.448 828.8a32 32 0 0 1-45.248-45.248l135.808-135.808a32 32 0 0 1 45.248 0"
       })
     ]));
   }
 });
-var loading_default = loading_vue_vue_type_script_setup_true_lang_default;
-var location_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var loading_default = _sfc_main150;
+var _sfc_main151 = /* @__PURE__ */ defineComponent({
   name: "LocationFilled",
   __name: "location-filled",
   setup(__props) {
@@ -29866,8 +29979,8 @@ var location_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     ]));
   }
 });
-var location_filled_default = location_filled_vue_vue_type_script_setup_true_lang_default;
-var location_information_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var location_filled_default = _sfc_main151;
+var _sfc_main152 = /* @__PURE__ */ defineComponent({
   name: "LocationInformation",
   __name: "location-information",
   setup(__props) {
@@ -29890,8 +30003,8 @@ var location_information_vue_vue_type_script_setup_true_lang_default = /* @__PUR
     ]));
   }
 });
-var location_information_default = location_information_vue_vue_type_script_setup_true_lang_default;
-var location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var location_information_default = _sfc_main152;
+var _sfc_main153 = /* @__PURE__ */ defineComponent({
   name: "Location",
   __name: "location",
   setup(__props) {
@@ -29910,8 +30023,8 @@ var location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var location_default = location_vue_vue_type_script_setup_true_lang_default;
-var lock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var location_default = _sfc_main153;
+var _sfc_main154 = /* @__PURE__ */ defineComponent({
   name: "Lock",
   __name: "lock",
   setup(__props) {
@@ -29930,8 +30043,8 @@ var lock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var lock_default = lock_vue_vue_type_script_setup_true_lang_default;
-var lollipop_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var lock_default = _sfc_main154;
+var _sfc_main155 = /* @__PURE__ */ defineComponent({
   name: "Lollipop",
   __name: "lollipop",
   setup(__props) {
@@ -29941,13 +30054,13 @@ var lollipop_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M513.28 448a64 64 0 1 1 76.544 49.728A96 96 0 0 0 768 448h64a160 160 0 0 1-320 0zm-126.976-29.696a256 256 0 1 0 43.52-180.48A256 256 0 0 1 832 448h-64a192 192 0 0 0-381.696-29.696m105.664 249.472L285.696 874.048a96 96 0 0 1-135.68-135.744l206.208-206.272a320 320 0 1 1 135.744 135.744zm-54.464-36.032a321.92 321.92 0 0 1-45.248-45.248L195.2 783.552a32 32 0 1 0 45.248 45.248l197.056-197.12z"
+        d: "M513.28 448a64 64 0 1 1 76.544 49.728A96 96 0 0 0 768 448h64a160 160 0 0 1-320 0zm-126.976-29.696a256 256 0 1 0 43.52-180.48A256 256 0 0 1 832 448h-64a192 192 0 0 0-381.696-29.696m105.664 249.472L285.696 874.048a96 96 0 0 1-135.68-135.744l206.208-206.272a320 320 0 1 1 135.744 135.744m-54.464-36.032a322 322 0 0 1-45.248-45.248L195.2 783.552a32 32 0 1 0 45.248 45.248l197.056-197.12z"
       })
     ]));
   }
 });
-var lollipop_default = lollipop_vue_vue_type_script_setup_true_lang_default;
-var magic_stick_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var lollipop_default = _sfc_main155;
+var _sfc_main156 = /* @__PURE__ */ defineComponent({
   name: "MagicStick",
   __name: "magic-stick",
   setup(__props) {
@@ -29962,8 +30075,8 @@ var magic_stick_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var magic_stick_default = magic_stick_vue_vue_type_script_setup_true_lang_default;
-var magnet_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var magic_stick_default = _sfc_main156;
+var _sfc_main157 = /* @__PURE__ */ defineComponent({
   name: "Magnet",
   __name: "magnet",
   setup(__props) {
@@ -29978,8 +30091,8 @@ var magnet_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var magnet_default = magnet_vue_vue_type_script_setup_true_lang_default;
-var male_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var magnet_default = _sfc_main157;
+var _sfc_main158 = /* @__PURE__ */ defineComponent({
   name: "Male",
   __name: "male",
   setup(__props) {
@@ -30002,8 +30115,8 @@ var male_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var male_default = male_vue_vue_type_script_setup_true_lang_default;
-var management_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var male_default = _sfc_main158;
+var _sfc_main159 = /* @__PURE__ */ defineComponent({
   name: "Management",
   __name: "management",
   setup(__props) {
@@ -30018,8 +30131,8 @@ var management_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var management_default = management_vue_vue_type_script_setup_true_lang_default;
-var map_location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var management_default = _sfc_main159;
+var _sfc_main160 = /* @__PURE__ */ defineComponent({
   name: "MapLocation",
   __name: "map-location",
   setup(__props) {
@@ -30038,8 +30151,8 @@ var map_location_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var map_location_default = map_location_vue_vue_type_script_setup_true_lang_default;
-var medal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var map_location_default = _sfc_main160;
+var _sfc_main161 = /* @__PURE__ */ defineComponent({
   name: "Medal",
   __name: "medal",
   setup(__props) {
@@ -30053,20 +30166,19 @@ var medal_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M576 128H448v200a286.72 286.72 0 0 1 64-8c19.52 0 40.832 2.688 64 8zm64 0v219.648c24.448 9.088 50.56 20.416 78.4 33.92L757.44 128zm-256 0H266.624l39.04 253.568c27.84-13.504 53.888-24.832 78.336-33.92V128zM229.312 64h565.376a32 32 0 0 1 31.616 36.864L768 480c-113.792-64-199.104-96-256-96-56.896 0-142.208 32-256 96l-58.304-379.136A32 32 0 0 1 229.312 64"
+        d: "M576 128H448v200a286.7 286.7 0 0 1 64-8c19.52 0 40.832 2.688 64 8zm64 0v219.648c24.448 9.088 50.56 20.416 78.4 33.92L757.44 128zm-256 0H266.624l39.04 253.568c27.84-13.504 53.888-24.832 78.336-33.92zM229.312 64h565.376a32 32 0 0 1 31.616 36.864L768 480c-113.792-64-199.104-96-256-96s-142.208 32-256 96l-58.304-379.136A32 32 0 0 1 229.312 64"
       })
     ]));
   }
 });
-var medal_default = medal_vue_vue_type_script_setup_true_lang_default;
-var memo_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var medal_default = _sfc_main161;
+var _sfc_main162 = /* @__PURE__ */ defineComponent({
   name: "Memo",
   __name: "memo",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
@@ -30084,8 +30196,8 @@ var memo_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var memo_default = memo_vue_vue_type_script_setup_true_lang_default;
-var menu_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var memo_default = _sfc_main162;
+var _sfc_main163 = /* @__PURE__ */ defineComponent({
   name: "Menu",
   __name: "menu",
   setup(__props) {
@@ -30100,8 +30212,8 @@ var menu_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var menu_default = menu_vue_vue_type_script_setup_true_lang_default;
-var message_box_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var menu_default = _sfc_main163;
+var _sfc_main164 = /* @__PURE__ */ defineComponent({
   name: "MessageBox",
   __name: "message-box",
   setup(__props) {
@@ -30111,13 +30223,13 @@ var message_box_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M288 384h448v64H288zm96-128h256v64H384zM131.456 512H384v128h256V512h252.544L721.856 192H302.144zM896 576H704v128H320V576H128v256h768zM275.776 128h472.448a32 32 0 0 1 28.608 17.664l179.84 359.552A32 32 0 0 1 960 519.552V864a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V519.552a32 32 0 0 1 3.392-14.336l179.776-359.552A32 32 0 0 1 275.776 128z"
+        d: "M288 384h448v64H288zm96-128h256v64H384zM131.456 512H384v128h256V512h252.544L721.856 192H302.144zM896 576H704v128H320V576H128v256h768zM275.776 128h472.448a32 32 0 0 1 28.608 17.664l179.84 359.552A32 32 0 0 1 960 519.552V864a32 32 0 0 1-32 32H96a32 32 0 0 1-32-32V519.552a32 32 0 0 1 3.392-14.336l179.776-359.552A32 32 0 0 1 275.776 128"
       })
     ]));
   }
 });
-var message_box_default = message_box_vue_vue_type_script_setup_true_lang_default;
-var message_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var message_box_default = _sfc_main164;
+var _sfc_main165 = /* @__PURE__ */ defineComponent({
   name: "Message",
   __name: "message",
   setup(__props) {
@@ -30131,13 +30243,13 @@ var message_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M904 224 656.512 506.88a192 192 0 0 1-289.024 0L120 224zm-698.944 0 210.56 240.704a128 128 0 0 0 192.704 0L818.944 224H205.056"
+        d: "M904 224 656.512 506.88a192 192 0 0 1-289.024 0L120 224zm-698.944 0 210.56 240.704a128 128 0 0 0 192.704 0L818.944 224z"
       })
     ]));
   }
 });
-var message_default = message_vue_vue_type_script_setup_true_lang_default;
-var mic_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var message_default = _sfc_main165;
+var _sfc_main166 = /* @__PURE__ */ defineComponent({
   name: "Mic",
   __name: "mic",
   setup(__props) {
@@ -30152,8 +30264,8 @@ var mic_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     ]));
   }
 });
-var mic_default = mic_vue_vue_type_script_setup_true_lang_default;
-var microphone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var mic_default = _sfc_main166;
+var _sfc_main167 = /* @__PURE__ */ defineComponent({
   name: "Microphone",
   __name: "microphone",
   setup(__props) {
@@ -30168,8 +30280,8 @@ var microphone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var microphone_default = microphone_vue_vue_type_script_setup_true_lang_default;
-var milk_tea_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var microphone_default = _sfc_main167;
+var _sfc_main168 = /* @__PURE__ */ defineComponent({
   name: "MilkTea",
   __name: "milk-tea",
   setup(__props) {
@@ -30184,8 +30296,8 @@ var milk_tea_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var milk_tea_default = milk_tea_vue_vue_type_script_setup_true_lang_default;
-var minus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var milk_tea_default = _sfc_main168;
+var _sfc_main169 = /* @__PURE__ */ defineComponent({
   name: "Minus",
   __name: "minus",
   setup(__props) {
@@ -30200,8 +30312,8 @@ var minus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var minus_default = minus_vue_vue_type_script_setup_true_lang_default;
-var money_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var minus_default = _sfc_main169;
+var _sfc_main170 = /* @__PURE__ */ defineComponent({
   name: "Money",
   __name: "money",
   setup(__props) {
@@ -30211,11 +30323,11 @@ var money_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M256 640v192h640V384H768v-64h150.976c14.272 0 19.456 1.472 24.64 4.288a29.056 29.056 0 0 1 12.16 12.096c2.752 5.184 4.224 10.368 4.224 24.64v493.952c0 14.272-1.472 19.456-4.288 24.64a29.056 29.056 0 0 1-12.096 12.16c-5.184 2.752-10.368 4.224-24.64 4.224H233.024c-14.272 0-19.456-1.472-24.64-4.288a29.056 29.056 0 0 1-12.16-12.096c-2.688-5.184-4.224-10.368-4.224-24.576V640z"
+        d: "M256 640v192h640V384H768v-64h150.976c14.272 0 19.456 1.472 24.64 4.288a29.06 29.06 0 0 1 12.16 12.096c2.752 5.184 4.224 10.368 4.224 24.64v493.952c0 14.272-1.472 19.456-4.288 24.64a29.06 29.06 0 0 1-12.096 12.16c-5.184 2.752-10.368 4.224-24.64 4.224H233.024c-14.272 0-19.456-1.472-24.64-4.288a29.06 29.06 0 0 1-12.16-12.096c-2.688-5.184-4.224-10.368-4.224-24.576V640z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M768 192H128v448h640zm64-22.976v493.952c0 14.272-1.472 19.456-4.288 24.64a29.056 29.056 0 0 1-12.096 12.16c-5.184 2.752-10.368 4.224-24.64 4.224H105.024c-14.272 0-19.456-1.472-24.64-4.288a29.056 29.056 0 0 1-12.16-12.096C65.536 682.432 64 677.248 64 663.04V169.024c0-14.272 1.472-19.456 4.288-24.64a29.056 29.056 0 0 1 12.096-12.16C85.568 129.536 90.752 128 104.96 128h685.952c14.272 0 19.456 1.472 24.64 4.288a29.056 29.056 0 0 1 12.16 12.096c2.752 5.184 4.224 10.368 4.224 24.64z"
+        d: "M768 192H128v448h640zm64-22.976v493.952c0 14.272-1.472 19.456-4.288 24.64a29.06 29.06 0 0 1-12.096 12.16c-5.184 2.752-10.368 4.224-24.64 4.224H105.024c-14.272 0-19.456-1.472-24.64-4.288a29.06 29.06 0 0 1-12.16-12.096C65.536 682.432 64 677.248 64 663.04V169.024c0-14.272 1.472-19.456 4.288-24.64a29.06 29.06 0 0 1 12.096-12.16C85.568 129.536 90.752 128 104.96 128h685.952c14.272 0 19.456 1.472 24.64 4.288a29.06 29.06 0 0 1 12.16 12.096c2.752 5.184 4.224 10.368 4.224 24.64z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -30224,8 +30336,8 @@ var money_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var money_default = money_vue_vue_type_script_setup_true_lang_default;
-var monitor_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var money_default = _sfc_main170;
+var _sfc_main171 = /* @__PURE__ */ defineComponent({
   name: "Monitor",
   __name: "monitor",
   setup(__props) {
@@ -30240,8 +30352,8 @@ var monitor_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var monitor_default = monitor_vue_vue_type_script_setup_true_lang_default;
-var moon_night_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var monitor_default = _sfc_main171;
+var _sfc_main172 = /* @__PURE__ */ defineComponent({
   name: "MoonNight",
   __name: "moon-night",
   setup(__props) {
@@ -30251,7 +30363,7 @@ var moon_night_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M384 512a448 448 0 0 1 215.872-383.296A384 384 0 0 0 213.76 640h188.8A448.256 448.256 0 0 1 384 512M171.136 704a448 448 0 0 1 636.992-575.296A384 384 0 0 0 499.328 704h-328.32z"
+        d: "M384 512a448 448 0 0 1 215.872-383.296A384 384 0 0 0 213.76 640h188.8A448.3 448.3 0 0 1 384 512M171.136 704a448 448 0 0 1 636.992-575.296A384 384 0 0 0 499.328 704h-328.32z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -30260,8 +30372,8 @@ var moon_night_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var moon_night_default = moon_night_vue_vue_type_script_setup_true_lang_default;
-var moon_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var moon_night_default = _sfc_main172;
+var _sfc_main173 = /* @__PURE__ */ defineComponent({
   name: "Moon",
   __name: "moon",
   setup(__props) {
@@ -30271,13 +30383,13 @@ var moon_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M240.448 240.448a384 384 0 1 0 559.424 525.696 448 448 0 0 1-542.016-542.08 390.592 390.592 0 0 0-17.408 16.384zm181.056 362.048a384 384 0 0 0 525.632 16.384A448 448 0 1 1 405.056 76.8a384 384 0 0 0 16.448 525.696"
+        d: "M240.448 240.448a384 384 0 1 0 559.424 525.696 448 448 0 0 1-542.016-542.08 391 391 0 0 0-17.408 16.384m181.056 362.048a384 384 0 0 0 525.632 16.384A448 448 0 1 1 405.056 76.8a384 384 0 0 0 16.448 525.696"
       })
     ]));
   }
 });
-var moon_default = moon_vue_vue_type_script_setup_true_lang_default;
-var more_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var moon_default = _sfc_main173;
+var _sfc_main174 = /* @__PURE__ */ defineComponent({
   name: "MoreFilled",
   __name: "more-filled",
   setup(__props) {
@@ -30292,8 +30404,8 @@ var more_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var more_filled_default = more_filled_vue_vue_type_script_setup_true_lang_default;
-var more_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var more_filled_default = _sfc_main174;
+var _sfc_main175 = /* @__PURE__ */ defineComponent({
   name: "More",
   __name: "more",
   setup(__props) {
@@ -30308,8 +30420,8 @@ var more_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var more_default = more_vue_vue_type_script_setup_true_lang_default;
-var mostly_cloudy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var more_default = _sfc_main175;
+var _sfc_main176 = /* @__PURE__ */ defineComponent({
   name: "MostlyCloudy",
   __name: "mostly-cloudy",
   setup(__props) {
@@ -30319,13 +30431,13 @@ var mostly_cloudy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M737.216 357.952 704 349.824l-11.776-32a192.064 192.064 0 0 0-367.424 23.04l-8.96 39.04-39.04 8.96A192.064 192.064 0 0 0 320 768h368a207.808 207.808 0 0 0 207.808-208 208.32 208.32 0 0 0-158.592-202.048m15.168-62.208A272.32 272.32 0 0 1 959.744 560a271.808 271.808 0 0 1-271.552 272H320a256 256 0 0 1-57.536-505.536 256.128 256.128 0 0 1 489.92-30.72"
+        d: "M737.216 357.952 704 349.824l-11.776-32a192.064 192.064 0 0 0-367.424 23.04l-8.96 39.04-39.04 8.96A192.064 192.064 0 0 0 320 768h368a207.81 207.81 0 0 0 207.808-208 208.32 208.32 0 0 0-158.592-202.048m15.168-62.208A272.32 272.32 0 0 1 959.744 560a271.81 271.81 0 0 1-271.552 272H320a256 256 0 0 1-57.536-505.536 256.128 256.128 0 0 1 489.92-30.72"
       })
     ]));
   }
 });
-var mostly_cloudy_default = mostly_cloudy_vue_vue_type_script_setup_true_lang_default;
-var mouse_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var mostly_cloudy_default = _sfc_main176;
+var _sfc_main177 = /* @__PURE__ */ defineComponent({
   name: "Mouse",
   __name: "mouse",
   setup(__props) {
@@ -30335,7 +30447,7 @@ var mouse_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M438.144 256c-68.352 0-92.736 4.672-117.76 18.112-20.096 10.752-35.52 26.176-46.272 46.272C260.672 345.408 256 369.792 256 438.144v275.712c0 68.352 4.672 92.736 18.112 117.76 10.752 20.096 26.176 35.52 46.272 46.272C345.408 891.328 369.792 896 438.144 896h147.712c68.352 0 92.736-4.672 117.76-18.112 20.096-10.752 35.52-26.176 46.272-46.272C763.328 806.592 768 782.208 768 713.856V438.144c0-68.352-4.672-92.736-18.112-117.76a110.464 110.464 0 0 0-46.272-46.272C678.592 260.672 654.208 256 585.856 256zm0-64h147.712c85.568 0 116.608 8.96 147.904 25.6 31.36 16.768 55.872 41.344 72.576 72.64C823.104 321.536 832 352.576 832 438.08v275.84c0 85.504-8.96 116.544-25.6 147.84a174.464 174.464 0 0 1-72.64 72.576C702.464 951.104 671.424 960 585.92 960H438.08c-85.504 0-116.544-8.96-147.84-25.6a174.464 174.464 0 0 1-72.64-72.704c-16.768-31.296-25.664-62.336-25.664-147.84v-275.84c0-85.504 8.96-116.544 25.6-147.84a174.464 174.464 0 0 1 72.768-72.576c31.232-16.704 62.272-25.6 147.776-25.6z"
+        d: "M438.144 256c-68.352 0-92.736 4.672-117.76 18.112q-30.144 16.128-46.272 46.272C260.672 345.408 256 369.792 256 438.144v275.712c0 68.352 4.672 92.736 18.112 117.76q16.128 30.144 46.272 46.272C345.408 891.328 369.792 896 438.144 896h147.712c68.352 0 92.736-4.672 117.76-18.112q30.144-16.128 46.272-46.272C763.328 806.592 768 782.208 768 713.856V438.144c0-68.352-4.672-92.736-18.112-117.76a110.46 110.46 0 0 0-46.272-46.272C678.592 260.672 654.208 256 585.856 256zm0-64h147.712c85.568 0 116.608 8.96 147.904 25.6 31.36 16.768 55.872 41.344 72.576 72.64C823.104 321.536 832 352.576 832 438.08v275.84c0 85.504-8.96 116.544-25.6 147.84a174.46 174.46 0 0 1-72.64 72.576C702.464 951.104 671.424 960 585.92 960H438.08c-85.504 0-116.544-8.96-147.84-25.6a174.46 174.46 0 0 1-72.64-72.704c-16.768-31.296-25.664-62.336-25.664-147.84v-275.84c0-85.504 8.96-116.544 25.6-147.84a174.46 174.46 0 0 1 72.768-72.576c31.232-16.704 62.272-25.6 147.776-25.6z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -30344,8 +30456,8 @@ var mouse_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var mouse_default = mouse_vue_vue_type_script_setup_true_lang_default;
-var mug_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var mouse_default = _sfc_main177;
+var _sfc_main178 = /* @__PURE__ */ defineComponent({
   name: "Mug",
   __name: "mug",
   setup(__props) {
@@ -30360,8 +30472,8 @@ var mug_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     ]));
   }
 });
-var mug_default = mug_vue_vue_type_script_setup_true_lang_default;
-var mute_notification_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var mug_default = _sfc_main178;
+var _sfc_main179 = /* @__PURE__ */ defineComponent({
   name: "MuteNotification",
   __name: "mute-notification",
   setup(__props) {
@@ -30371,17 +30483,17 @@ var mute_notification_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m241.216 832 63.616-64H768V448c0-42.368-10.24-82.304-28.48-117.504l46.912-47.232C815.36 331.392 832 387.84 832 448v320h96a32 32 0 1 1 0 64zm-90.24 0H96a32 32 0 1 1 0-64h96V448a320.128 320.128 0 0 1 256-313.6V128a64 64 0 1 1 128 0v6.4a319.552 319.552 0 0 1 171.648 97.088l-45.184 45.44A256 256 0 0 0 256 448v278.336L151.04 832zM448 896h128a64 64 0 0 1-128 0"
+        d: "m241.216 832 63.616-64H768V448c0-42.368-10.24-82.304-28.48-117.504l46.912-47.232C815.36 331.392 832 387.84 832 448v320h96a32 32 0 1 1 0 64zm-90.24 0H96a32 32 0 1 1 0-64h96V448a320.13 320.13 0 0 1 256-313.6V128a64 64 0 1 1 128 0v6.4a319.55 319.55 0 0 1 171.648 97.088l-45.184 45.44A256 256 0 0 0 256 448v278.336L151.04 832zM448 896h128a64 64 0 0 1-128 0"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M150.72 859.072a32 32 0 0 1-45.44-45.056l704-708.544a32 32 0 0 1 45.44 45.056l-704 708.544z"
+        d: "M150.72 859.072a32 32 0 0 1-45.44-45.056l704-708.544a32 32 0 0 1 45.44 45.056z"
       })
     ]));
   }
 });
-var mute_notification_default = mute_notification_vue_vue_type_script_setup_true_lang_default;
-var mute_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var mute_notification_default = _sfc_main179;
+var _sfc_main180 = /* @__PURE__ */ defineComponent({
   name: "Mute",
   __name: "mute",
   setup(__props) {
@@ -30391,17 +30503,17 @@ var mute_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m412.16 592.128-45.44 45.44A191.232 191.232 0 0 1 320 512V256a192 192 0 1 1 384 0v44.352l-64 64V256a128 128 0 1 0-256 0v256c0 30.336 10.56 58.24 28.16 80.128m51.968 38.592A128 128 0 0 0 640 512v-57.152l64-64V512a192 192 0 0 1-287.68 166.528zM314.88 779.968l46.144-46.08A222.976 222.976 0 0 0 480 768h64a224 224 0 0 0 224-224v-32a32 32 0 1 1 64 0v32a288 288 0 0 1-288 288v64h64a32 32 0 1 1 0 64H416a32 32 0 1 1 0-64h64v-64c-61.44 0-118.4-19.2-165.12-52.032M266.752 737.6A286.976 286.976 0 0 1 192 544v-32a32 32 0 0 1 64 0v32c0 56.832 21.184 108.8 56.064 148.288z"
+        d: "m412.16 592.128-45.44 45.44A191.23 191.23 0 0 1 320 512V256a192 192 0 1 1 384 0v44.352l-64 64V256a128 128 0 1 0-256 0v256c0 30.336 10.56 58.24 28.16 80.128m51.968 38.592A128 128 0 0 0 640 512v-57.152l64-64V512a192 192 0 0 1-287.68 166.528zM314.88 779.968l46.144-46.08A223 223 0 0 0 480 768h64a224 224 0 0 0 224-224v-32a32 32 0 1 1 64 0v32a288 288 0 0 1-288 288v64h64a32 32 0 1 1 0 64H416a32 32 0 1 1 0-64h64v-64c-61.44 0-118.4-19.2-165.12-52.032M266.752 737.6A286.98 286.98 0 0 1 192 544v-32a32 32 0 0 1 64 0v32c0 56.832 21.184 108.8 56.064 148.288z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M150.72 859.072a32 32 0 0 1-45.44-45.056l704-708.544a32 32 0 0 1 45.44 45.056l-704 708.544z"
+        d: "M150.72 859.072a32 32 0 0 1-45.44-45.056l704-708.544a32 32 0 0 1 45.44 45.056z"
       })
     ]));
   }
 });
-var mute_default = mute_vue_vue_type_script_setup_true_lang_default;
-var no_smoking_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var mute_default = _sfc_main180;
+var _sfc_main181 = /* @__PURE__ */ defineComponent({
   name: "NoSmoking",
   __name: "no-smoking",
   setup(__props) {
@@ -30416,8 +30528,8 @@ var no_smoking_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var no_smoking_default = no_smoking_vue_vue_type_script_setup_true_lang_default;
-var notebook_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var no_smoking_default = _sfc_main181;
+var _sfc_main182 = /* @__PURE__ */ defineComponent({
   name: "Notebook",
   __name: "notebook",
   setup(__props) {
@@ -30436,8 +30548,8 @@ var notebook_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var notebook_default = notebook_vue_vue_type_script_setup_true_lang_default;
-var notification_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var notebook_default = _sfc_main182;
+var _sfc_main183 = /* @__PURE__ */ defineComponent({
   name: "Notification",
   __name: "notification",
   setup(__props) {
@@ -30456,8 +30568,8 @@ var notification_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var notification_default = notification_vue_vue_type_script_setup_true_lang_default;
-var odometer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var notification_default = _sfc_main183;
+var _sfc_main184 = /* @__PURE__ */ defineComponent({
   name: "Odometer",
   __name: "odometer",
   setup(__props) {
@@ -30480,8 +30592,8 @@ var odometer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var odometer_default = odometer_vue_vue_type_script_setup_true_lang_default;
-var office_building_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var odometer_default = _sfc_main184;
+var _sfc_main185 = /* @__PURE__ */ defineComponent({
   name: "OfficeBuilding",
   __name: "office-building",
   setup(__props) {
@@ -30504,8 +30616,8 @@ var office_building_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     ]));
   }
 });
-var office_building_default = office_building_vue_vue_type_script_setup_true_lang_default;
-var open_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var office_building_default = _sfc_main185;
+var _sfc_main186 = /* @__PURE__ */ defineComponent({
   name: "Open",
   __name: "open",
   setup(__props) {
@@ -30515,7 +30627,7 @@ var open_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M329.956 257.138a254.862 254.862 0 0 0 0 509.724h364.088a254.862 254.862 0 0 0 0-509.724zm0-72.818h364.088a327.68 327.68 0 1 1 0 655.36H329.956a327.68 327.68 0 1 1 0-655.36z"
+        d: "M329.956 257.138a254.862 254.862 0 0 0 0 509.724h364.088a254.862 254.862 0 0 0 0-509.724zm0-72.818h364.088a327.68 327.68 0 1 1 0 655.36H329.956a327.68 327.68 0 1 1 0-655.36"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -30524,8 +30636,8 @@ var open_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var open_default = open_vue_vue_type_script_setup_true_lang_default;
-var operation_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var open_default = _sfc_main186;
+var _sfc_main187 = /* @__PURE__ */ defineComponent({
   name: "Operation",
   __name: "operation",
   setup(__props) {
@@ -30540,8 +30652,8 @@ var operation_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var operation_default = operation_vue_vue_type_script_setup_true_lang_default;
-var opportunity_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var operation_default = _sfc_main187;
+var _sfc_main188 = /* @__PURE__ */ defineComponent({
   name: "Opportunity",
   __name: "opportunity",
   setup(__props) {
@@ -30551,13 +30663,13 @@ var opportunity_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M384 960v-64h192.064v64zm448-544a350.656 350.656 0 0 1-128.32 271.424C665.344 719.04 640 763.776 640 813.504V832H320v-14.336c0-48-19.392-95.36-57.216-124.992a351.552 351.552 0 0 1-128.448-344.256c25.344-136.448 133.888-248.128 269.76-276.48A352.384 352.384 0 0 1 832 416m-544 32c0-132.288 75.904-224 192-224v-64c-154.432 0-256 122.752-256 288z"
+        d: "M384 960v-64h192.064v64zm448-544a350.66 350.66 0 0 1-128.32 271.424C665.344 719.04 640 763.776 640 813.504V832H320v-14.336c0-48-19.392-95.36-57.216-124.992a351.55 351.55 0 0 1-128.448-344.256c25.344-136.448 133.888-248.128 269.76-276.48A352.384 352.384 0 0 1 832 416m-544 32c0-132.288 75.904-224 192-224v-64c-154.432 0-256 122.752-256 288z"
       })
     ]));
   }
 });
-var opportunity_default = opportunity_vue_vue_type_script_setup_true_lang_default;
-var orange_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var opportunity_default = _sfc_main188;
+var _sfc_main189 = /* @__PURE__ */ defineComponent({
   name: "Orange",
   __name: "orange",
   setup(__props) {
@@ -30567,13 +30679,13 @@ var orange_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M544 894.72a382.336 382.336 0 0 0 215.936-89.472L577.024 622.272c-10.24 6.016-21.248 10.688-33.024 13.696v258.688zm261.248-134.784A382.336 382.336 0 0 0 894.656 544H635.968c-3.008 11.776-7.68 22.848-13.696 33.024l182.976 182.912zM894.656 480a382.336 382.336 0 0 0-89.408-215.936L622.272 446.976c6.016 10.24 10.688 21.248 13.696 33.024h258.688zm-134.72-261.248A382.336 382.336 0 0 0 544 129.344v258.688c11.776 3.008 22.848 7.68 33.024 13.696zM480 129.344a382.336 382.336 0 0 0-215.936 89.408l182.912 182.976c10.24-6.016 21.248-10.688 33.024-13.696zm-261.248 134.72A382.336 382.336 0 0 0 129.344 480h258.688c3.008-11.776 7.68-22.848 13.696-33.024zM129.344 544a382.336 382.336 0 0 0 89.408 215.936l182.976-182.912A127.232 127.232 0 0 1 388.032 544zm134.72 261.248A382.336 382.336 0 0 0 480 894.656V635.968a127.232 127.232 0 0 1-33.024-13.696zM512 960a448 448 0 1 1 0-896 448 448 0 0 1 0 896m0-384a64 64 0 1 0 0-128 64 64 0 0 0 0 128"
+        d: "M544 894.72a382.34 382.34 0 0 0 215.936-89.472L577.024 622.272c-10.24 6.016-21.248 10.688-33.024 13.696v258.688zm261.248-134.784A382.34 382.34 0 0 0 894.656 544H635.968c-3.008 11.776-7.68 22.848-13.696 33.024zM894.656 480a382.34 382.34 0 0 0-89.408-215.936L622.272 446.976c6.016 10.24 10.688 21.248 13.696 33.024zm-134.72-261.248A382.34 382.34 0 0 0 544 129.344v258.688c11.776 3.008 22.848 7.68 33.024 13.696zM480 129.344a382.34 382.34 0 0 0-215.936 89.408l182.912 182.976c10.24-6.016 21.248-10.688 33.024-13.696zm-261.248 134.72A382.34 382.34 0 0 0 129.344 480h258.688c3.008-11.776 7.68-22.848 13.696-33.024zM129.344 544a382.34 382.34 0 0 0 89.408 215.936l182.976-182.912A127.2 127.2 0 0 1 388.032 544zm134.72 261.248A382.34 382.34 0 0 0 480 894.656V635.968a127.2 127.2 0 0 1-33.024-13.696zM512 960a448 448 0 1 1 0-896 448 448 0 0 1 0 896m0-384a64 64 0 1 0 0-128 64 64 0 0 0 0 128"
       })
     ]));
   }
 });
-var orange_default = orange_vue_vue_type_script_setup_true_lang_default;
-var paperclip_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var orange_default = _sfc_main189;
+var _sfc_main190 = /* @__PURE__ */ defineComponent({
   name: "Paperclip",
   __name: "paperclip",
   setup(__props) {
@@ -30583,13 +30695,13 @@ var paperclip_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M602.496 240.448A192 192 0 1 1 874.048 512l-316.8 316.8A256 256 0 0 1 195.2 466.752L602.496 59.456l45.248 45.248L240.448 512A192 192 0 0 0 512 783.552l316.8-316.8a128 128 0 1 0-181.056-181.056L353.6 579.904a32 32 0 1 0 45.248 45.248l294.144-294.144 45.312 45.248L444.096 670.4a96 96 0 1 1-135.744-135.744l294.144-294.208z"
+        d: "M602.496 240.448A192 192 0 1 1 874.048 512l-316.8 316.8A256 256 0 0 1 195.2 466.752L602.496 59.456l45.248 45.248L240.448 512A192 192 0 0 0 512 783.552l316.8-316.8a128 128 0 1 0-181.056-181.056L353.6 579.904a32 32 0 1 0 45.248 45.248l294.144-294.144 45.312 45.248L444.096 670.4a96 96 0 1 1-135.744-135.744z"
       })
     ]));
   }
 });
-var paperclip_default = paperclip_vue_vue_type_script_setup_true_lang_default;
-var partly_cloudy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var paperclip_default = _sfc_main190;
+var _sfc_main191 = /* @__PURE__ */ defineComponent({
   name: "PartlyCloudy",
   __name: "partly-cloudy",
   setup(__props) {
@@ -30603,13 +30715,13 @@ var partly_cloudy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M139.84 501.888a256 256 0 1 1 417.856-277.12c-17.728 2.176-38.208 8.448-61.504 18.816A192 192 0 1 0 189.12 460.48a6003.84 6003.84 0 0 0-49.28 41.408z"
+        d: "M139.84 501.888a256 256 0 1 1 417.856-277.12c-17.728 2.176-38.208 8.448-61.504 18.816A192 192 0 1 0 189.12 460.48a6004 6004 0 0 0-49.28 41.408"
       })
     ]));
   }
 });
-var partly_cloudy_default = partly_cloudy_vue_vue_type_script_setup_true_lang_default;
-var pear_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var partly_cloudy_default = _sfc_main191;
+var _sfc_main192 = /* @__PURE__ */ defineComponent({
   name: "Pear",
   __name: "pear",
   setup(__props) {
@@ -30619,13 +30731,13 @@ var pear_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M542.336 258.816a443.255 443.255 0 0 0-9.024 25.088 32 32 0 1 1-60.8-20.032l1.088-3.328a162.688 162.688 0 0 0-122.048 131.392l-17.088 102.72-20.736 15.36C256.192 552.704 224 610.88 224 672c0 120.576 126.4 224 288 224s288-103.424 288-224c0-61.12-32.192-119.296-89.728-161.92l-20.736-15.424-17.088-102.72a162.688 162.688 0 0 0-130.112-133.12zm-40.128-66.56c7.936-15.552 16.576-30.08 25.92-43.776 23.296-33.92 49.408-59.776 78.528-77.12a32 32 0 1 1 32.704 55.04c-20.544 12.224-40.064 31.552-58.432 58.304a316.608 316.608 0 0 0-9.792 15.104 226.688 226.688 0 0 1 164.48 181.568l12.8 77.248C819.456 511.36 864 587.392 864 672c0 159.04-157.568 288-352 288S160 831.04 160 672c0-84.608 44.608-160.64 115.584-213.376l12.8-77.248a226.624 226.624 0 0 1 213.76-189.184z"
+        d: "M542.336 258.816a443 443 0 0 0-9.024 25.088 32 32 0 1 1-60.8-20.032l1.088-3.328a162.69 162.69 0 0 0-122.048 131.392l-17.088 102.72-20.736 15.36C256.192 552.704 224 610.88 224 672c0 120.576 126.4 224 288 224s288-103.424 288-224c0-61.12-32.192-119.296-89.728-161.92l-20.736-15.424-17.088-102.72a162.69 162.69 0 0 0-130.112-133.12m-40.128-66.56c7.936-15.552 16.576-30.08 25.92-43.776 23.296-33.92 49.408-59.776 78.528-77.12a32 32 0 1 1 32.704 55.04c-20.544 12.224-40.064 31.552-58.432 58.304a317 317 0 0 0-9.792 15.104 226.69 226.69 0 0 1 164.48 181.568l12.8 77.248C819.456 511.36 864 587.392 864 672c0 159.04-157.568 288-352 288S160 831.04 160 672c0-84.608 44.608-160.64 115.584-213.376l12.8-77.248a226.624 226.624 0 0 1 213.76-189.184z"
       })
     ]));
   }
 });
-var pear_default = pear_vue_vue_type_script_setup_true_lang_default;
-var phone_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var pear_default = _sfc_main192;
+var _sfc_main193 = /* @__PURE__ */ defineComponent({
   name: "PhoneFilled",
   __name: "phone-filled",
   setup(__props) {
@@ -30635,13 +30747,13 @@ var phone_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M199.232 125.568 90.624 379.008a32 32 0 0 0 6.784 35.2l512.384 512.384a32 32 0 0 0 35.2 6.784l253.44-108.608a32 32 0 0 0 10.048-52.032L769.6 633.92a32 32 0 0 0-36.928-5.952l-130.176 65.088-271.488-271.552 65.024-130.176a32 32 0 0 0-5.952-36.928L251.2 115.52a32 32 0 0 0-51.968 10.048z"
+        d: "M199.232 125.568 90.624 379.008a32 32 0 0 0 6.784 35.2l512.384 512.384a32 32 0 0 0 35.2 6.784l253.44-108.608a32 32 0 0 0 10.048-52.032L769.6 633.92a32 32 0 0 0-36.928-5.952l-130.176 65.088-271.488-271.552 65.024-130.176a32 32 0 0 0-5.952-36.928L251.2 115.52a32 32 0 0 0-51.968 10.048"
       })
     ]));
   }
 });
-var phone_filled_default = phone_filled_vue_vue_type_script_setup_true_lang_default;
-var phone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var phone_filled_default = _sfc_main193;
+var _sfc_main194 = /* @__PURE__ */ defineComponent({
   name: "Phone",
   __name: "phone",
   setup(__props) {
@@ -30651,13 +30763,13 @@ var phone_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M79.36 432.256 591.744 944.64a32 32 0 0 0 35.2 6.784l253.44-108.544a32 32 0 0 0 9.984-52.032l-153.856-153.92a32 32 0 0 0-36.928-6.016l-69.888 34.944L358.08 394.24l35.008-69.888a32 32 0 0 0-5.952-36.928L233.152 133.568a32 32 0 0 0-52.032 10.048L72.512 397.056a32 32 0 0 0 6.784 35.2zm60.48-29.952 81.536-190.08L325.568 316.48l-24.64 49.216-20.608 41.216 32.576 32.64 271.552 271.552 32.64 32.64 41.216-20.672 49.28-24.576 104.192 104.128-190.08 81.472L139.84 402.304zM512 320v-64a256 256 0 0 1 256 256h-64a192 192 0 0 0-192-192m0-192V64a448 448 0 0 1 448 448h-64a384 384 0 0 0-384-384"
+        d: "M79.36 432.256 591.744 944.64a32 32 0 0 0 35.2 6.784l253.44-108.544a32 32 0 0 0 9.984-52.032l-153.856-153.92a32 32 0 0 0-36.928-6.016l-69.888 34.944L358.08 394.24l35.008-69.888a32 32 0 0 0-5.952-36.928L233.152 133.568a32 32 0 0 0-52.032 10.048L72.512 397.056a32 32 0 0 0 6.784 35.2zm60.48-29.952 81.536-190.08L325.568 316.48l-24.64 49.216-20.608 41.216 32.576 32.64 271.552 271.552 32.64 32.64 41.216-20.672 49.28-24.576 104.192 104.128-190.08 81.472zM512 320v-64a256 256 0 0 1 256 256h-64a192 192 0 0 0-192-192m0-192V64a448 448 0 0 1 448 448h-64a384 384 0 0 0-384-384"
       })
     ]));
   }
 });
-var phone_default = phone_vue_vue_type_script_setup_true_lang_default;
-var picture_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var phone_default = _sfc_main194;
+var _sfc_main195 = /* @__PURE__ */ defineComponent({
   name: "PictureFilled",
   __name: "picture-filled",
   setup(__props) {
@@ -30672,8 +30784,8 @@ var picture_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
     ]));
   }
 });
-var picture_filled_default = picture_filled_vue_vue_type_script_setup_true_lang_default;
-var picture_rounded_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var picture_filled_default = _sfc_main195;
+var _sfc_main196 = /* @__PURE__ */ defineComponent({
   name: "PictureRounded",
   __name: "picture-rounded",
   setup(__props) {
@@ -30687,13 +30799,13 @@ var picture_rounded_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M640 288q64 0 64 64t-64 64q-64 0-64-64t64-64M214.656 790.656l-45.312-45.312 185.664-185.6a96 96 0 0 1 123.712-10.24l138.24 98.688a32 32 0 0 0 39.872-2.176L906.688 422.4l42.624 47.744L699.52 693.696a96 96 0 0 1-119.808 6.592l-138.24-98.752a32 32 0 0 0-41.152 3.456l-185.664 185.6z"
+        d: "M640 288q64 0 64 64t-64 64-64-64 64-64M214.656 790.656l-45.312-45.312 185.664-185.6a96 96 0 0 1 123.712-10.24l138.24 98.688a32 32 0 0 0 39.872-2.176L906.688 422.4l42.624 47.744L699.52 693.696a96 96 0 0 1-119.808 6.592l-138.24-98.752a32 32 0 0 0-41.152 3.456l-185.664 185.6z"
       })
     ]));
   }
 });
-var picture_rounded_default = picture_rounded_vue_vue_type_script_setup_true_lang_default;
-var picture_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var picture_rounded_default = _sfc_main196;
+var _sfc_main197 = /* @__PURE__ */ defineComponent({
   name: "Picture",
   __name: "picture",
   setup(__props) {
@@ -30707,13 +30819,13 @@ var picture_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M384 288q64 0 64 64t-64 64q-64 0-64-64t64-64M185.408 876.992l-50.816-38.912L350.72 556.032a96 96 0 0 1 134.592-17.856l1.856 1.472 122.88 99.136a32 32 0 0 0 44.992-4.864l216-269.888 49.92 39.936-215.808 269.824-.256.32a96 96 0 0 1-135.04 14.464l-122.88-99.072-.64-.512a32 32 0 0 0-44.8 5.952z"
+        d: "M384 288q64 0 64 64t-64 64-64-64 64-64M185.408 876.992l-50.816-38.912L350.72 556.032a96 96 0 0 1 134.592-17.856l1.856 1.472 122.88 99.136a32 32 0 0 0 44.992-4.864l216-269.888 49.92 39.936-215.808 269.824-.256.32a96 96 0 0 1-135.04 14.464l-122.88-99.072-.64-.512a32 32 0 0 0-44.8 5.952z"
       })
     ]));
   }
 });
-var picture_default = picture_vue_vue_type_script_setup_true_lang_default;
-var pie_chart_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var picture_default = _sfc_main197;
+var _sfc_main198 = /* @__PURE__ */ defineComponent({
   name: "PieChart",
   __name: "pie-chart",
   setup(__props) {
@@ -30723,17 +30835,17 @@ var pie_chart_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M448 68.48v64.832A384.128 384.128 0 0 0 512 896a384.128 384.128 0 0 0 378.688-320h64.768A448.128 448.128 0 0 1 64 512 448.128 448.128 0 0 1 448 68.48z"
+        d: "M448 68.48v64.832A384.128 384.128 0 0 0 512 896a384.13 384.13 0 0 0 378.688-320h64.768A448.128 448.128 0 0 1 64 512 448.13 448.13 0 0 1 448 68.48"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M576 97.28V448h350.72A384.064 384.064 0 0 0 576 97.28zM512 64V33.152A448 448 0 0 1 990.848 512H512z"
+        d: "M576 97.28V448h350.72A384.064 384.064 0 0 0 576 97.28M512 64V33.152A448 448 0 0 1 990.848 512H512z"
       })
     ]));
   }
 });
-var pie_chart_default = pie_chart_vue_vue_type_script_setup_true_lang_default;
-var place_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var pie_chart_default = _sfc_main198;
+var _sfc_main199 = /* @__PURE__ */ defineComponent({
   name: "Place",
   __name: "place",
   setup(__props) {
@@ -30756,8 +30868,8 @@ var place_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var place_default = place_vue_vue_type_script_setup_true_lang_default;
-var platform_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var place_default = _sfc_main199;
+var _sfc_main200 = /* @__PURE__ */ defineComponent({
   name: "Platform",
   __name: "platform",
   setup(__props) {
@@ -30772,8 +30884,8 @@ var platform_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var platform_default = platform_vue_vue_type_script_setup_true_lang_default;
-var plus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var platform_default = _sfc_main200;
+var _sfc_main201 = /* @__PURE__ */ defineComponent({
   name: "Plus",
   __name: "plus",
   setup(__props) {
@@ -30788,8 +30900,8 @@ var plus_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var plus_default = plus_vue_vue_type_script_setup_true_lang_default;
-var pointer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var plus_default = _sfc_main201;
+var _sfc_main202 = /* @__PURE__ */ defineComponent({
   name: "Pointer",
   __name: "pointer",
   setup(__props) {
@@ -30799,13 +30911,13 @@ var pointer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M511.552 128c-35.584 0-64.384 28.8-64.384 64.448v516.48L274.048 570.88a94.272 94.272 0 0 0-112.896-3.456 44.416 44.416 0 0 0-8.96 62.208L332.8 870.4A64 64 0 0 0 384 896h512V575.232a64 64 0 0 0-45.632-61.312l-205.952-61.76A96 96 0 0 1 576 360.192V192.448C576 156.8 547.2 128 511.552 128M359.04 556.8l24.128 19.2V192.448a128.448 128.448 0 1 1 256.832 0v167.744a32 32 0 0 0 22.784 30.656l206.016 61.76A128 128 0 0 1 960 575.232V896a64 64 0 0 1-64 64H384a128 128 0 0 1-102.4-51.2L101.056 668.032A108.416 108.416 0 0 1 128 512.512a158.272 158.272 0 0 1 185.984 8.32z"
+        d: "M511.552 128c-35.584 0-64.384 28.8-64.384 64.448v516.48L274.048 570.88a94.27 94.27 0 0 0-112.896-3.456 44.416 44.416 0 0 0-8.96 62.208L332.8 870.4A64 64 0 0 0 384 896h512V575.232a64 64 0 0 0-45.632-61.312l-205.952-61.76A96 96 0 0 1 576 360.192V192.448C576 156.8 547.2 128 511.552 128M359.04 556.8l24.128 19.2V192.448a128.448 128.448 0 1 1 256.832 0v167.744a32 32 0 0 0 22.784 30.656l206.016 61.76A128 128 0 0 1 960 575.232V896a64 64 0 0 1-64 64H384a128 128 0 0 1-102.4-51.2L101.056 668.032A108.416 108.416 0 0 1 128 512.512a158.27 158.27 0 0 1 185.984 8.32z"
       })
     ]));
   }
 });
-var pointer_default = pointer_vue_vue_type_script_setup_true_lang_default;
-var position_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var pointer_default = _sfc_main202;
+var _sfc_main203 = /* @__PURE__ */ defineComponent({
   name: "Position",
   __name: "position",
   setup(__props) {
@@ -30815,13 +30927,13 @@ var position_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m249.6 417.088 319.744 43.072 39.168 310.272L845.12 178.88 249.6 417.088zm-129.024 47.168a32 32 0 0 1-7.68-61.44l777.792-311.04a32 32 0 0 1 41.6 41.6l-310.336 775.68a32 32 0 0 1-61.44-7.808L512 516.992l-391.424-52.736z"
+        d: "m249.6 417.088 319.744 43.072 39.168 310.272L845.12 178.88zm-129.024 47.168a32 32 0 0 1-7.68-61.44l777.792-311.04a32 32 0 0 1 41.6 41.6l-310.336 775.68a32 32 0 0 1-61.44-7.808L512 516.992z"
       })
     ]));
   }
 });
-var position_default = position_vue_vue_type_script_setup_true_lang_default;
-var postcard_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var position_default = _sfc_main203;
+var _sfc_main204 = /* @__PURE__ */ defineComponent({
   name: "Postcard",
   __name: "postcard",
   setup(__props) {
@@ -30840,8 +30952,8 @@ var postcard_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var postcard_default = postcard_vue_vue_type_script_setup_true_lang_default;
-var pouring_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var postcard_default = _sfc_main204;
+var _sfc_main205 = /* @__PURE__ */ defineComponent({
   name: "Pouring",
   __name: "pouring",
   setup(__props) {
@@ -30851,13 +30963,13 @@ var pouring_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m739.328 291.328-35.2-6.592-12.8-33.408a192.064 192.064 0 0 0-365.952 23.232l-9.92 40.896-41.472 7.04a176.32 176.32 0 0 0-146.24 173.568c0 97.28 78.72 175.936 175.808 175.936h400a192 192 0 0 0 35.776-380.672zM959.552 480a256 256 0 0 1-256 256h-400A239.808 239.808 0 0 1 63.744 496.192a240.32 240.32 0 0 1 199.488-236.8 256.128 256.128 0 0 1 487.872-30.976A256.064 256.064 0 0 1 959.552 480M224 800a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32m192 0a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32m192 0a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32m192 0a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32"
+        d: "m739.328 291.328-35.2-6.592-12.8-33.408a192.064 192.064 0 0 0-365.952 23.232l-9.92 40.896-41.472 7.04a176.32 176.32 0 0 0-146.24 173.568c0 97.28 78.72 175.936 175.808 175.936h400a192 192 0 0 0 35.776-380.672M959.552 480a256 256 0 0 1-256 256h-400A239.81 239.81 0 0 1 63.744 496.192a240.32 240.32 0 0 1 199.488-236.8 256.128 256.128 0 0 1 487.872-30.976A256.064 256.064 0 0 1 959.552 480M224 800a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32m192 0a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32m192 0a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32m192 0a32 32 0 0 1 32 32v96a32 32 0 1 1-64 0v-96a32 32 0 0 1 32-32"
       })
     ]));
   }
 });
-var pouring_default = pouring_vue_vue_type_script_setup_true_lang_default;
-var present_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var pouring_default = _sfc_main205;
+var _sfc_main206 = /* @__PURE__ */ defineComponent({
   name: "Present",
   __name: "present",
   setup(__props) {
@@ -30884,8 +30996,8 @@ var present_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var present_default = present_vue_vue_type_script_setup_true_lang_default;
-var price_tag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var present_default = _sfc_main206;
+var _sfc_main207 = /* @__PURE__ */ defineComponent({
   name: "PriceTag",
   __name: "price-tag",
   setup(__props) {
@@ -30895,7 +31007,7 @@ var price_tag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M224 318.336V896h576V318.336L552.512 115.84a64 64 0 0 0-81.024 0zM593.024 66.304l259.2 212.096A32 32 0 0 1 864 303.168V928a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V303.168a32 32 0 0 1 11.712-24.768l259.2-212.096a128 128 0 0 1 162.112 0z"
+        d: "M224 318.336V896h576V318.336L552.512 115.84a64 64 0 0 0-81.024 0zM593.024 66.304l259.2 212.096A32 32 0 0 1 864 303.168V928a32 32 0 0 1-32 32H192a32 32 0 0 1-32-32V303.168a32 32 0 0 1 11.712-24.768l259.2-212.096a128 128 0 0 1 162.112 0"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -30904,8 +31016,8 @@ var price_tag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var price_tag_default = price_tag_vue_vue_type_script_setup_true_lang_default;
-var printer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var price_tag_default = _sfc_main207;
+var _sfc_main208 = /* @__PURE__ */ defineComponent({
   name: "Printer",
   __name: "printer",
   setup(__props) {
@@ -30915,13 +31027,13 @@ var printer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M256 768H105.024c-14.272 0-19.456-1.472-24.64-4.288a29.056 29.056 0 0 1-12.16-12.096C65.536 746.432 64 741.248 64 727.04V379.072c0-42.816 4.48-58.304 12.8-73.984 8.384-15.616 20.672-27.904 36.288-36.288 15.68-8.32 31.168-12.8 73.984-12.8H256V64h512v192h68.928c42.816 0 58.304 4.48 73.984 12.8 15.616 8.384 27.904 20.672 36.288 36.288 8.32 15.68 12.8 31.168 12.8 73.984v347.904c0 14.272-1.472 19.456-4.288 24.64a29.056 29.056 0 0 1-12.096 12.16c-5.184 2.752-10.368 4.224-24.64 4.224H768v192H256zm64-192v320h384V576zm-64 128V512h512v192h128V379.072c0-29.376-1.408-36.48-5.248-43.776a23.296 23.296 0 0 0-10.048-10.048c-7.232-3.84-14.4-5.248-43.776-5.248H187.072c-29.376 0-36.48 1.408-43.776 5.248a23.296 23.296 0 0 0-10.048 10.048c-3.84 7.232-5.248 14.4-5.248 43.776V704zm64-448h384V128H320zm-64 128h64v64h-64zm128 0h64v64h-64z"
+        d: "M256 768H105.024c-14.272 0-19.456-1.472-24.64-4.288a29.06 29.06 0 0 1-12.16-12.096C65.536 746.432 64 741.248 64 727.04V379.072c0-42.816 4.48-58.304 12.8-73.984 8.384-15.616 20.672-27.904 36.288-36.288 15.68-8.32 31.168-12.8 73.984-12.8H256V64h512v192h68.928c42.816 0 58.304 4.48 73.984 12.8 15.616 8.384 27.904 20.672 36.288 36.288 8.32 15.68 12.8 31.168 12.8 73.984v347.904c0 14.272-1.472 19.456-4.288 24.64a29.06 29.06 0 0 1-12.096 12.16c-5.184 2.752-10.368 4.224-24.64 4.224H768v192H256zm64-192v320h384V576zm-64 128V512h512v192h128V379.072c0-29.376-1.408-36.48-5.248-43.776a23.3 23.3 0 0 0-10.048-10.048c-7.232-3.84-14.4-5.248-43.776-5.248H187.072c-29.376 0-36.48 1.408-43.776 5.248a23.3 23.3 0 0 0-10.048 10.048c-3.84 7.232-5.248 14.4-5.248 43.776V704zm64-448h384V128H320zm-64 128h64v64h-64zm128 0h64v64h-64z"
       })
     ]));
   }
 });
-var printer_default = printer_vue_vue_type_script_setup_true_lang_default;
-var promotion_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var printer_default = _sfc_main208;
+var _sfc_main209 = /* @__PURE__ */ defineComponent({
   name: "Promotion",
   __name: "promotion",
   setup(__props) {
@@ -30936,20 +31048,19 @@ var promotion_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var promotion_default = promotion_vue_vue_type_script_setup_true_lang_default;
-var quartz_watch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var promotion_default = _sfc_main209;
+var _sfc_main210 = /* @__PURE__ */ defineComponent({
   name: "QuartzWatch",
   __name: "quartz-watch",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M422.02 602.01v-.03c-6.68-5.99-14.35-8.83-23.01-8.51-8.67.32-16.17 3.66-22.5 10.02-6.33 6.36-9.5 13.7-9.5 22.02s3 15.82 8.99 22.5c8.68 8.68 19.02 11.35 31.01 8s19.49-10.85 22.5-22.5c3.01-11.65.51-22.15-7.49-31.49zM384 512c0-9.35-3-17.02-8.99-23.01-6-5.99-13.66-8.99-23.01-8.99-9.35 0-17.02 3-23.01 8.99-5.99 6-8.99 13.66-8.99 23.01s3 17.02 8.99 23.01c6 5.99 13.66 8.99 23.01 8.99 9.35 0 17.02-3 23.01-8.99 5.99-6 8.99-13.67 8.99-23.01m6.53-82.49c11.65 3.01 22.15.51 31.49-7.49h.04c5.99-6.68 8.83-14.34 8.51-23.01-.32-8.67-3.66-16.16-10.02-22.5-6.36-6.33-13.7-9.5-22.02-9.5s-15.82 3-22.5 8.99c-8.68 8.69-11.35 19.02-8 31.01 3.35 11.99 10.85 19.49 22.5 22.5zm242.94 0c11.67-3.03 19.01-10.37 22.02-22.02 3.01-11.65.51-22.15-7.49-31.49h.01c-6.68-5.99-14.18-8.99-22.5-8.99s-15.66 3.16-22.02 9.5c-6.36 6.34-9.7 13.84-10.02 22.5-.32 8.66 2.52 16.33 8.51 23.01 9.32 8.02 19.82 10.52 31.49 7.49M512 640c-9.35 0-17.02 3-23.01 8.99-5.99 6-8.99 13.66-8.99 23.01s3 17.02 8.99 23.01c6 5.99 13.67 8.99 23.01 8.99 9.35 0 17.02-3 23.01-8.99 5.99-6 8.99-13.66 8.99-23.01s-3-17.02-8.99-23.01c-6-5.99-13.66-8.99-23.01-8.99m183.01-151.01c-6-5.99-13.66-8.99-23.01-8.99s-17.02 3-23.01 8.99c-5.99 6-8.99 13.66-8.99 23.01s3 17.02 8.99 23.01c6 5.99 13.66 8.99 23.01 8.99s17.02-3 23.01-8.99c5.99-6 8.99-13.67 8.99-23.01 0-9.35-3-17.02-8.99-23.01"
+        d: "M422.02 602.01v-.03c-6.68-5.99-14.35-8.83-23.01-8.51q-13.005.48-22.5 10.02c-6.33 6.36-9.5 13.7-9.5 22.02s3 15.82 8.99 22.5c8.68 8.68 19.02 11.35 31.01 8s19.49-10.85 22.5-22.5.51-22.15-7.49-31.49zM384 512c0-9.35-3-17.02-8.99-23.01-6-5.99-13.66-8.99-23.01-8.99s-17.02 3-23.01 8.99c-5.99 6-8.99 13.66-8.99 23.01s3 17.02 8.99 23.01c6 5.99 13.66 8.99 23.01 8.99s17.02-3 23.01-8.99c5.99-6 8.99-13.67 8.99-23.01m6.53-82.49c11.65 3.01 22.15.51 31.49-7.49h.04c5.99-6.68 8.83-14.34 8.51-23.01s-3.66-16.16-10.02-22.5c-6.36-6.33-13.7-9.5-22.02-9.5s-15.82 3-22.5 8.99c-8.68 8.69-11.35 19.02-8 31.01q5.025 17.985 22.5 22.5m242.94 0q17.505-4.545 22.02-22.02c3.01-11.65.51-22.15-7.49-31.49h.01c-6.68-5.99-14.18-8.99-22.5-8.99s-15.66 3.16-22.02 9.5q-9.54 9.51-10.02 22.5c-.32 8.66 2.52 16.33 8.51 23.01 9.32 8.02 19.82 10.52 31.49 7.49M512 640c-9.35 0-17.02 3-23.01 8.99-5.99 6-8.99 13.66-8.99 23.01s3 17.02 8.99 23.01c6 5.99 13.67 8.99 23.01 8.99 9.35 0 17.02-3 23.01-8.99 5.99-6 8.99-13.66 8.99-23.01s-3-17.02-8.99-23.01c-6-5.99-13.66-8.99-23.01-8.99m183.01-151.01c-6-5.99-13.66-8.99-23.01-8.99s-17.02 3-23.01 8.99c-5.99 6-8.99 13.66-8.99 23.01s3 17.02 8.99 23.01c6 5.99 13.66 8.99 23.01 8.99s17.02-3 23.01-8.99c5.99-6 8.99-13.67 8.99-23.01 0-9.35-3-17.02-8.99-23.01"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -30957,13 +31068,13 @@ var quartz_watch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 320c-9.35 0-17.02 3-23.01 8.99-5.99 6-8.99 13.66-8.99 23.01 0 9.35 3 17.02 8.99 23.01 6 5.99 13.67 8.99 23.01 8.99 9.35 0 17.02-3 23.01-8.99 5.99-6 8.99-13.66 8.99-23.01 0-9.35-3-17.02-8.99-23.01-6-5.99-13.66-8.99-23.01-8.99m112.99 273.5c-8.66-.32-16.33 2.52-23.01 8.51-7.98 9.32-10.48 19.82-7.49 31.49s10.49 19.17 22.5 22.5 22.35.66 31.01-8v.04c5.99-6.68 8.99-14.18 8.99-22.5s-3.16-15.66-9.5-22.02-13.84-9.7-22.5-10.02"
+        d: "M512 320c-9.35 0-17.02 3-23.01 8.99-5.99 6-8.99 13.66-8.99 23.01s3 17.02 8.99 23.01c6 5.99 13.67 8.99 23.01 8.99 9.35 0 17.02-3 23.01-8.99 5.99-6 8.99-13.66 8.99-23.01s-3-17.02-8.99-23.01c-6-5.99-13.66-8.99-23.01-8.99m112.99 273.5c-8.66-.32-16.33 2.52-23.01 8.51-7.98 9.32-10.48 19.82-7.49 31.49s10.49 19.17 22.5 22.5 22.35.66 31.01-8v.04c5.99-6.68 8.99-14.18 8.99-22.5s-3.16-15.66-9.5-22.02-13.84-9.7-22.5-10.02"
       })
     ]));
   }
 });
-var quartz_watch_default = quartz_watch_vue_vue_type_script_setup_true_lang_default;
-var question_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var quartz_watch_default = _sfc_main210;
+var _sfc_main211 = /* @__PURE__ */ defineComponent({
   name: "QuestionFilled",
   __name: "question-filled",
   setup(__props) {
@@ -30973,13 +31084,13 @@ var question_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ *
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m23.744 191.488c-52.096 0-92.928 14.784-123.2 44.352-30.976 29.568-45.76 70.4-45.76 122.496h80.256c0-29.568 5.632-52.8 17.6-68.992 13.376-19.712 35.2-28.864 66.176-28.864 23.936 0 42.944 6.336 56.32 19.712 12.672 13.376 19.712 31.68 19.712 54.912 0 17.6-6.336 34.496-19.008 49.984l-8.448 9.856c-45.76 40.832-73.216 70.4-82.368 89.408-9.856 19.008-14.08 42.24-14.08 68.992v9.856h80.96v-9.856c0-16.896 3.52-31.68 10.56-45.76 6.336-12.672 15.488-24.64 28.16-35.2 33.792-29.568 54.208-48.576 60.544-55.616 16.896-22.528 26.048-51.392 26.048-86.592 0-42.944-14.08-76.736-42.24-101.376-28.16-25.344-65.472-37.312-111.232-37.312zm-12.672 406.208a54.272 54.272 0 0 0-38.72 14.784 49.408 49.408 0 0 0-15.488 38.016c0 15.488 4.928 28.16 15.488 38.016A54.848 54.848 0 0 0 523.072 768c15.488 0 28.16-4.928 38.72-14.784a51.52 51.52 0 0 0 16.192-38.72 51.968 51.968 0 0 0-15.488-38.016 55.936 55.936 0 0 0-39.424-14.784z"
+        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m23.744 191.488c-52.096 0-92.928 14.784-123.2 44.352-30.976 29.568-45.76 70.4-45.76 122.496h80.256c0-29.568 5.632-52.8 17.6-68.992 13.376-19.712 35.2-28.864 66.176-28.864 23.936 0 42.944 6.336 56.32 19.712 12.672 13.376 19.712 31.68 19.712 54.912 0 17.6-6.336 34.496-19.008 49.984l-8.448 9.856c-45.76 40.832-73.216 70.4-82.368 89.408-9.856 19.008-14.08 42.24-14.08 68.992v9.856h80.96v-9.856c0-16.896 3.52-31.68 10.56-45.76 6.336-12.672 15.488-24.64 28.16-35.2 33.792-29.568 54.208-48.576 60.544-55.616 16.896-22.528 26.048-51.392 26.048-86.592q0-64.416-42.24-101.376c-28.16-25.344-65.472-37.312-111.232-37.312m-12.672 406.208a54.27 54.27 0 0 0-38.72 14.784 49.4 49.4 0 0 0-15.488 38.016c0 15.488 4.928 28.16 15.488 38.016A54.85 54.85 0 0 0 523.072 768c15.488 0 28.16-4.928 38.72-14.784a51.52 51.52 0 0 0 16.192-38.72 51.97 51.97 0 0 0-15.488-38.016 55.94 55.94 0 0 0-39.424-14.784"
       })
     ]));
   }
 });
-var question_filled_default = question_filled_vue_vue_type_script_setup_true_lang_default;
-var rank_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var question_filled_default = _sfc_main211;
+var _sfc_main212 = /* @__PURE__ */ defineComponent({
   name: "Rank",
   __name: "rank",
   setup(__props) {
@@ -30989,13 +31100,13 @@ var rank_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m186.496 544 41.408 41.344a32 32 0 1 1-45.248 45.312l-96-96a32 32 0 0 1 0-45.312l96-96a32 32 0 1 1 45.248 45.312L186.496 480h290.816V186.432l-41.472 41.472a32 32 0 1 1-45.248-45.184l96-96.128a32 32 0 0 1 45.312 0l96 96.064a32 32 0 0 1-45.248 45.184l-41.344-41.28V480H832l-41.344-41.344a32 32 0 0 1 45.248-45.312l96 96a32 32 0 0 1 0 45.312l-96 96a32 32 0 0 1-45.248-45.312L832 544H541.312v293.44l41.344-41.28a32 32 0 1 1 45.248 45.248l-96 96a32 32 0 0 1-45.312 0l-96-96a32 32 0 1 1 45.312-45.248l41.408 41.408V544H186.496z"
+        d: "m186.496 544 41.408 41.344a32 32 0 1 1-45.248 45.312l-96-96a32 32 0 0 1 0-45.312l96-96a32 32 0 1 1 45.248 45.312L186.496 480h290.816V186.432l-41.472 41.472a32 32 0 1 1-45.248-45.184l96-96.128a32 32 0 0 1 45.312 0l96 96.064a32 32 0 0 1-45.248 45.184l-41.344-41.28V480H832l-41.344-41.344a32 32 0 0 1 45.248-45.312l96 96a32 32 0 0 1 0 45.312l-96 96a32 32 0 0 1-45.248-45.312L832 544H541.312v293.44l41.344-41.28a32 32 0 1 1 45.248 45.248l-96 96a32 32 0 0 1-45.312 0l-96-96a32 32 0 1 1 45.312-45.248l41.408 41.408V544z"
       })
     ]));
   }
 });
-var rank_default = rank_vue_vue_type_script_setup_true_lang_default;
-var reading_lamp_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var rank_default = _sfc_main212;
+var _sfc_main213 = /* @__PURE__ */ defineComponent({
   name: "ReadingLamp",
   __name: "reading-lamp",
   setup(__props) {
@@ -31014,8 +31125,8 @@ var reading_lamp_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var reading_lamp_default = reading_lamp_vue_vue_type_script_setup_true_lang_default;
-var reading_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var reading_lamp_default = _sfc_main213;
+var _sfc_main214 = /* @__PURE__ */ defineComponent({
   name: "Reading",
   __name: "reading",
   setup(__props) {
@@ -31025,7 +31136,7 @@ var reading_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m512 863.36 384-54.848v-638.72L525.568 222.72a96 96 0 0 1-27.136 0L128 169.792v638.72zM137.024 106.432l370.432 52.928a32 32 0 0 0 9.088 0l370.432-52.928A64 64 0 0 1 960 169.792v638.72a64 64 0 0 1-54.976 63.36l-388.48 55.488a32 32 0 0 1-9.088 0l-388.48-55.488A64 64 0 0 1 64 808.512v-638.72a64 64 0 0 1 73.024-63.36z"
+        d: "m512 863.36 384-54.848v-638.72L525.568 222.72a96 96 0 0 1-27.136 0L128 169.792v638.72zM137.024 106.432l370.432 52.928a32 32 0 0 0 9.088 0l370.432-52.928A64 64 0 0 1 960 169.792v638.72a64 64 0 0 1-54.976 63.36l-388.48 55.488a32 32 0 0 1-9.088 0l-388.48-55.488A64 64 0 0 1 64 808.512v-638.72a64 64 0 0 1 73.024-63.36"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -31034,8 +31145,8 @@ var reading_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var reading_default = reading_vue_vue_type_script_setup_true_lang_default;
-var refresh_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var reading_default = _sfc_main214;
+var _sfc_main215 = /* @__PURE__ */ defineComponent({
   name: "RefreshLeft",
   __name: "refresh-left",
   setup(__props) {
@@ -31050,8 +31161,8 @@ var refresh_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var refresh_left_default = refresh_left_vue_vue_type_script_setup_true_lang_default;
-var refresh_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var refresh_left_default = _sfc_main215;
+var _sfc_main216 = /* @__PURE__ */ defineComponent({
   name: "RefreshRight",
   __name: "refresh-right",
   setup(__props) {
@@ -31061,13 +31172,13 @@ var refresh_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M784.512 230.272v-50.56a32 32 0 1 1 64 0v149.056a32 32 0 0 1-32 32H667.52a32 32 0 1 1 0-64h92.992A320 320 0 1 0 524.8 833.152a320 320 0 0 0 320-320h64a384 384 0 0 1-384 384 384 384 0 0 1-384-384 384 384 0 0 1 643.712-282.88z"
+        d: "M784.512 230.272v-50.56a32 32 0 1 1 64 0v149.056a32 32 0 0 1-32 32H667.52a32 32 0 1 1 0-64h92.992A320 320 0 1 0 524.8 833.152a320 320 0 0 0 320-320h64a384 384 0 0 1-384 384 384 384 0 0 1-384-384 384 384 0 0 1 643.712-282.88"
       })
     ]));
   }
 });
-var refresh_right_default = refresh_right_vue_vue_type_script_setup_true_lang_default;
-var refresh_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var refresh_right_default = _sfc_main216;
+var _sfc_main217 = /* @__PURE__ */ defineComponent({
   name: "Refresh",
   __name: "refresh",
   setup(__props) {
@@ -31082,8 +31193,8 @@ var refresh_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var refresh_default = refresh_vue_vue_type_script_setup_true_lang_default;
-var refrigerator_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var refresh_default = _sfc_main217;
+var _sfc_main218 = /* @__PURE__ */ defineComponent({
   name: "Refrigerator",
   __name: "refrigerator",
   setup(__props) {
@@ -31098,8 +31209,8 @@ var refrigerator_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var refrigerator_default = refrigerator_vue_vue_type_script_setup_true_lang_default;
-var remove_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var refrigerator_default = _sfc_main218;
+var _sfc_main219 = /* @__PURE__ */ defineComponent({
   name: "RemoveFilled",
   __name: "remove-filled",
   setup(__props) {
@@ -31114,8 +31225,8 @@ var remove_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var remove_filled_default = remove_filled_vue_vue_type_script_setup_true_lang_default;
-var remove_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var remove_filled_default = _sfc_main219;
+var _sfc_main220 = /* @__PURE__ */ defineComponent({
   name: "Remove",
   __name: "remove",
   setup(__props) {
@@ -31134,8 +31245,8 @@ var remove_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var remove_default = remove_vue_vue_type_script_setup_true_lang_default;
-var right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var remove_default = _sfc_main220;
+var _sfc_main221 = /* @__PURE__ */ defineComponent({
   name: "Right",
   __name: "right",
   setup(__props) {
@@ -31150,8 +31261,8 @@ var right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var right_default = right_vue_vue_type_script_setup_true_lang_default;
-var scale_to_original_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var right_default = _sfc_main221;
+var _sfc_main2222 = /* @__PURE__ */ defineComponent({
   name: "ScaleToOriginal",
   __name: "scale-to-original",
   setup(__props) {
@@ -31161,13 +31272,13 @@ var scale_to_original_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M813.176 180.706a60.235 60.235 0 0 1 60.236 60.235v481.883a60.235 60.235 0 0 1-60.236 60.235H210.824a60.235 60.235 0 0 1-60.236-60.235V240.94a60.235 60.235 0 0 1 60.236-60.235h602.352zm0-60.235H210.824A120.47 120.47 0 0 0 90.353 240.94v481.883a120.47 120.47 0 0 0 120.47 120.47h602.353a120.47 120.47 0 0 0 120.471-120.47V240.94a120.47 120.47 0 0 0-120.47-120.47zm-120.47 180.705a30.118 30.118 0 0 0-30.118 30.118v301.177a30.118 30.118 0 0 0 60.236 0V331.294a30.118 30.118 0 0 0-30.118-30.118zm-361.412 0a30.118 30.118 0 0 0-30.118 30.118v301.177a30.118 30.118 0 1 0 60.236 0V331.294a30.118 30.118 0 0 0-30.118-30.118M512 361.412a30.118 30.118 0 0 0-30.118 30.117v30.118a30.118 30.118 0 0 0 60.236 0V391.53A30.118 30.118 0 0 0 512 361.412M512 512a30.118 30.118 0 0 0-30.118 30.118v30.117a30.118 30.118 0 0 0 60.236 0v-30.117A30.118 30.118 0 0 0 512 512"
+        d: "M813.176 180.706a60.235 60.235 0 0 1 60.236 60.235v481.883a60.235 60.235 0 0 1-60.236 60.235H210.824a60.235 60.235 0 0 1-60.236-60.235V240.94a60.235 60.235 0 0 1 60.236-60.235h602.352zm0-60.235H210.824A120.47 120.47 0 0 0 90.353 240.94v481.883a120.47 120.47 0 0 0 120.47 120.47h602.353a120.47 120.47 0 0 0 120.471-120.47V240.94a120.47 120.47 0 0 0-120.47-120.47zm-120.47 180.705a30.12 30.12 0 0 0-30.118 30.118v301.177a30.118 30.118 0 0 0 60.236 0V331.294a30.12 30.12 0 0 0-30.118-30.118m-361.412 0a30.12 30.12 0 0 0-30.118 30.118v301.177a30.118 30.118 0 1 0 60.236 0V331.294a30.12 30.12 0 0 0-30.118-30.118M512 361.412a30.12 30.12 0 0 0-30.118 30.117v30.118a30.118 30.118 0 0 0 60.236 0V391.53A30.12 30.12 0 0 0 512 361.412M512 512a30.12 30.12 0 0 0-30.118 30.118v30.117a30.118 30.118 0 0 0 60.236 0v-30.117A30.12 30.12 0 0 0 512 512"
       })
     ]));
   }
 });
-var scale_to_original_default = scale_to_original_vue_vue_type_script_setup_true_lang_default;
-var school_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var scale_to_original_default = _sfc_main2222;
+var _sfc_main223 = /* @__PURE__ */ defineComponent({
   name: "School",
   __name: "school",
   setup(__props) {
@@ -31190,8 +31301,8 @@ var school_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var school_default = school_vue_vue_type_script_setup_true_lang_default;
-var scissor_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var school_default = _sfc_main223;
+var _sfc_main224 = /* @__PURE__ */ defineComponent({
   name: "Scissor",
   __name: "scissor",
   setup(__props) {
@@ -31206,8 +31317,8 @@ var scissor_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var scissor_default = scissor_vue_vue_type_script_setup_true_lang_default;
-var search_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var scissor_default = _sfc_main224;
+var _sfc_main225 = /* @__PURE__ */ defineComponent({
   name: "Search",
   __name: "search",
   setup(__props) {
@@ -31222,8 +31333,8 @@ var search_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var search_default = search_vue_vue_type_script_setup_true_lang_default;
-var select_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var search_default = _sfc_main225;
+var _sfc_main226 = /* @__PURE__ */ defineComponent({
   name: "Select",
   __name: "select",
   setup(__props) {
@@ -31233,13 +31344,13 @@ var select_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M77.248 415.04a64 64 0 0 1 90.496 0l226.304 226.304L846.528 188.8a64 64 0 1 1 90.56 90.496l-543.04 543.04-316.8-316.8a64 64 0 0 1 0-90.496z"
+        d: "M77.248 415.04a64 64 0 0 1 90.496 0l226.304 226.304L846.528 188.8a64 64 0 1 1 90.56 90.496l-543.04 543.04-316.8-316.8a64 64 0 0 1 0-90.496"
       })
     ]));
   }
 });
-var select_default = select_vue_vue_type_script_setup_true_lang_default;
-var sell_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var select_default = _sfc_main226;
+var _sfc_main227 = /* @__PURE__ */ defineComponent({
   name: "Sell",
   __name: "sell",
   setup(__props) {
@@ -31249,13 +31360,13 @@ var sell_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M704 288h131.072a32 32 0 0 1 31.808 28.8L886.4 512h-64.384l-16-160H704v96a32 32 0 1 1-64 0v-96H384v96a32 32 0 0 1-64 0v-96H217.92l-51.2 512H512v64H131.328a32 32 0 0 1-31.808-35.2l57.6-576a32 32 0 0 1 31.808-28.8H320v-22.336C320 154.688 405.504 64 512 64s192 90.688 192 201.664v22.4zm-64 0v-22.336C640 189.248 582.272 128 512 128c-70.272 0-128 61.248-128 137.664v22.4h256zm201.408 483.84L768 698.496V928a32 32 0 1 1-64 0V698.496l-73.344 73.344a32 32 0 1 1-45.248-45.248l128-128a32 32 0 0 1 45.248 0l128 128a32 32 0 1 1-45.248 45.248z"
+        d: "M704 288h131.072a32 32 0 0 1 31.808 28.8L886.4 512h-64.384l-16-160H704v96a32 32 0 1 1-64 0v-96H384v96a32 32 0 0 1-64 0v-96H217.92l-51.2 512H512v64H131.328a32 32 0 0 1-31.808-35.2l57.6-576a32 32 0 0 1 31.808-28.8H320v-22.336C320 154.688 405.504 64 512 64s192 90.688 192 201.664v22.4zm-64 0v-22.336C640 189.248 582.272 128 512 128s-128 61.248-128 137.664v22.4h256zm201.408 483.84L768 698.496V928a32 32 0 1 1-64 0V698.496l-73.344 73.344a32 32 0 1 1-45.248-45.248l128-128a32 32 0 0 1 45.248 0l128 128a32 32 0 1 1-45.248 45.248"
       })
     ]));
   }
 });
-var sell_default = sell_vue_vue_type_script_setup_true_lang_default;
-var semi_select_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sell_default = _sfc_main227;
+var _sfc_main228 = /* @__PURE__ */ defineComponent({
   name: "SemiSelect",
   __name: "semi-select",
   setup(__props) {
@@ -31270,8 +31381,8 @@ var semi_select_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var semi_select_default = semi_select_vue_vue_type_script_setup_true_lang_default;
-var service_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var semi_select_default = _sfc_main228;
+var _sfc_main229 = /* @__PURE__ */ defineComponent({
   name: "Service",
   __name: "service",
   setup(__props) {
@@ -31281,13 +31392,13 @@ var service_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M864 409.6a192 192 0 0 1-37.888 349.44A256.064 256.064 0 0 1 576 960h-96a32 32 0 1 1 0-64h96a192.064 192.064 0 0 0 181.12-128H736a32 32 0 0 1-32-32V416a32 32 0 0 1 32-32h32c10.368 0 20.544.832 30.528 2.432a288 288 0 0 0-573.056 0A193.235 193.235 0 0 1 256 384h32a32 32 0 0 1 32 32v320a32 32 0 0 1-32 32h-32a192 192 0 0 1-96-358.4 352 352 0 0 1 704 0M256 448a128 128 0 1 0 0 256zm640 128a128 128 0 0 0-128-128v256a128 128 0 0 0 128-128"
+        d: "M864 409.6a192 192 0 0 1-37.888 349.44A256.064 256.064 0 0 1 576 960h-96a32 32 0 1 1 0-64h96a192.06 192.06 0 0 0 181.12-128H736a32 32 0 0 1-32-32V416a32 32 0 0 1 32-32h32c10.368 0 20.544.832 30.528 2.432a288 288 0 0 0-573.056 0A193 193 0 0 1 256 384h32a32 32 0 0 1 32 32v320a32 32 0 0 1-32 32h-32a192 192 0 0 1-96-358.4 352 352 0 0 1 704 0M256 448a128 128 0 1 0 0 256zm640 128a128 128 0 0 0-128-128v256a128 128 0 0 0 128-128"
       })
     ]));
   }
 });
-var service_default = service_vue_vue_type_script_setup_true_lang_default;
-var set_up_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var service_default = _sfc_main229;
+var _sfc_main230 = /* @__PURE__ */ defineComponent({
   name: "SetUp",
   __name: "set-up",
   setup(__props) {
@@ -31314,8 +31425,8 @@ var set_up_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var set_up_default = set_up_vue_vue_type_script_setup_true_lang_default;
-var setting_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var set_up_default = _sfc_main230;
+var _sfc_main231 = /* @__PURE__ */ defineComponent({
   name: "Setting",
   __name: "setting",
   setup(__props) {
@@ -31325,13 +31436,13 @@ var setting_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357.12 357.12 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a351.616 351.616 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357.12 357.12 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294.113 294.113 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293.12 293.12 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294.113 294.113 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288.282 288.282 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293.12 293.12 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a287.616 287.616 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384m0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256"
+        d: "M600.704 64a32 32 0 0 1 30.464 22.208l35.2 109.376c14.784 7.232 28.928 15.36 42.432 24.512l112.384-24.192a32 32 0 0 1 34.432 15.36L944.32 364.8a32 32 0 0 1-4.032 37.504l-77.12 85.12a357 357 0 0 1 0 49.024l77.12 85.248a32 32 0 0 1 4.032 37.504l-88.704 153.6a32 32 0 0 1-34.432 15.296L708.8 803.904c-13.44 9.088-27.648 17.28-42.368 24.512l-35.264 109.376A32 32 0 0 1 600.704 960H423.296a32 32 0 0 1-30.464-22.208L357.696 828.48a352 352 0 0 1-42.56-24.64l-112.32 24.256a32 32 0 0 1-34.432-15.36L79.68 659.2a32 32 0 0 1 4.032-37.504l77.12-85.248a357 357 0 0 1 0-48.896l-77.12-85.248A32 32 0 0 1 79.68 364.8l88.704-153.6a32 32 0 0 1 34.432-15.296l112.32 24.256c13.568-9.152 27.776-17.408 42.56-24.64l35.2-109.312A32 32 0 0 1 423.232 64H600.64zm-23.424 64H446.72l-36.352 113.088-24.512 11.968a294 294 0 0 0-34.816 20.096l-22.656 15.36-116.224-25.088-65.28 113.152 79.68 88.192-1.92 27.136a293 293 0 0 0 0 40.192l1.92 27.136-79.808 88.192 65.344 113.152 116.224-25.024 22.656 15.296a294 294 0 0 0 34.816 20.096l24.512 11.968L446.72 896h130.688l36.48-113.152 24.448-11.904a288 288 0 0 0 34.752-20.096l22.592-15.296 116.288 25.024 65.28-113.152-79.744-88.192 1.92-27.136a293 293 0 0 0 0-40.256l-1.92-27.136 79.808-88.128-65.344-113.152-116.288 24.96-22.592-15.232a288 288 0 0 0-34.752-20.096l-24.448-11.904L577.344 128zM512 320a192 192 0 1 1 0 384 192 192 0 0 1 0-384m0 64a128 128 0 1 0 0 256 128 128 0 0 0 0-256"
       })
     ]));
   }
 });
-var setting_default = setting_vue_vue_type_script_setup_true_lang_default;
-var share_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var setting_default = _sfc_main231;
+var _sfc_main232 = /* @__PURE__ */ defineComponent({
   name: "Share",
   __name: "share",
   setup(__props) {
@@ -31341,13 +31452,13 @@ var share_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m679.872 348.8-301.76 188.608a127.808 127.808 0 0 1 5.12 52.16l279.936 104.96a128 128 0 1 1-22.464 59.904l-279.872-104.96a128 128 0 1 1-16.64-166.272l301.696-188.608a128 128 0 1 1 33.92 54.272z"
+        d: "m679.872 348.8-301.76 188.608a127.8 127.8 0 0 1 5.12 52.16l279.936 104.96a128 128 0 1 1-22.464 59.904l-279.872-104.96a128 128 0 1 1-16.64-166.272l301.696-188.608a128 128 0 1 1 33.92 54.272z"
       })
     ]));
   }
 });
-var share_default = share_vue_vue_type_script_setup_true_lang_default;
-var ship_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var share_default = _sfc_main232;
+var _sfc_main233 = /* @__PURE__ */ defineComponent({
   name: "Ship",
   __name: "ship",
   setup(__props) {
@@ -31357,13 +31468,13 @@ var ship_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 386.88V448h405.568a32 32 0 0 1 30.72 40.768l-76.48 267.968A192 192 0 0 1 687.168 896H336.832a192 192 0 0 1-184.64-139.264L75.648 488.768A32 32 0 0 1 106.368 448H448V117.888a32 32 0 0 1 47.36-28.096l13.888 7.616L512 96v2.88l231.68 126.4a32 32 0 0 1-2.048 57.216zm0-70.272 144.768-65.792L512 171.84zM512 512H148.864l18.24 64H856.96l18.24-64zM185.408 640l28.352 99.2A128 128 0 0 0 336.832 832h350.336a128 128 0 0 0 123.072-92.8l28.352-99.2H185.408"
+        d: "M512 386.88V448h405.568a32 32 0 0 1 30.72 40.768l-76.48 267.968A192 192 0 0 1 687.168 896H336.832a192 192 0 0 1-184.64-139.264L75.648 488.768A32 32 0 0 1 106.368 448H448V117.888a32 32 0 0 1 47.36-28.096l13.888 7.616L512 96v2.88l231.68 126.4a32 32 0 0 1-2.048 57.216zm0-70.272 144.768-65.792L512 171.84zM512 512H148.864l18.24 64H856.96l18.24-64zM185.408 640l28.352 99.2A128 128 0 0 0 336.832 832h350.336a128 128 0 0 0 123.072-92.8l28.352-99.2z"
       })
     ]));
   }
 });
-var ship_default = ship_vue_vue_type_script_setup_true_lang_default;
-var shop_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var ship_default = _sfc_main233;
+var _sfc_main234 = /* @__PURE__ */ defineComponent({
   name: "Shop",
   __name: "shop",
   setup(__props) {
@@ -31378,8 +31489,8 @@ var shop_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var shop_default = shop_vue_vue_type_script_setup_true_lang_default;
-var shopping_bag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var shop_default = _sfc_main234;
+var _sfc_main235 = /* @__PURE__ */ defineComponent({
   name: "ShoppingBag",
   __name: "shopping-bag",
   setup(__props) {
@@ -31398,8 +31509,8 @@ var shopping_bag_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var shopping_bag_default = shopping_bag_vue_vue_type_script_setup_true_lang_default;
-var shopping_cart_full_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var shopping_bag_default = _sfc_main235;
+var _sfc_main236 = /* @__PURE__ */ defineComponent({
   name: "ShoppingCartFull",
   __name: "shopping-cart-full",
   setup(__props) {
@@ -31409,17 +31520,17 @@ var shopping_cart_full_vue_vue_type_script_setup_true_lang_default = /* @__PURE_
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M432 928a48 48 0 1 1 0-96 48 48 0 0 1 0 96m320 0a48 48 0 1 1 0-96 48 48 0 0 1 0 96M96 128a32 32 0 0 1 0-64h160a32 32 0 0 1 31.36 25.728L320.64 256H928a32 32 0 0 1 31.296 38.72l-96 448A32 32 0 0 1 832 768H384a32 32 0 0 1-31.36-25.728L229.76 128zm314.24 576h395.904l82.304-384H333.44l76.8 384z"
+        d: "M432 928a48 48 0 1 1 0-96 48 48 0 0 1 0 96m320 0a48 48 0 1 1 0-96 48 48 0 0 1 0 96M96 128a32 32 0 0 1 0-64h160a32 32 0 0 1 31.36 25.728L320.64 256H928a32 32 0 0 1 31.296 38.72l-96 448A32 32 0 0 1 832 768H384a32 32 0 0 1-31.36-25.728L229.76 128zm314.24 576h395.904l82.304-384H333.44z"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M699.648 256 608 145.984 516.352 256h183.296zm-140.8-151.04a64 64 0 0 1 98.304 0L836.352 320H379.648l179.2-215.04"
+        d: "M699.648 256 608 145.984 516.352 256zm-140.8-151.04a64 64 0 0 1 98.304 0L836.352 320H379.648z"
       })
     ]));
   }
 });
-var shopping_cart_full_default = shopping_cart_full_vue_vue_type_script_setup_true_lang_default;
-var shopping_cart_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var shopping_cart_full_default = _sfc_main236;
+var _sfc_main237 = /* @__PURE__ */ defineComponent({
   name: "ShoppingCart",
   __name: "shopping-cart",
   setup(__props) {
@@ -31429,20 +31540,19 @@ var shopping_cart_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M432 928a48 48 0 1 1 0-96 48 48 0 0 1 0 96m320 0a48 48 0 1 1 0-96 48 48 0 0 1 0 96M96 128a32 32 0 0 1 0-64h160a32 32 0 0 1 31.36 25.728L320.64 256H928a32 32 0 0 1 31.296 38.72l-96 448A32 32 0 0 1 832 768H384a32 32 0 0 1-31.36-25.728L229.76 128zm314.24 576h395.904l82.304-384H333.44l76.8 384z"
+        d: "M432 928a48 48 0 1 1 0-96 48 48 0 0 1 0 96m320 0a48 48 0 1 1 0-96 48 48 0 0 1 0 96M96 128a32 32 0 0 1 0-64h160a32 32 0 0 1 31.36 25.728L320.64 256H928a32 32 0 0 1 31.296 38.72l-96 448A32 32 0 0 1 832 768H384a32 32 0 0 1-31.36-25.728L229.76 128zm314.24 576h395.904l82.304-384H333.44z"
       })
     ]));
   }
 });
-var shopping_cart_default = shopping_cart_vue_vue_type_script_setup_true_lang_default;
-var shopping_trolley_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var shopping_cart_default = _sfc_main237;
+var _sfc_main238 = /* @__PURE__ */ defineComponent({
   name: "ShoppingTrolley",
   __name: "shopping-trolley",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
@@ -31452,8 +31562,8 @@ var shopping_trolley_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ 
     ]));
   }
 });
-var shopping_trolley_default = shopping_trolley_vue_vue_type_script_setup_true_lang_default;
-var smoking_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var shopping_trolley_default = _sfc_main238;
+var _sfc_main239 = /* @__PURE__ */ defineComponent({
   name: "Smoking",
   __name: "smoking",
   setup(__props) {
@@ -31472,8 +31582,8 @@ var smoking_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var smoking_default = smoking_vue_vue_type_script_setup_true_lang_default;
-var soccer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var smoking_default = _sfc_main239;
+var _sfc_main240 = /* @__PURE__ */ defineComponent({
   name: "Soccer",
   __name: "soccer",
   setup(__props) {
@@ -31483,13 +31593,13 @@ var soccer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M418.496 871.04 152.256 604.8c-16.512 94.016-2.368 178.624 42.944 224 44.928 44.928 129.344 58.752 223.296 42.24m72.32-18.176a573.056 573.056 0 0 0 224.832-137.216 573.12 573.12 0 0 0 137.216-224.832L533.888 171.84a578.56 578.56 0 0 0-227.52 138.496A567.68 567.68 0 0 0 170.432 532.48l320.384 320.384zM871.04 418.496c16.512-93.952 2.688-178.368-42.24-223.296-44.544-44.544-128.704-58.048-222.592-41.536zM149.952 874.048c-112.96-112.96-88.832-408.96 111.168-608.96C461.056 65.152 760.96 36.928 874.048 149.952c113.024 113.024 86.784 411.008-113.152 610.944-199.936 199.936-497.92 226.112-610.944 113.152m452.544-497.792 22.656-22.656a32 32 0 0 1 45.248 45.248l-22.656 22.656 45.248 45.248A32 32 0 1 1 647.744 512l-45.248-45.248L557.248 512l45.248 45.248a32 32 0 1 1-45.248 45.248L512 557.248l-45.248 45.248L512 647.744a32 32 0 1 1-45.248 45.248l-45.248-45.248-22.656 22.656a32 32 0 1 1-45.248-45.248l22.656-22.656-45.248-45.248A32 32 0 1 1 376.256 512l45.248 45.248L466.752 512l-45.248-45.248a32 32 0 1 1 45.248-45.248L512 466.752l45.248-45.248L512 376.256a32 32 0 0 1 45.248-45.248l45.248 45.248z"
+        d: "M418.496 871.04 152.256 604.8c-16.512 94.016-2.368 178.624 42.944 224 44.928 44.928 129.344 58.752 223.296 42.24m72.32-18.176a573.06 573.06 0 0 0 224.832-137.216 573.1 573.1 0 0 0 137.216-224.832L533.888 171.84a578.56 578.56 0 0 0-227.52 138.496A567.7 567.7 0 0 0 170.432 532.48zM871.04 418.496c16.512-93.952 2.688-178.368-42.24-223.296-44.544-44.544-128.704-58.048-222.592-41.536zM149.952 874.048c-112.96-112.96-88.832-408.96 111.168-608.96C461.056 65.152 760.96 36.928 874.048 149.952c113.024 113.024 86.784 411.008-113.152 610.944s-497.92 226.112-610.944 113.152m452.544-497.792 22.656-22.656a32 32 0 0 1 45.248 45.248l-22.656 22.656 45.248 45.248A32 32 0 1 1 647.744 512l-45.248-45.248L557.248 512l45.248 45.248a32 32 0 1 1-45.248 45.248L512 557.248l-45.248 45.248L512 647.744a32 32 0 1 1-45.248 45.248l-45.248-45.248-22.656 22.656a32 32 0 1 1-45.248-45.248l22.656-22.656-45.248-45.248A32 32 0 1 1 376.256 512l45.248 45.248L466.752 512l-45.248-45.248a32 32 0 1 1 45.248-45.248L512 466.752l45.248-45.248L512 376.256a32 32 0 0 1 45.248-45.248z"
       })
     ]));
   }
 });
-var soccer_default = soccer_vue_vue_type_script_setup_true_lang_default;
-var sold_out_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var soccer_default = _sfc_main240;
+var _sfc_main241 = /* @__PURE__ */ defineComponent({
   name: "SoldOut",
   __name: "sold-out",
   setup(__props) {
@@ -31499,13 +31609,13 @@ var sold_out_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M704 288h131.072a32 32 0 0 1 31.808 28.8L886.4 512h-64.384l-16-160H704v96a32 32 0 1 1-64 0v-96H384v96a32 32 0 0 1-64 0v-96H217.92l-51.2 512H512v64H131.328a32 32 0 0 1-31.808-35.2l57.6-576a32 32 0 0 1 31.808-28.8H320v-22.336C320 154.688 405.504 64 512 64s192 90.688 192 201.664v22.4zm-64 0v-22.336C640 189.248 582.272 128 512 128c-70.272 0-128 61.248-128 137.664v22.4h256zm201.408 476.16a32 32 0 1 1 45.248 45.184l-128 128a32 32 0 0 1-45.248 0l-128-128a32 32 0 1 1 45.248-45.248L704 837.504V608a32 32 0 1 1 64 0v229.504l73.408-73.408z"
+        d: "M704 288h131.072a32 32 0 0 1 31.808 28.8L886.4 512h-64.384l-16-160H704v96a32 32 0 1 1-64 0v-96H384v96a32 32 0 0 1-64 0v-96H217.92l-51.2 512H512v64H131.328a32 32 0 0 1-31.808-35.2l57.6-576a32 32 0 0 1 31.808-28.8H320v-22.336C320 154.688 405.504 64 512 64s192 90.688 192 201.664v22.4zm-64 0v-22.336C640 189.248 582.272 128 512 128s-128 61.248-128 137.664v22.4h256zm201.408 476.16a32 32 0 1 1 45.248 45.184l-128 128a32 32 0 0 1-45.248 0l-128-128a32 32 0 1 1 45.248-45.248L704 837.504V608a32 32 0 1 1 64 0v229.504l73.408-73.408z"
       })
     ]));
   }
 });
-var sold_out_default = sold_out_vue_vue_type_script_setup_true_lang_default;
-var sort_down_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sold_out_default = _sfc_main241;
+var _sfc_main242 = /* @__PURE__ */ defineComponent({
   name: "SortDown",
   __name: "sort-down",
   setup(__props) {
@@ -31520,8 +31630,8 @@ var sort_down_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var sort_down_default = sort_down_vue_vue_type_script_setup_true_lang_default;
-var sort_up_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sort_down_default = _sfc_main242;
+var _sfc_main243 = /* @__PURE__ */ defineComponent({
   name: "SortUp",
   __name: "sort-up",
   setup(__props) {
@@ -31536,8 +31646,8 @@ var sort_up_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var sort_up_default = sort_up_vue_vue_type_script_setup_true_lang_default;
-var sort_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sort_up_default = _sfc_main243;
+var _sfc_main244 = /* @__PURE__ */ defineComponent({
   name: "Sort",
   __name: "sort",
   setup(__props) {
@@ -31547,13 +31657,13 @@ var sort_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M384 96a32 32 0 0 1 64 0v786.752a32 32 0 0 1-54.592 22.656L95.936 608a32 32 0 0 1 0-45.312h.128a32 32 0 0 1 45.184 0L384 805.632zm192 45.248a32 32 0 0 1 54.592-22.592L928.064 416a32 32 0 0 1 0 45.312h-.128a32 32 0 0 1-45.184 0L640 218.496V928a32 32 0 1 1-64 0V141.248z"
+        d: "M384 96a32 32 0 0 1 64 0v786.752a32 32 0 0 1-54.592 22.656L95.936 608a32 32 0 0 1 0-45.312h.128a32 32 0 0 1 45.184 0L384 805.632zm192 45.248a32 32 0 0 1 54.592-22.592L928.064 416a32 32 0 0 1 0 45.312h-.128a32 32 0 0 1-45.184 0L640 218.496V928a32 32 0 1 1-64 0z"
       })
     ]));
   }
 });
-var sort_default = sort_vue_vue_type_script_setup_true_lang_default;
-var stamp_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sort_default = _sfc_main244;
+var _sfc_main245 = /* @__PURE__ */ defineComponent({
   name: "Stamp",
   __name: "stamp",
   setup(__props) {
@@ -31568,8 +31678,8 @@ var stamp_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var stamp_default = stamp_vue_vue_type_script_setup_true_lang_default;
-var star_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var stamp_default = _sfc_main245;
+var _sfc_main246 = /* @__PURE__ */ defineComponent({
   name: "StarFilled",
   __name: "star-filled",
   setup(__props) {
@@ -31579,13 +31689,13 @@ var star_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M283.84 867.84 512 747.776l228.16 119.936a6.4 6.4 0 0 0 9.28-6.72l-43.52-254.08 184.512-179.904a6.4 6.4 0 0 0-3.52-10.88l-255.104-37.12L517.76 147.904a6.4 6.4 0 0 0-11.52 0L392.192 379.072l-255.104 37.12a6.4 6.4 0 0 0-3.52 10.88L318.08 606.976l-43.584 254.08a6.4 6.4 0 0 0 9.28 6.72z"
+        d: "M313.6 924.48a70.4 70.4 0 0 1-74.152-5.365 70.4 70.4 0 0 1-27.992-68.875l37.888-220.928L88.96 472.96a70.4 70.4 0 0 1 3.788-104.225A70.4 70.4 0 0 1 128 352.896l221.76-32.256 99.2-200.96a70.4 70.4 0 0 1 100.246-28.595 70.4 70.4 0 0 1 25.962 28.595l99.2 200.96 221.824 32.256a70.4 70.4 0 0 1 39.04 120.064L774.72 629.376l37.888 220.928a70.4 70.4 0 0 1-102.144 74.24L512 820.096l-198.4 104.32z"
       })
     ]));
   }
 });
-var star_filled_default = star_filled_vue_vue_type_script_setup_true_lang_default;
-var star_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var star_filled_default = _sfc_main246;
+var _sfc_main247 = /* @__PURE__ */ defineComponent({
   name: "Star",
   __name: "star",
   setup(__props) {
@@ -31600,8 +31710,8 @@ var star_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var star_default = star_vue_vue_type_script_setup_true_lang_default;
-var stopwatch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var star_default = _sfc_main247;
+var _sfc_main248 = /* @__PURE__ */ defineComponent({
   name: "Stopwatch",
   __name: "stopwatch",
   setup(__props) {
@@ -31620,8 +31730,8 @@ var stopwatch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
     ]));
   }
 });
-var stopwatch_default = stopwatch_vue_vue_type_script_setup_true_lang_default;
-var success_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var stopwatch_default = _sfc_main248;
+var _sfc_main249 = /* @__PURE__ */ defineComponent({
   name: "SuccessFilled",
   __name: "success-filled",
   setup(__props) {
@@ -31631,13 +31741,13 @@ var success_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336z"
+        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.27 38.27 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336z"
       })
     ]));
   }
 });
-var success_filled_default = success_filled_vue_vue_type_script_setup_true_lang_default;
-var sugar_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var success_filled_default = _sfc_main249;
+var _sfc_main250 = /* @__PURE__ */ defineComponent({
   name: "Sugar",
   __name: "sugar",
   setup(__props) {
@@ -31647,31 +31757,30 @@ var sugar_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m801.728 349.184 4.48 4.48a128 128 0 0 1 0 180.992L534.656 806.144a128 128 0 0 1-181.056 0l-4.48-4.48-19.392 109.696a64 64 0 0 1-108.288 34.176L78.464 802.56a64 64 0 0 1 34.176-108.288l109.76-19.328-4.544-4.544a128 128 0 0 1 0-181.056l271.488-271.488a128 128 0 0 1 181.056 0l4.48 4.48 19.392-109.504a64 64 0 0 1 108.352-34.048l142.592 143.04a64 64 0 0 1-34.24 108.16l-109.248 19.2zm-548.8 198.72h447.168v2.24l60.8-60.8a63.808 63.808 0 0 0 18.752-44.416h-426.88l-89.664 89.728a64.064 64.064 0 0 0-10.24 13.248zm0 64c2.752 4.736 6.144 9.152 10.176 13.248l135.744 135.744a64 64 0 0 0 90.496 0L638.4 611.904zm490.048-230.976L625.152 263.104a64 64 0 0 0-90.496 0L416.768 380.928zM123.712 757.312l142.976 142.976 24.32-137.6a25.6 25.6 0 0 0-29.696-29.632l-137.6 24.256zm633.6-633.344-24.32 137.472a25.6 25.6 0 0 0 29.632 29.632l137.28-24.064-142.656-143.04z"
+        d: "m801.728 349.184 4.48 4.48a128 128 0 0 1 0 180.992L534.656 806.144a128 128 0 0 1-181.056 0l-4.48-4.48-19.392 109.696a64 64 0 0 1-108.288 34.176L78.464 802.56a64 64 0 0 1 34.176-108.288l109.76-19.328-4.544-4.544a128 128 0 0 1 0-181.056l271.488-271.488a128 128 0 0 1 181.056 0l4.48 4.48 19.392-109.504a64 64 0 0 1 108.352-34.048l142.592 143.04a64 64 0 0 1-34.24 108.16zm-548.8 198.72h447.168v2.24l60.8-60.8a63.8 63.8 0 0 0 18.752-44.416h-426.88l-89.664 89.728a64 64 0 0 0-10.24 13.248zm0 64q4.128 7.104 10.176 13.248l135.744 135.744a64 64 0 0 0 90.496 0L638.4 611.904zm490.048-230.976L625.152 263.104a64 64 0 0 0-90.496 0L416.768 380.928zM123.712 757.312l142.976 142.976 24.32-137.6a25.6 25.6 0 0 0-29.696-29.632zm633.6-633.344-24.32 137.472a25.6 25.6 0 0 0 29.632 29.632l137.28-24.064-142.656-143.04z"
       })
     ]));
   }
 });
-var sugar_default = sugar_vue_vue_type_script_setup_true_lang_default;
-var suitcase_line_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sugar_default = _sfc_main250;
+var _sfc_main251 = /* @__PURE__ */ defineComponent({
   name: "SuitcaseLine",
   __name: "suitcase-line",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M922.5 229.5c-24.32-24.34-54.49-36.84-90.5-37.5H704v-64c-.68-17.98-7.02-32.98-19.01-44.99S658.01 64.66 640 64H384c-17.98.68-32.98 7.02-44.99 19.01S320.66 110 320 128v64H192c-35.99.68-66.16 13.18-90.5 37.5C77.16 253.82 64.66 283.99 64 320v448c.68 35.99 13.18 66.16 37.5 90.5s54.49 36.84 90.5 37.5h640c35.99-.68 66.16-13.18 90.5-37.5s36.84-54.49 37.5-90.5V320c-.68-35.99-13.18-66.16-37.5-90.5M384 128h256v64H384zM256 832h-64c-17.98-.68-32.98-7.02-44.99-19.01S128.66 786.01 128 768V448h128zm448 0H320V448h384zm192-64c-.68 17.98-7.02 32.98-19.01 44.99S850.01 831.34 832 832h-64V448h128zm0-384H128v-64c.69-17.98 7.02-32.98 19.01-44.99S173.99 256.66 192 256h640c17.98.69 32.98 7.02 44.99 19.01S895.34 301.99 896 320z"
+        d: "M922.5 229.5c-24.32-24.34-54.49-36.84-90.5-37.5H704v-64c-.68-17.98-7.02-32.98-19.01-44.99S658.01 64.66 640 64H384c-17.98.68-32.98 7.02-44.99 19.01S320.66 110 320 128v64H192c-35.99.68-66.16 13.18-90.5 37.5S64.66 283.99 64 320v448c.68 35.99 13.18 66.16 37.5 90.5s54.49 36.84 90.5 37.5h640c35.99-.68 66.16-13.18 90.5-37.5s36.84-54.49 37.5-90.5V320c-.68-35.99-13.18-66.16-37.5-90.5M384 128h256v64H384zM256 832h-64c-17.98-.68-32.98-7.02-44.99-19.01S128.66 786.01 128 768V448h128zm448 0H320V448h384zm192-64c-.68 17.98-7.02 32.98-19.01 44.99S850.01 831.34 832 832h-64V448h128zm0-384H128v-64c.69-17.98 7.02-32.98 19.01-44.99S173.99 256.66 192 256h640c17.98.69 32.98 7.02 44.99 19.01S895.34 301.99 896 320z"
       })
     ]));
   }
 });
-var suitcase_line_default = suitcase_line_vue_vue_type_script_setup_true_lang_default;
-var suitcase_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var suitcase_line_default = _sfc_main251;
+var _sfc_main252 = /* @__PURE__ */ defineComponent({
   name: "Suitcase",
   __name: "suitcase",
   setup(__props) {
@@ -31690,8 +31799,8 @@ var suitcase_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var suitcase_default = suitcase_vue_vue_type_script_setup_true_lang_default;
-var sunny_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var suitcase_default = _sfc_main252;
+var _sfc_main253 = /* @__PURE__ */ defineComponent({
   name: "Sunny",
   __name: "sunny",
   setup(__props) {
@@ -31701,13 +31810,13 @@ var sunny_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 704a192 192 0 1 0 0-384 192 192 0 0 0 0 384m0 64a256 256 0 1 1 0-512 256 256 0 0 1 0 512m0-704a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32m0 768a32 32 0 0 1 32 32v64a32 32 0 1 1-64 0v-64a32 32 0 0 1 32-32M195.2 195.2a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 1 1-45.248 45.248L195.2 240.448a32 32 0 0 1 0-45.248zm543.104 543.104a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 0 1-45.248 45.248l-45.248-45.248a32 32 0 0 1 0-45.248M64 512a32 32 0 0 1 32-32h64a32 32 0 0 1 0 64H96a32 32 0 0 1-32-32m768 0a32 32 0 0 1 32-32h64a32 32 0 1 1 0 64h-64a32 32 0 0 1-32-32M195.2 828.8a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248L240.448 828.8a32 32 0 0 1-45.248 0zm543.104-543.104a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248l-45.248 45.248a32 32 0 0 1-45.248 0"
+        d: "M512 704a192 192 0 1 0 0-384 192 192 0 0 0 0 384m0 64a256 256 0 1 1 0-512 256 256 0 0 1 0 512m0-704a32 32 0 0 1 32 32v64a32 32 0 0 1-64 0V96a32 32 0 0 1 32-32m0 768a32 32 0 0 1 32 32v64a32 32 0 1 1-64 0v-64a32 32 0 0 1 32-32M195.2 195.2a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 1 1-45.248 45.248L195.2 240.448a32 32 0 0 1 0-45.248m543.104 543.104a32 32 0 0 1 45.248 0l45.248 45.248a32 32 0 0 1-45.248 45.248l-45.248-45.248a32 32 0 0 1 0-45.248M64 512a32 32 0 0 1 32-32h64a32 32 0 0 1 0 64H96a32 32 0 0 1-32-32m768 0a32 32 0 0 1 32-32h64a32 32 0 1 1 0 64h-64a32 32 0 0 1-32-32M195.2 828.8a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248L240.448 828.8a32 32 0 0 1-45.248 0m543.104-543.104a32 32 0 0 1 0-45.248l45.248-45.248a32 32 0 0 1 45.248 45.248l-45.248 45.248a32 32 0 0 1-45.248 0"
       })
     ]));
   }
 });
-var sunny_default = sunny_vue_vue_type_script_setup_true_lang_default;
-var sunrise_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sunny_default = _sfc_main253;
+var _sfc_main254 = /* @__PURE__ */ defineComponent({
   name: "Sunrise",
   __name: "sunrise",
   setup(__props) {
@@ -31717,13 +31826,13 @@ var sunrise_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M32 768h960a32 32 0 1 1 0 64H32a32 32 0 1 1 0-64m129.408-96a352 352 0 0 1 701.184 0h-64.32a288 288 0 0 0-572.544 0h-64.32zM512 128a32 32 0 0 1 32 32v96a32 32 0 0 1-64 0v-96a32 32 0 0 1 32-32m407.296 168.704a32 32 0 0 1 0 45.248l-67.84 67.84a32 32 0 1 1-45.248-45.248l67.84-67.84a32 32 0 0 1 45.248 0zm-814.592 0a32 32 0 0 1 45.248 0l67.84 67.84a32 32 0 1 1-45.248 45.248l-67.84-67.84a32 32 0 0 1 0-45.248"
+        d: "M32 768h960a32 32 0 1 1 0 64H32a32 32 0 1 1 0-64m129.408-96a352 352 0 0 1 701.184 0h-64.32a288 288 0 0 0-572.544 0zM512 128a32 32 0 0 1 32 32v96a32 32 0 0 1-64 0v-96a32 32 0 0 1 32-32m407.296 168.704a32 32 0 0 1 0 45.248l-67.84 67.84a32 32 0 1 1-45.248-45.248l67.84-67.84a32 32 0 0 1 45.248 0m-814.592 0a32 32 0 0 1 45.248 0l67.84 67.84a32 32 0 1 1-45.248 45.248l-67.84-67.84a32 32 0 0 1 0-45.248"
       })
     ]));
   }
 });
-var sunrise_default = sunrise_vue_vue_type_script_setup_true_lang_default;
-var sunset_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sunrise_default = _sfc_main254;
+var _sfc_main255 = /* @__PURE__ */ defineComponent({
   name: "Sunset",
   __name: "sunset",
   setup(__props) {
@@ -31738,8 +31847,8 @@ var sunset_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var sunset_default = sunset_vue_vue_type_script_setup_true_lang_default;
-var switch_button_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var sunset_default = _sfc_main255;
+var _sfc_main256 = /* @__PURE__ */ defineComponent({
   name: "SwitchButton",
   __name: "switch-button",
   setup(__props) {
@@ -31749,7 +31858,7 @@ var switch_button_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M352 159.872V230.4a352 352 0 1 0 320 0v-70.528A416.128 416.128 0 0 1 512 960a416 416 0 0 1-160-800.128z"
+        d: "M352 159.872V230.4a352 352 0 1 0 320 0v-70.528A416.128 416.128 0 0 1 512 960a416 416 0 0 1-160-800.128"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -31758,30 +31867,29 @@ var switch_button_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var switch_button_default = switch_button_vue_vue_type_script_setup_true_lang_default;
-var switch_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var switch_button_default = _sfc_main256;
+var _sfc_main257 = /* @__PURE__ */ defineComponent({
   name: "SwitchFilled",
   __name: "switch-filled",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M247.47 358.4v.04c.07 19.17 7.72 37.53 21.27 51.09s31.92 21.2 51.09 21.27c39.86 0 72.41-32.6 72.41-72.4s-32.6-72.36-72.41-72.36-72.36 32.55-72.36 72.36z"
+        d: "M247.47 358.4v.04c.07 19.17 7.72 37.53 21.27 51.09s31.92 21.2 51.09 21.27c39.86 0 72.41-32.6 72.41-72.4s-32.6-72.36-72.41-72.36-72.36 32.55-72.36 72.36"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M492.38 128H324.7c-52.16 0-102.19 20.73-139.08 57.61a196.655 196.655 0 0 0-57.61 139.08V698.7c-.01 25.84 5.08 51.42 14.96 75.29s24.36 45.56 42.63 63.83 39.95 32.76 63.82 42.65a196.67 196.67 0 0 0 75.28 14.98h167.68c3.03 0 5.46-2.43 5.46-5.42V133.42c.6-2.99-1.83-5.42-5.46-5.42zm-56.11 705.88H324.7c-17.76.13-35.36-3.33-51.75-10.18s-31.22-16.94-43.61-29.67c-25.3-25.35-39.81-59.1-39.81-95.32V324.69c-.13-17.75 3.33-35.35 10.17-51.74a131.695 131.695 0 0 1 29.64-43.62c25.39-25.3 59.14-39.81 95.36-39.81h111.57zm402.12-647.67a196.655 196.655 0 0 0-139.08-57.61H580.48c-3.03 0-4.82 2.43-4.82 4.82v757.16c-.6 2.99 1.79 5.42 5.42 5.42h118.23a196.69 196.69 0 0 0 139.08-57.61A196.655 196.655 0 0 0 896 699.31V325.29a196.69 196.69 0 0 0-57.61-139.08zm-111.3 441.92c-42.83 0-77.82-34.99-77.82-77.82s34.98-77.82 77.82-77.82c42.83 0 77.82 34.99 77.82 77.82s-34.99 77.82-77.82 77.82z"
+        d: "M492.38 128H324.7c-52.16 0-102.19 20.73-139.08 57.61a196.66 196.66 0 0 0-57.61 139.08V698.7c-.01 25.84 5.08 51.42 14.96 75.29s24.36 45.56 42.63 63.83 39.95 32.76 63.82 42.65a196.7 196.7 0 0 0 75.28 14.98h167.68c3.03 0 5.46-2.43 5.46-5.42V133.42c.6-2.99-1.83-5.42-5.46-5.42m-56.11 705.88H324.7c-17.76.13-35.36-3.33-51.75-10.18s-31.22-16.94-43.61-29.67c-25.3-25.35-39.81-59.1-39.81-95.32V324.69c-.13-17.75 3.33-35.35 10.17-51.74a131.7 131.7 0 0 1 29.64-43.62c25.39-25.3 59.14-39.81 95.36-39.81h111.57zm402.12-647.67a196.66 196.66 0 0 0-139.08-57.61H580.48c-3.03 0-4.82 2.43-4.82 4.82v757.16c-.6 2.99 1.79 5.42 5.42 5.42h118.23a196.7 196.7 0 0 0 139.08-57.61A196.66 196.66 0 0 0 896 699.31V325.29a196.7 196.7 0 0 0-57.61-139.08m-111.3 441.92c-42.83 0-77.82-34.99-77.82-77.82s34.98-77.82 77.82-77.82c42.83 0 77.82 34.99 77.82 77.82s-34.99 77.82-77.82 77.82"
       })
     ]));
   }
 });
-var switch_filled_default = switch_filled_vue_vue_type_script_setup_true_lang_default;
-var switch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var switch_filled_default = _sfc_main257;
+var _sfc_main258 = /* @__PURE__ */ defineComponent({
   name: "Switch",
   __name: "switch",
   setup(__props) {
@@ -31791,13 +31899,13 @@ var switch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M118.656 438.656a32 32 0 0 1 0-45.248L416 96l4.48-3.776A32 32 0 0 1 461.248 96l3.712 4.48a32.064 32.064 0 0 1-3.712 40.832L218.56 384H928a32 32 0 1 1 0 64H141.248a32 32 0 0 1-22.592-9.344zM64 608a32 32 0 0 1 32-32h786.752a32 32 0 0 1 22.656 54.592L608 928l-4.48 3.776a32.064 32.064 0 0 1-40.832-49.024L805.632 640H96a32 32 0 0 1-32-32"
+        d: "M118.656 438.656a32 32 0 0 1 0-45.248L416 96l4.48-3.776A32 32 0 0 1 461.248 96l3.712 4.48a32.064 32.064 0 0 1-3.712 40.832L218.56 384H928a32 32 0 1 1 0 64H141.248a32 32 0 0 1-22.592-9.344M64 608a32 32 0 0 1 32-32h786.752a32 32 0 0 1 22.656 54.592L608 928l-4.48 3.776a32.064 32.064 0 0 1-40.832-49.024L805.632 640H96a32 32 0 0 1-32-32"
       })
     ]));
   }
 });
-var switch_default = switch_vue_vue_type_script_setup_true_lang_default;
-var takeaway_box_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var switch_default = _sfc_main258;
+var _sfc_main259 = /* @__PURE__ */ defineComponent({
   name: "TakeawayBox",
   __name: "takeaway-box",
   setup(__props) {
@@ -31812,8 +31920,8 @@ var takeaway_box_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var takeaway_box_default = takeaway_box_vue_vue_type_script_setup_true_lang_default;
-var ticket_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var takeaway_box_default = _sfc_main259;
+var _sfc_main260 = /* @__PURE__ */ defineComponent({
   name: "Ticket",
   __name: "ticket",
   setup(__props) {
@@ -31828,8 +31936,8 @@ var ticket_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var ticket_default = ticket_vue_vue_type_script_setup_true_lang_default;
-var tickets_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var ticket_default = _sfc_main260;
+var _sfc_main261 = /* @__PURE__ */ defineComponent({
   name: "Tickets",
   __name: "tickets",
   setup(__props) {
@@ -31844,8 +31952,8 @@ var tickets_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var tickets_default = tickets_vue_vue_type_script_setup_true_lang_default;
-var timer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var tickets_default = _sfc_main261;
+var _sfc_main262 = /* @__PURE__ */ defineComponent({
   name: "Timer",
   __name: "timer",
   setup(__props) {
@@ -31868,8 +31976,8 @@ var timer_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var timer_default = timer_vue_vue_type_script_setup_true_lang_default;
-var toilet_paper_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var timer_default = _sfc_main262;
+var _sfc_main263 = /* @__PURE__ */ defineComponent({
   name: "ToiletPaper",
   __name: "toilet-paper",
   setup(__props) {
@@ -31888,8 +31996,8 @@ var toilet_paper_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var toilet_paper_default = toilet_paper_vue_vue_type_script_setup_true_lang_default;
-var tools_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var toilet_paper_default = _sfc_main263;
+var _sfc_main264 = /* @__PURE__ */ defineComponent({
   name: "Tools",
   __name: "tools",
   setup(__props) {
@@ -31899,13 +32007,13 @@ var tools_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M764.416 254.72a351.68 351.68 0 0 1 86.336 149.184H960v192.064H850.752a351.68 351.68 0 0 1-86.336 149.312l54.72 94.72-166.272 96-54.592-94.72a352.64 352.64 0 0 1-172.48 0L371.136 936l-166.272-96 54.72-94.72a351.68 351.68 0 0 1-86.336-149.312H64v-192h109.248a351.68 351.68 0 0 1 86.336-149.312L204.8 160l166.208-96h.192l54.656 94.592a352.64 352.64 0 0 1 172.48 0L652.8 64h.128L819.2 160l-54.72 94.72zM704 499.968a192 192 0 1 0-384 0 192 192 0 0 0 384 0"
+        d: "M764.416 254.72a351.7 351.7 0 0 1 86.336 149.184H960v192.064H850.752a351.7 351.7 0 0 1-86.336 149.312l54.72 94.72-166.272 96-54.592-94.72a352.64 352.64 0 0 1-172.48 0L371.136 936l-166.272-96 54.72-94.72a351.7 351.7 0 0 1-86.336-149.312H64v-192h109.248a351.7 351.7 0 0 1 86.336-149.312L204.8 160l166.208-96h.192l54.656 94.592a352.64 352.64 0 0 1 172.48 0L652.8 64h.128L819.2 160l-54.72 94.72zM704 499.968a192 192 0 1 0-384 0 192 192 0 0 0 384 0"
       })
     ]));
   }
 });
-var tools_default = tools_vue_vue_type_script_setup_true_lang_default;
-var top_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var tools_default = _sfc_main264;
+var _sfc_main265 = /* @__PURE__ */ defineComponent({
   name: "TopLeft",
   __name: "top-left",
   setup(__props) {
@@ -31919,13 +32027,13 @@ var top_left_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M246.656 201.344a32 32 0 0 0-45.312 45.312l544 544a32 32 0 0 0 45.312-45.312l-544-544z"
+        d: "M246.656 201.344a32 32 0 0 0-45.312 45.312l544 544a32 32 0 0 0 45.312-45.312z"
       })
     ]));
   }
 });
-var top_left_default = top_left_vue_vue_type_script_setup_true_lang_default;
-var top_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var top_left_default = _sfc_main265;
+var _sfc_main266 = /* @__PURE__ */ defineComponent({
   name: "TopRight",
   __name: "top-right",
   setup(__props) {
@@ -31939,13 +32047,13 @@ var top_right_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defi
       }),
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M777.344 201.344a32 32 0 0 1 45.312 45.312l-544 544a32 32 0 0 1-45.312-45.312l544-544z"
+        d: "M777.344 201.344a32 32 0 0 1 45.312 45.312l-544 544a32 32 0 0 1-45.312-45.312z"
       })
     ]));
   }
 });
-var top_right_default = top_right_vue_vue_type_script_setup_true_lang_default;
-var top_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var top_right_default = _sfc_main266;
+var _sfc_main267 = /* @__PURE__ */ defineComponent({
   name: "Top",
   __name: "top",
   setup(__props) {
@@ -31960,8 +32068,8 @@ var top_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     ]));
   }
 });
-var top_default = top_vue_vue_type_script_setup_true_lang_default;
-var trend_charts_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var top_default = _sfc_main267;
+var _sfc_main268 = /* @__PURE__ */ defineComponent({
   name: "TrendCharts",
   __name: "trend-charts",
   setup(__props) {
@@ -31971,31 +32079,30 @@ var trend_charts_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M128 896V128h768v768zm291.712-327.296 128 102.4 180.16-201.792-47.744-42.624-139.84 156.608-128-102.4-180.16 201.792 47.744 42.624 139.84-156.608zM816 352a48 48 0 1 0-96 0 48 48 0 0 0 96 0"
+        d: "M128 896V128h768v768zm291.712-327.296 128 102.4 180.16-201.792-47.744-42.624-139.84 156.608-128-102.4-180.16 201.792 47.744 42.624zM816 352a48 48 0 1 0-96 0 48 48 0 0 0 96 0"
       })
     ]));
   }
 });
-var trend_charts_default = trend_charts_vue_vue_type_script_setup_true_lang_default;
-var trophy_base_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var trend_charts_default = _sfc_main268;
+var _sfc_main269 = /* @__PURE__ */ defineComponent({
   name: "TrophyBase",
   __name: "trophy-base",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M918.4 201.6c-6.4-6.4-12.8-9.6-22.4-9.6H768V96c0-9.6-3.2-16-9.6-22.4C752 67.2 745.6 64 736 64H288c-9.6 0-16 3.2-22.4 9.6C259.2 80 256 86.4 256 96v96H128c-9.6 0-16 3.2-22.4 9.6-6.4 6.4-9.6 16-9.6 22.4 3.2 108.8 25.6 185.6 64 224 34.4 34.4 77.56 55.65 127.65 61.99 10.91 20.44 24.78 39.25 41.95 56.41 40.86 40.86 91 65.47 150.4 71.9V768h-96c-9.6 0-16 3.2-22.4 9.6-6.4 6.4-9.6 12.8-9.6 22.4s3.2 16 9.6 22.4c6.4 6.4 12.8 9.6 22.4 9.6h256c9.6 0 16-3.2 22.4-9.6 6.4-6.4 9.6-12.8 9.6-22.4s-3.2-16-9.6-22.4c-6.4-6.4-12.8-9.6-22.4-9.6h-96V637.26c59.4-7.71 109.54-30.01 150.4-70.86 17.2-17.2 31.51-36.06 42.81-56.55 48.93-6.51 90.02-27.7 126.79-61.85 38.4-38.4 60.8-112 64-224 0-6.4-3.2-16-9.6-22.4zM256 438.4c-19.2-6.4-35.2-19.2-51.2-35.2-22.4-22.4-35.2-70.4-41.6-147.2H256zm390.4 80C608 553.6 566.4 576 512 576s-99.2-19.2-134.4-57.6C342.4 480 320 438.4 320 384V128h384v256c0 54.4-19.2 99.2-57.6 134.4m172.8-115.2c-16 16-32 25.6-51.2 35.2V256h92.8c-6.4 76.8-19.2 124.8-41.6 147.2zM768 896H256c-9.6 0-16 3.2-22.4 9.6-6.4 6.4-9.6 12.8-9.6 22.4s3.2 16 9.6 22.4c6.4 6.4 12.8 9.6 22.4 9.6h512c9.6 0 16-3.2 22.4-9.6 6.4-6.4 9.6-12.8 9.6-22.4s-3.2-16-9.6-22.4c-6.4-6.4-12.8-9.6-22.4-9.6"
+        d: "M918.4 201.6c-6.4-6.4-12.8-9.6-22.4-9.6H768V96c0-9.6-3.2-16-9.6-22.4S745.6 64 736 64H288c-9.6 0-16 3.2-22.4 9.6S256 86.4 256 96v96H128c-9.6 0-16 3.2-22.4 9.6S96 217.6 96 224c3.2 108.8 25.6 185.6 64 224 34.4 34.4 77.56 55.65 127.65 61.99 10.91 20.44 24.78 39.25 41.95 56.41 40.86 40.86 91 65.47 150.4 71.9V768h-96c-9.6 0-16 3.2-22.4 9.6S352 790.4 352 800s3.2 16 9.6 22.4 12.8 9.6 22.4 9.6h256c9.6 0 16-3.2 22.4-9.6s9.6-12.8 9.6-22.4-3.2-16-9.6-22.4-12.8-9.6-22.4-9.6h-96V637.26c59.4-7.71 109.54-30.01 150.4-70.86 17.2-17.2 31.51-36.06 42.81-56.55 48.93-6.51 90.02-27.7 126.79-61.85 38.4-38.4 60.8-112 64-224 0-6.4-3.2-16-9.6-22.4M256 438.4c-19.2-6.4-35.2-19.2-51.2-35.2-22.4-22.4-35.2-70.4-41.6-147.2H256zm390.4 80C608 553.6 566.4 576 512 576s-99.2-19.2-134.4-57.6S320 438.4 320 384V128h384v256q0 81.6-57.6 134.4m172.8-115.2c-16 16-32 25.6-51.2 35.2V256h92.8c-6.4 76.8-19.2 124.8-41.6 147.2M768 896H256c-9.6 0-16 3.2-22.4 9.6S224 918.4 224 928s3.2 16 9.6 22.4 12.8 9.6 22.4 9.6h512c9.6 0 16-3.2 22.4-9.6s9.6-12.8 9.6-22.4-3.2-16-9.6-22.4-12.8-9.6-22.4-9.6"
       })
     ]));
   }
 });
-var trophy_base_default = trophy_base_vue_vue_type_script_setup_true_lang_default;
-var trophy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var trophy_base_default = _sfc_main269;
+var _sfc_main270 = /* @__PURE__ */ defineComponent({
   name: "Trophy",
   __name: "trophy",
   setup(__props) {
@@ -32005,13 +32112,13 @@ var trophy_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M480 896V702.08A256.256 256.256 0 0 1 264.064 512h-32.64a96 96 0 0 1-91.968-68.416L93.632 290.88a76.8 76.8 0 0 1 73.6-98.88H256V96a32 32 0 0 1 32-32h448a32 32 0 0 1 32 32v96h88.768a76.8 76.8 0 0 1 73.6 98.88L884.48 443.52A96 96 0 0 1 792.576 512h-32.64A256.256 256.256 0 0 1 544 702.08V896h128a32 32 0 1 1 0 64H352a32 32 0 1 1 0-64zm224-448V128H320v320a192 192 0 1 0 384 0m64 0h24.576a32 32 0 0 0 30.656-22.784l45.824-152.768A12.8 12.8 0 0 0 856.768 256H768zm-512 0V256h-88.768a12.8 12.8 0 0 0-12.288 16.448l45.824 152.768A32 32 0 0 0 231.424 448z"
+        d: "M480 896V702.08A256.26 256.26 0 0 1 264.064 512h-32.64a96 96 0 0 1-91.968-68.416L93.632 290.88a76.8 76.8 0 0 1 73.6-98.88H256V96a32 32 0 0 1 32-32h448a32 32 0 0 1 32 32v96h88.768a76.8 76.8 0 0 1 73.6 98.88L884.48 443.52A96 96 0 0 1 792.576 512h-32.64A256.26 256.26 0 0 1 544 702.08V896h128a32 32 0 1 1 0 64H352a32 32 0 1 1 0-64zm224-448V128H320v320a192 192 0 1 0 384 0m64 0h24.576a32 32 0 0 0 30.656-22.784l45.824-152.768A12.8 12.8 0 0 0 856.768 256H768zm-512 0V256h-88.768a12.8 12.8 0 0 0-12.288 16.448l45.824 152.768A32 32 0 0 0 231.424 448z"
       })
     ]));
   }
 });
-var trophy_default = trophy_vue_vue_type_script_setup_true_lang_default;
-var turn_off_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var trophy_default = _sfc_main270;
+var _sfc_main271 = /* @__PURE__ */ defineComponent({
   name: "TurnOff",
   __name: "turn-off",
   setup(__props) {
@@ -32021,7 +32128,7 @@ var turn_off_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M329.956 257.138a254.862 254.862 0 0 0 0 509.724h364.088a254.862 254.862 0 0 0 0-509.724zm0-72.818h364.088a327.68 327.68 0 1 1 0 655.36H329.956a327.68 327.68 0 1 1 0-655.36z"
+        d: "M329.956 257.138a254.862 254.862 0 0 0 0 509.724h364.088a254.862 254.862 0 0 0 0-509.724zm0-72.818h364.088a327.68 327.68 0 1 1 0 655.36H329.956a327.68 327.68 0 1 1 0-655.36"
       }),
       createBaseVNode("path", {
         fill: "currentColor",
@@ -32030,8 +32137,8 @@ var turn_off_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var turn_off_default = turn_off_vue_vue_type_script_setup_true_lang_default;
-var umbrella_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var turn_off_default = _sfc_main271;
+var _sfc_main272 = /* @__PURE__ */ defineComponent({
   name: "Umbrella",
   __name: "umbrella",
   setup(__props) {
@@ -32046,8 +32153,8 @@ var umbrella_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var umbrella_default = umbrella_vue_vue_type_script_setup_true_lang_default;
-var unlock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var umbrella_default = _sfc_main272;
+var _sfc_main273 = /* @__PURE__ */ defineComponent({
   name: "Unlock",
   __name: "unlock",
   setup(__props) {
@@ -32066,8 +32173,8 @@ var unlock_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var unlock_default = unlock_vue_vue_type_script_setup_true_lang_default;
-var upload_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var unlock_default = _sfc_main273;
+var _sfc_main274 = /* @__PURE__ */ defineComponent({
   name: "UploadFilled",
   __name: "upload-filled",
   setup(__props) {
@@ -32077,13 +32184,13 @@ var upload_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M544 864V672h128L512 480 352 672h128v192H320v-1.6c-5.376.32-10.496 1.6-16 1.6A240 240 0 0 1 64 624c0-123.136 93.12-223.488 212.608-237.248A239.808 239.808 0 0 1 512 192a239.872 239.872 0 0 1 235.456 194.752c119.488 13.76 212.48 114.112 212.48 237.248a240 240 0 0 1-240 240c-5.376 0-10.56-1.28-16-1.6v1.6z"
+        d: "M544 864V672h128L512 480 352 672h128v192H320v-1.6c-5.376.32-10.496 1.6-16 1.6A240 240 0 0 1 64 624c0-123.136 93.12-223.488 212.608-237.248A239.81 239.81 0 0 1 512 192a239.87 239.87 0 0 1 235.456 194.752c119.488 13.76 212.48 114.112 212.48 237.248a240 240 0 0 1-240 240c-5.376 0-10.56-1.28-16-1.6v1.6z"
       })
     ]));
   }
 });
-var upload_filled_default = upload_filled_vue_vue_type_script_setup_true_lang_default;
-var upload_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var upload_filled_default = _sfc_main274;
+var _sfc_main275 = /* @__PURE__ */ defineComponent({
   name: "Upload",
   __name: "upload",
   setup(__props) {
@@ -32098,8 +32205,8 @@ var upload_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var upload_default = upload_vue_vue_type_script_setup_true_lang_default;
-var user_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var upload_default = _sfc_main275;
+var _sfc_main276 = /* @__PURE__ */ defineComponent({
   name: "UserFilled",
   __name: "user-filled",
   setup(__props) {
@@ -32114,8 +32221,8 @@ var user_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var user_filled_default = user_filled_vue_vue_type_script_setup_true_lang_default;
-var user_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var user_filled_default = _sfc_main276;
+var _sfc_main277 = /* @__PURE__ */ defineComponent({
   name: "User",
   __name: "user",
   setup(__props) {
@@ -32130,8 +32237,8 @@ var user_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     ]));
   }
 });
-var user_default = user_vue_vue_type_script_setup_true_lang_default;
-var van_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var user_default = _sfc_main277;
+var _sfc_main278 = /* @__PURE__ */ defineComponent({
   name: "Van",
   __name: "van",
   setup(__props) {
@@ -32141,13 +32248,13 @@ var van_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComp
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M128.896 736H96a32 32 0 0 1-32-32V224a32 32 0 0 1 32-32h576a32 32 0 0 1 32 32v96h164.544a32 32 0 0 1 31.616 27.136l54.144 352A32 32 0 0 1 922.688 736h-91.52a144 144 0 1 1-286.272 0H415.104a144 144 0 1 1-286.272 0zm23.36-64a143.872 143.872 0 0 1 239.488 0H568.32c17.088-25.6 42.24-45.376 71.744-55.808V256H128v416zm655.488 0h77.632l-19.648-128H704v64.896A144 144 0 0 1 807.744 672m48.128-192-14.72-96H704v96h151.872M688 832a80 80 0 1 0 0-160 80 80 0 0 0 0 160m-416 0a80 80 0 1 0 0-160 80 80 0 0 0 0 160"
+        d: "M128.896 736H96a32 32 0 0 1-32-32V224a32 32 0 0 1 32-32h576a32 32 0 0 1 32 32v96h164.544a32 32 0 0 1 31.616 27.136l54.144 352A32 32 0 0 1 922.688 736h-91.52a144 144 0 1 1-286.272 0H415.104a144 144 0 1 1-286.272 0zm23.36-64a143.872 143.872 0 0 1 239.488 0H568.32c17.088-25.6 42.24-45.376 71.744-55.808V256H128v416zm655.488 0h77.632l-19.648-128H704v64.896A144 144 0 0 1 807.744 672m48.128-192-14.72-96H704v96zM688 832a80 80 0 1 0 0-160 80 80 0 0 0 0 160m-416 0a80 80 0 1 0 0-160 80 80 0 0 0 0 160"
       })
     ]));
   }
 });
-var van_default = van_vue_vue_type_script_setup_true_lang_default;
-var video_camera_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var van_default = _sfc_main278;
+var _sfc_main279 = /* @__PURE__ */ defineComponent({
   name: "VideoCameraFilled",
   __name: "video-camera-filled",
   setup(__props) {
@@ -32162,8 +32269,8 @@ var video_camera_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE
     ]));
   }
 });
-var video_camera_filled_default = video_camera_filled_vue_vue_type_script_setup_true_lang_default;
-var video_camera_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var video_camera_filled_default = _sfc_main279;
+var _sfc_main280 = /* @__PURE__ */ defineComponent({
   name: "VideoCamera",
   __name: "video-camera",
   setup(__props) {
@@ -32178,8 +32285,8 @@ var video_camera_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ d
     ]));
   }
 });
-var video_camera_default = video_camera_vue_vue_type_script_setup_true_lang_default;
-var video_pause_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var video_camera_default = _sfc_main280;
+var _sfc_main281 = /* @__PURE__ */ defineComponent({
   name: "VideoPause",
   __name: "video-pause",
   setup(__props) {
@@ -32194,8 +32301,8 @@ var video_pause_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ de
     ]));
   }
 });
-var video_pause_default = video_pause_vue_vue_type_script_setup_true_lang_default;
-var video_play_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var video_pause_default = _sfc_main281;
+var _sfc_main282 = /* @__PURE__ */ defineComponent({
   name: "VideoPlay",
   __name: "video-play",
   setup(__props) {
@@ -32210,8 +32317,8 @@ var video_play_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var video_play_default = video_play_vue_vue_type_script_setup_true_lang_default;
-var view_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var video_play_default = _sfc_main282;
+var _sfc_main283 = /* @__PURE__ */ defineComponent({
   name: "View",
   __name: "view",
   setup(__props) {
@@ -32221,13 +32328,13 @@ var view_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCom
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 160c320 0 512 352 512 352S832 864 512 864 0 512 0 512s192-352 512-352m0 64c-225.28 0-384.128 208.064-436.8 288 52.608 79.872 211.456 288 436.8 288 225.28 0 384.128-208.064 436.8-288-52.608-79.872-211.456-288-436.8-288zm0 64a224 224 0 1 1 0 448 224 224 0 0 1 0-448m0 64a160.192 160.192 0 0 0-160 160c0 88.192 71.744 160 160 160s160-71.808 160-160-71.744-160-160-160"
+        d: "M512 160c320 0 512 352 512 352S832 864 512 864 0 512 0 512s192-352 512-352m0 64c-225.28 0-384.128 208.064-436.8 288 52.608 79.872 211.456 288 436.8 288 225.28 0 384.128-208.064 436.8-288-52.608-79.872-211.456-288-436.8-288m0 64a224 224 0 1 1 0 448 224 224 0 0 1 0-448m0 64a160.19 160.19 0 0 0-160 160c0 88.192 71.744 160 160 160s160-71.808 160-160-71.744-160-160-160"
       })
     ]));
   }
 });
-var view_default = view_vue_vue_type_script_setup_true_lang_default;
-var wallet_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var view_default = _sfc_main283;
+var _sfc_main284 = /* @__PURE__ */ defineComponent({
   name: "WalletFilled",
   __name: "wallet-filled",
   setup(__props) {
@@ -32242,8 +32349,8 @@ var wallet_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ 
     ]));
   }
 });
-var wallet_filled_default = wallet_filled_vue_vue_type_script_setup_true_lang_default;
-var wallet_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var wallet_filled_default = _sfc_main284;
+var _sfc_main285 = /* @__PURE__ */ defineComponent({
   name: "Wallet",
   __name: "wallet",
   setup(__props) {
@@ -32266,26 +32373,25 @@ var wallet_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineC
     ]));
   }
 });
-var wallet_default = wallet_vue_vue_type_script_setup_true_lang_default;
-var warn_triangle_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var wallet_default = _sfc_main285;
+var _sfc_main286 = /* @__PURE__ */ defineComponent({
   name: "WarnTriangleFilled",
   __name: "warn-triangle-filled",
   setup(__props) {
     return (_ctx, _cache) => (openBlock(), createElementBlock("svg", {
       xmlns: "http://www.w3.org/2000/svg",
       "xml:space": "preserve",
-      style: { "enable-background": "new 0 0 1024 1024" },
       viewBox: "0 0 1024 1024"
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M928.99 755.83 574.6 203.25c-12.89-20.16-36.76-32.58-62.6-32.58s-49.71 12.43-62.6 32.58L95.01 755.83c-12.91 20.12-12.9 44.91.01 65.03 12.92 20.12 36.78 32.51 62.59 32.49h708.78c25.82.01 49.68-12.37 62.59-32.49 12.91-20.12 12.92-44.91.01-65.03M554.67 768h-85.33v-85.33h85.33zm0-426.67v298.66h-85.33V341.32z"
+        d: "M928.99 755.83 574.6 203.25c-12.89-20.16-36.76-32.58-62.6-32.58s-49.71 12.43-62.6 32.58L95.01 755.83c-12.91 20.12-12.9 44.91.01 65.03 12.92 20.12 36.78 32.51 62.59 32.49h708.78c25.82.01 49.68-12.37 62.59-32.49s12.92-44.91.01-65.03M554.67 768h-85.33v-85.33h85.33zm0-426.67v298.66h-85.33V341.32z"
       })
     ]));
   }
 });
-var warn_triangle_filled_default = warn_triangle_filled_vue_vue_type_script_setup_true_lang_default;
-var warning_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var warn_triangle_filled_default = _sfc_main286;
+var _sfc_main287 = /* @__PURE__ */ defineComponent({
   name: "WarningFilled",
   __name: "warning-filled",
   setup(__props) {
@@ -32295,13 +32401,13 @@ var warning_filled_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m0 192a58.432 58.432 0 0 0-58.24 63.744l23.36 256.384a35.072 35.072 0 0 0 69.76 0l23.296-256.384A58.432 58.432 0 0 0 512 256m0 512a51.2 51.2 0 1 0 0-102.4 51.2 51.2 0 0 0 0 102.4"
+        d: "M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896m0 192a58.43 58.43 0 0 0-58.24 63.744l23.36 256.384a35.072 35.072 0 0 0 69.76 0l23.296-256.384A58.43 58.43 0 0 0 512 256m0 512a51.2 51.2 0 1 0 0-102.4 51.2 51.2 0 0 0 0 102.4"
       })
     ]));
   }
 });
-var warning_filled_default = warning_filled_vue_vue_type_script_setup_true_lang_default;
-var warning_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var warning_filled_default = _sfc_main287;
+var _sfc_main288 = /* @__PURE__ */ defineComponent({
   name: "Warning",
   __name: "warning",
   setup(__props) {
@@ -32316,8 +32422,8 @@ var warning_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var warning_default = warning_vue_vue_type_script_setup_true_lang_default;
-var watch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var warning_default = _sfc_main288;
+var _sfc_main289 = /* @__PURE__ */ defineComponent({
   name: "Watch",
   __name: "watch",
   setup(__props) {
@@ -32340,8 +32446,8 @@ var watch_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineCo
     ]));
   }
 });
-var watch_default = watch_vue_vue_type_script_setup_true_lang_default;
-var watermelon_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var watch_default = _sfc_main289;
+var _sfc_main290 = /* @__PURE__ */ defineComponent({
   name: "Watermelon",
   __name: "watermelon",
   setup(__props) {
@@ -32351,13 +32457,13 @@ var watermelon_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     }, [
       createBaseVNode("path", {
         fill: "currentColor",
-        d: "m683.072 600.32-43.648 162.816-61.824-16.512 53.248-198.528L576 493.248l-158.4 158.4-45.248-45.248 158.4-158.4-55.616-55.616-198.528 53.248-16.512-61.824 162.816-43.648L282.752 200A384 384 0 0 0 824 741.248zm231.552 141.056a448 448 0 1 1-632-632l632 632"
+        d: "m683.072 600.32-43.648 162.816-61.824-16.512 53.248-198.528L576 493.248l-158.4 158.4-45.248-45.248 158.4-158.4-55.616-55.616-198.528 53.248-16.512-61.824 162.816-43.648L282.752 200A384 384 0 0 0 824 741.248zm231.552 141.056a448 448 0 1 1-632-632z"
       })
     ]));
   }
 });
-var watermelon_default = watermelon_vue_vue_type_script_setup_true_lang_default;
-var wind_power_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var watermelon_default = _sfc_main290;
+var _sfc_main291 = /* @__PURE__ */ defineComponent({
   name: "WindPower",
   __name: "wind-power",
   setup(__props) {
@@ -32372,8 +32478,8 @@ var wind_power_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
     ]));
   }
 });
-var wind_power_default = wind_power_vue_vue_type_script_setup_true_lang_default;
-var zoom_in_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var wind_power_default = _sfc_main291;
+var _sfc_main292 = /* @__PURE__ */ defineComponent({
   name: "ZoomIn",
   __name: "zoom-in",
   setup(__props) {
@@ -32388,8 +32494,8 @@ var zoom_in_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ define
     ]));
   }
 });
-var zoom_in_default = zoom_in_vue_vue_type_script_setup_true_lang_default;
-var zoom_out_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defineComponent({
+var zoom_in_default = _sfc_main292;
+var _sfc_main293 = /* @__PURE__ */ defineComponent({
   name: "ZoomOut",
   __name: "zoom-out",
   setup(__props) {
@@ -32404,7 +32510,7 @@ var zoom_out_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ defin
     ]));
   }
 });
-var zoom_out_default = zoom_out_vue_vue_type_script_setup_true_lang_default;
+var zoom_out_default = _sfc_main293;
 
 // node_modules/element-plus/es/utils/vue/icon.mjs
 var iconPropType = definePropType([
@@ -32477,7 +32583,7 @@ var alertEmits = {
 var __default__3 = defineComponent({
   name: "ElAlert"
 });
-var _sfc_main3 = /* @__PURE__ */ defineComponent({
+var _sfc_main294 = /* @__PURE__ */ defineComponent({
   ...__default__3,
   props: alertProps,
   emits: alertEmits,
@@ -32573,7 +32679,7 @@ var _sfc_main3 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Alert = /* @__PURE__ */ _export_sfc(_sfc_main3, [["__file", "alert.vue"]]);
+var Alert = /* @__PURE__ */ _export_sfc(_sfc_main294, [["__file", "alert.vue"]]);
 
 // node_modules/element-plus/es/components/alert/index.mjs
 var ElAlert = withInstall(Alert);
@@ -32607,7 +32713,8 @@ var CONTEXT_STYLE = [
   "padding-left",
   "padding-right",
   "border-width",
-  "box-sizing"
+  "box-sizing",
+  "word-break"
 ];
 function calculateNodeStyling(targetElement) {
   const style = window.getComputedStyle(targetElement);
@@ -32621,10 +32728,10 @@ function calculateNodeStyling(targetElement) {
   return { contextStyle, paddingSize, borderSize, boxSizing };
 }
 function calcTextareaHeight(targetElement, minRows = 1, maxRows) {
-  var _a26;
+  var _a26, _b25;
   if (!hiddenTextarea) {
     hiddenTextarea = document.createElement("textarea");
-    document.body.appendChild(hiddenTextarea);
+    ((_a26 = targetElement.parentNode) != null ? _a26 : document.body).appendChild(hiddenTextarea);
   }
   const { paddingSize, borderSize, boxSizing, contextStyle } = calculateNodeStyling(targetElement);
   contextStyle.forEach(([key, value]) => hiddenTextarea == null ? void 0 : hiddenTextarea.style.setProperty(key, value));
@@ -32655,7 +32762,7 @@ function calcTextareaHeight(targetElement, minRows = 1, maxRows) {
     height = Math.min(maxHeight, height);
   }
   result.height = `${height}px`;
-  (_a26 = hiddenTextarea.parentNode) == null ? void 0 : _a26.removeChild(hiddenTextarea);
+  (_b25 = hiddenTextarea.parentNode) == null ? void 0 : _b25.removeChild(hiddenTextarea);
   hiddenTextarea = void 0;
   return result;
 }
@@ -32676,7 +32783,7 @@ var useAriaProps = (arias) => {
   return pick_default(ariaProps, arias);
 };
 
-// node_modules/element-plus/es/components/input/src/input.mjs
+// node_modules/element-plus/es/components/input/src/input2.mjs
 var inputProps = buildProps({
   id: {
     type: String,
@@ -32728,6 +32835,10 @@ var inputProps = buildProps({
   },
   readonly: Boolean,
   clearable: Boolean,
+  clearIcon: {
+    type: iconPropType,
+    default: circle_close_default
+  },
   showPassword: Boolean,
   showWordLimit: Boolean,
   suffixIcon: {
@@ -32757,7 +32868,12 @@ var inputProps = buildProps({
     type: Number,
     default: 2
   },
-  ...useAriaProps(["ariaLabel"])
+  ...useAriaProps(["ariaLabel"]),
+  inputmode: {
+    type: definePropType(String),
+    default: void 0
+  },
+  name: String
 });
 var inputEmits = {
   [UPDATE_MODEL_EVENT]: (value) => isString(value),
@@ -32784,7 +32900,6 @@ var useAttrs2 = (params = {}) => {
   });
   const instance = getCurrentInstance();
   if (!instance) {
-    debugWarn("use-attrs", "getCurrentInstance() returned null. useAttrs() must be called at the top of a setup function");
     return computed2(() => ({}));
   }
   return computed2(() => {
@@ -32804,13 +32919,6 @@ var useIdInjection = () => {
 };
 var useId = (deterministicId) => {
   const idInjection = useIdInjection();
-  if (!isClient && idInjection === defaultIdInjection) {
-    debugWarn("IdInjection", `Looks like you are using server rendering, you must provide a id provider to ensure the hydration process to be succeed
-usage: app.provide(ID_INJECTION_KEY, {
-  prefix: number,
-  current: number,
-})`);
-  }
   const namespace = useGetDerivedNamespace();
   const idRef = computedEager(() => unref(deterministicId) || `${namespace.value}-id-${idInjection.prefix}-${idInjection.current++}`);
   return idRef;
@@ -32840,6 +32948,20 @@ var useFormItemInputId = (props2, {
   if (!disableIdManagement) {
     disableIdManagement = ref(false);
   }
+  const instance = getCurrentInstance();
+  const inLabel = () => {
+    let parent2 = instance == null ? void 0 : instance.parent;
+    while (parent2) {
+      if (parent2.type.name === "ElFormItem") {
+        return false;
+      }
+      if (parent2.type.name === "ElLabelWrap") {
+        return true;
+      }
+      parent2 = parent2.parent;
+    }
+    return false;
+  };
   const inputId = ref();
   let idUnwatch = void 0;
   const isLabeledByFormItem = computed2(() => {
@@ -32850,7 +32972,7 @@ var useFormItemInputId = (props2, {
     idUnwatch = watch2([toRef(props2, "id"), disableIdGeneration], ([id2, disableIdGeneration2]) => {
       const newId2 = id2 != null ? id2 : !disableIdGeneration2 ? useId().value : void 0;
       if (newId2 !== inputId.value) {
-        if (formItemContext == null ? void 0 : formItemContext.removeInputId) {
+        if ((formItemContext == null ? void 0 : formItemContext.removeInputId) && !inLabel()) {
           inputId.value && formItemContext.removeInputId(inputId.value);
           if (!(disableIdManagement == null ? void 0 : disableIdManagement.value) && !disableIdGeneration2 && newId2) {
             formItemContext.addInputId(newId2);
@@ -32899,8 +33021,6 @@ var useFormDisabled = (fallback) => {
 // node_modules/element-plus/es/utils/dom/aria.mjs
 var FOCUSABLE_ELEMENT_SELECTORS = `a[href],button:not([disabled]),button:not([hidden]),:not([tabindex="-1"]),input:not([disabled]),input:not([type="hidden"]),select:not([disabled]),textarea:not([disabled])`;
 var isVisible = (element) => {
-  if (false)
-    return true;
   const computed4 = getComputedStyle(element);
   return computed4.position === "fixed" ? false : element.offsetParent !== null;
 };
@@ -32963,6 +33083,7 @@ var focusNode = (el) => {
 
 // node_modules/element-plus/es/hooks/use-focus-controller/index.mjs
 function useFocusController(target2, {
+  disabled,
   beforeFocus,
   afterFocus,
   beforeBlur,
@@ -32971,11 +33092,10 @@ function useFocusController(target2, {
   const instance = getCurrentInstance();
   const { emit: emit2 } = instance;
   const wrapperRef = shallowRef();
-  const disabled = useFormDisabled();
   const isFocused = ref(false);
   const handleFocus = (event) => {
     const cancelFocus = isFunction(beforeFocus) ? beforeFocus(event) : false;
-    if (cancelFocus || isFocused.value)
+    if (unref(disabled) || isFocused.value || cancelFocus)
       return;
     isFocused.value = true;
     emit2("focus", event);
@@ -32984,7 +33104,7 @@ function useFocusController(target2, {
   const handleBlur = (event) => {
     var _a26;
     const cancelBlur = isFunction(beforeBlur) ? beforeBlur(event) : false;
-    if (cancelBlur || event.relatedTarget && ((_a26 = wrapperRef.value) == null ? void 0 : _a26.contains(event.relatedTarget)))
+    if (unref(disabled) || event.relatedTarget && ((_a26 = wrapperRef.value) == null ? void 0 : _a26.contains(event.relatedTarget)) || cancelBlur)
       return;
     isFocused.value = false;
     emit2("blur", event);
@@ -32992,11 +33112,11 @@ function useFocusController(target2, {
   };
   const handleClick = (event) => {
     var _a26, _b25;
-    if (((_a26 = wrapperRef.value) == null ? void 0 : _a26.contains(document.activeElement)) && wrapperRef.value !== document.activeElement || isFocusable(event.target) || disabled.value)
+    if (unref(disabled) || isFocusable(event.target) || ((_a26 = wrapperRef.value) == null ? void 0 : _a26.contains(document.activeElement)) && wrapperRef.value !== document.activeElement)
       return;
     (_b25 = target2.value) == null ? void 0 : _b25.focus();
   };
-  watch2([wrapperRef, disabled], ([el, disabled2]) => {
+  watch2([wrapperRef, () => unref(disabled)], ([el, disabled2]) => {
     if (!el)
       return;
     if (disabled2) {
@@ -33008,15 +33128,6 @@ function useFocusController(target2, {
   useEventListener(wrapperRef, "focus", handleFocus, true);
   useEventListener(wrapperRef, "blur", handleBlur, true);
   useEventListener(wrapperRef, "click", handleClick, true);
-  if (false) {
-    onMounted(() => {
-      const targetEl = isElement(target2.value) ? target2.value : document.querySelector("input,textarea");
-      if (targetEl) {
-        useEventListener(targetEl, "focus", handleFocus, true);
-        useEventListener(targetEl, "blur", handleBlur, true);
-      }
-    });
-  }
   return {
     isFocused,
     wrapperRef,
@@ -33107,13 +33218,13 @@ function useCursor(input) {
   return [recordCursor, setCursor];
 }
 
-// node_modules/element-plus/es/components/input/src/input2.mjs
+// node_modules/element-plus/es/components/input/src/input.mjs
 var COMPONENT_NAME2 = "ElInput";
 var __default__4 = defineComponent({
   name: COMPONENT_NAME2,
   inheritAttrs: false
 });
-var _sfc_main4 = /* @__PURE__ */ defineComponent({
+var _sfc_main295 = /* @__PURE__ */ defineComponent({
   ...__default__4,
   props: inputProps,
   emits: inputEmits,
@@ -33156,13 +33267,11 @@ var _sfc_main4 = /* @__PURE__ */ defineComponent({
     const textareaCalcStyle = shallowRef(props2.inputStyle);
     const _ref = computed2(() => input.value || textarea.value);
     const { wrapperRef, isFocused, handleFocus, handleBlur } = useFocusController(_ref, {
-      beforeFocus() {
-        return inputDisabled.value;
-      },
+      disabled: inputDisabled,
       afterBlur() {
         var _a26;
         if (props2.validateEvent) {
-          (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "blur").catch((err) => debugWarn(err));
+          (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "blur").catch((err) => debugWarn());
         }
       }
     });
@@ -33311,7 +33420,7 @@ var _sfc_main4 = /* @__PURE__ */ defineComponent({
       var _a26;
       nextTick(() => resizeTextarea());
       if (props2.validateEvent) {
-        (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "change").catch((err) => debugWarn(err));
+        (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "change").catch((err) => debugWarn());
       }
     });
     watch2(nativeInputValue, () => setNativeInputValue());
@@ -33321,9 +33430,8 @@ var _sfc_main4 = /* @__PURE__ */ defineComponent({
       resizeTextarea();
     });
     onMounted(() => {
-      if (!props2.formatter && props2.parser) {
-        debugWarn(COMPONENT_NAME2, "If you set the parser, you also need to set the formatter.");
-      }
+      if (!props2.formatter && props2.parser)
+        ;
       setNativeInputValue();
       nextTick(resizeTextarea);
     });
@@ -33393,6 +33501,7 @@ var _sfc_main4 = /* @__PURE__ */ defineComponent({
               ref: input,
               class: unref(nsInput).e("inner")
             }, unref(attrs), {
+              name: _ctx.name,
               minlength: _ctx.minlength,
               maxlength: _ctx.maxlength,
               type: _ctx.showPassword ? passwordVisible.value ? "text" : "password" : _ctx.type,
@@ -33406,13 +33515,14 @@ var _sfc_main4 = /* @__PURE__ */ defineComponent({
               form: _ctx.form,
               autofocus: _ctx.autofocus,
               role: _ctx.containerRole,
+              inputmode: _ctx.inputmode,
               onCompositionstart: unref(handleCompositionStart),
               onCompositionupdate: unref(handleCompositionUpdate),
               onCompositionend: unref(handleCompositionEnd),
               onInput: handleInput,
               onChange: handleChange,
               onKeydown: handleKeydown
-            }), null, 16, ["id", "minlength", "maxlength", "type", "disabled", "readonly", "autocomplete", "tabindex", "aria-label", "placeholder", "form", "autofocus", "role", "onCompositionstart", "onCompositionupdate", "onCompositionend"]),
+            }), null, 16, ["id", "name", "minlength", "maxlength", "type", "disabled", "readonly", "autocomplete", "tabindex", "aria-label", "placeholder", "form", "autofocus", "role", "inputmode", "onCompositionstart", "onCompositionupdate", "onCompositionend"]),
             createCommentVNode(" suffix slot "),
             unref(suffixVisible) ? (openBlock(), createElementBlock("span", {
               key: 1,
@@ -33440,7 +33550,7 @@ var _sfc_main4 = /* @__PURE__ */ defineComponent({
                   onClick: clear
                 }, {
                   default: withCtx(() => [
-                    createVNode(unref(circle_close_default))
+                    (openBlock(), createBlock(resolveDynamicComponent(_ctx.clearIcon)))
                   ]),
                   _: 1
                 }, 8, ["class", "onMousedown"])) : createCommentVNode("v-if", true),
@@ -33525,7 +33635,7 @@ var _sfc_main4 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Input = /* @__PURE__ */ _export_sfc(_sfc_main4, [["__file", "input.vue"]]);
+var Input = /* @__PURE__ */ _export_sfc(_sfc_main295, [["__file", "input.vue"]]);
 
 // node_modules/element-plus/es/components/input/index.mjs
 var ElInput = withInstall(Input);
@@ -33580,7 +33690,7 @@ var thumbProps = buildProps({
 
 // node_modules/element-plus/es/components/scrollbar/src/thumb2.mjs
 var COMPONENT_NAME3 = "Thumb";
-var _sfc_main5 = /* @__PURE__ */ defineComponent({
+var _sfc_main296 = /* @__PURE__ */ defineComponent({
   __name: "thumb",
   props: thumbProps,
   setup(__props) {
@@ -33709,7 +33819,7 @@ var _sfc_main5 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Thumb = /* @__PURE__ */ _export_sfc(_sfc_main5, [["__file", "thumb.vue"]]);
+var Thumb = /* @__PURE__ */ _export_sfc(_sfc_main296, [["__file", "thumb.vue"]]);
 
 // node_modules/element-plus/es/components/scrollbar/src/bar.mjs
 var barProps = buildProps({
@@ -33724,7 +33834,7 @@ var barProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/scrollbar/src/bar2.mjs
-var _sfc_main6 = /* @__PURE__ */ defineComponent({
+var _sfc_main297 = /* @__PURE__ */ defineComponent({
   __name: "bar",
   props: barProps,
   setup(__props, { expose }) {
@@ -33782,10 +33892,14 @@ var _sfc_main6 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Bar = /* @__PURE__ */ _export_sfc(_sfc_main6, [["__file", "bar.vue"]]);
+var Bar = /* @__PURE__ */ _export_sfc(_sfc_main297, [["__file", "bar.vue"]]);
 
 // node_modules/element-plus/es/components/scrollbar/src/scrollbar.mjs
 var scrollbarProps = buildProps({
+  distance: {
+    type: Number,
+    default: 0
+  },
   height: {
     type: [String, Number],
     default: ""
@@ -33794,10 +33908,7 @@ var scrollbarProps = buildProps({
     type: [String, Number],
     default: ""
   },
-  native: {
-    type: Boolean,
-    default: false
-  },
+  native: Boolean,
   wrapStyle: {
     type: definePropType([String, Object, Array]),
     default: ""
@@ -33845,7 +33956,7 @@ var COMPONENT_NAME4 = "ElScrollbar";
 var __default__5 = defineComponent({
   name: COMPONENT_NAME4
 });
-var _sfc_main7 = /* @__PURE__ */ defineComponent({
+var _sfc_main298 = /* @__PURE__ */ defineComponent({
   ...__default__5,
   props: scrollbarProps,
   emits: scrollbarEmits,
@@ -33853,10 +33964,17 @@ var _sfc_main7 = /* @__PURE__ */ defineComponent({
     const props2 = __props;
     const ns = useNamespace("scrollbar");
     let stopResizeObserver = void 0;
+    let stopWrapResizeObserver = void 0;
     let stopResizeListener = void 0;
     let wrapScrollTop = 0;
     let wrapScrollLeft = 0;
     let direction2 = "";
+    const distanceScrollState = {
+      bottom: false,
+      top: false,
+      right: false,
+      left: false
+    };
     const scrollbarRef = ref();
     const wrapRef = ref();
     const resizeRef = ref();
@@ -33879,6 +33997,29 @@ var _sfc_main7 = /* @__PURE__ */ defineComponent({
     const resizeKls = computed2(() => {
       return [ns.e("view"), props2.viewClass];
     });
+    const shouldSkipDirection = (direction22) => {
+      var _a26;
+      return (_a26 = distanceScrollState[direction22]) != null ? _a26 : false;
+    };
+    const DIRECTION_PAIRS = {
+      top: "bottom",
+      bottom: "top",
+      left: "right",
+      right: "left"
+    };
+    const updateTriggerStatus = (arrivedStates) => {
+      const oppositeDirection = DIRECTION_PAIRS[direction2];
+      if (!oppositeDirection)
+        return;
+      const arrived = arrivedStates[direction2];
+      const oppositeArrived = arrivedStates[oppositeDirection];
+      if (arrived && !distanceScrollState[direction2]) {
+        distanceScrollState[direction2] = true;
+      }
+      if (!oppositeArrived && distanceScrollState[oppositeDirection]) {
+        distanceScrollState[oppositeDirection] = false;
+      }
+    };
     const handleScroll2 = () => {
       var _a26;
       if (wrapRef.value) {
@@ -33888,21 +34029,27 @@ var _sfc_main7 = /* @__PURE__ */ defineComponent({
         wrapScrollTop = wrapRef.value.scrollTop;
         wrapScrollLeft = wrapRef.value.scrollLeft;
         const arrivedStates = {
-          bottom: wrapScrollTop + wrapRef.value.clientHeight >= wrapRef.value.scrollHeight,
-          top: wrapScrollTop <= 0 && prevTop !== 0,
-          right: wrapScrollLeft + wrapRef.value.clientWidth >= wrapRef.value.scrollWidth && prevLeft !== wrapScrollLeft,
-          left: wrapScrollLeft <= 0 && prevLeft !== 0
+          bottom: wrapScrollTop + wrapRef.value.clientHeight >= wrapRef.value.scrollHeight - props2.distance,
+          top: wrapScrollTop <= props2.distance && prevTop !== 0,
+          right: wrapScrollLeft + wrapRef.value.clientWidth >= wrapRef.value.scrollWidth - props2.distance && prevLeft !== wrapScrollLeft,
+          left: wrapScrollLeft <= props2.distance && prevLeft !== 0
         };
+        emit2("scroll", {
+          scrollTop: wrapScrollTop,
+          scrollLeft: wrapScrollLeft
+        });
         if (prevTop !== wrapScrollTop) {
           direction2 = wrapScrollTop > prevTop ? "bottom" : "top";
         }
         if (prevLeft !== wrapScrollLeft) {
           direction2 = wrapScrollLeft > prevLeft ? "right" : "left";
         }
-        emit2("scroll", {
-          scrollTop: wrapScrollTop,
-          scrollLeft: wrapScrollLeft
-        });
+        if (props2.distance > 0) {
+          if (shouldSkipDirection(direction2)) {
+            return;
+          }
+          updateTriggerStatus(arrivedStates);
+        }
         if (arrivedStates[direction2])
           emit2("end-reached", direction2);
       }
@@ -33916,14 +34063,12 @@ var _sfc_main7 = /* @__PURE__ */ defineComponent({
     }
     const setScrollTop = (value) => {
       if (!isNumber2(value)) {
-        debugWarn(COMPONENT_NAME4, "value must be a number");
         return;
       }
       wrapRef.value.scrollTop = value;
     };
     const setScrollLeft = (value) => {
       if (!isNumber2(value)) {
-        debugWarn(COMPONENT_NAME4, "value must be a number");
         return;
       }
       wrapRef.value.scrollLeft = value;
@@ -33931,13 +34076,16 @@ var _sfc_main7 = /* @__PURE__ */ defineComponent({
     const update2 = () => {
       var _a26;
       (_a26 = barRef.value) == null ? void 0 : _a26.update();
+      distanceScrollState[direction2] = false;
     };
     watch2(() => props2.noresize, (noresize) => {
       if (noresize) {
         stopResizeObserver == null ? void 0 : stopResizeObserver();
+        stopWrapResizeObserver == null ? void 0 : stopWrapResizeObserver();
         stopResizeListener == null ? void 0 : stopResizeListener();
       } else {
         ({ stop: stopResizeObserver } = useResizeObserver(resizeRef, update2));
+        ({ stop: stopWrapResizeObserver } = useResizeObserver(wrapRef, update2));
         stopResizeListener = useEventListener("resize", update2);
       }
     }, { immediate: true });
@@ -34017,7 +34165,7 @@ var _sfc_main7 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Scrollbar = /* @__PURE__ */ _export_sfc(_sfc_main7, [["__file", "scrollbar.vue"]]);
+var Scrollbar = /* @__PURE__ */ _export_sfc(_sfc_main298, [["__file", "scrollbar.vue"]]);
 
 // node_modules/element-plus/es/components/scrollbar/index.mjs
 var ElScrollbar = withInstall(Scrollbar);
@@ -34026,7 +34174,7 @@ var ElScrollbar = withInstall(Scrollbar);
 var POPPER_INJECTION_KEY = Symbol("popper");
 var POPPER_CONTENT_INJECTION_KEY = Symbol("popperContent");
 
-// node_modules/element-plus/es/components/popper/src/popper2.mjs
+// node_modules/element-plus/es/components/popper/src/popper.mjs
 var roleTypes = [
   "dialog",
   "grid",
@@ -34045,12 +34193,12 @@ var popperProps = buildProps({
   }
 });
 
-// node_modules/element-plus/es/components/popper/src/popper.mjs
+// node_modules/element-plus/es/components/popper/src/popper2.mjs
 var __default__6 = defineComponent({
   name: "ElPopper",
   inheritAttrs: false
 });
-var _sfc_main8 = /* @__PURE__ */ defineComponent({
+var _sfc_main299 = /* @__PURE__ */ defineComponent({
   ...__default__6,
   props: popperProps,
   setup(__props, { expose }) {
@@ -34074,14 +34222,14 @@ var _sfc_main8 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Popper = /* @__PURE__ */ _export_sfc(_sfc_main8, [["__file", "popper.vue"]]);
+var Popper = /* @__PURE__ */ _export_sfc(_sfc_main299, [["__file", "popper.vue"]]);
 
 // node_modules/element-plus/es/components/popper/src/arrow2.mjs
 var __default__7 = defineComponent({
   name: "ElPopperArrow",
   inheritAttrs: false
 });
-var _sfc_main9 = /* @__PURE__ */ defineComponent({
+var _sfc_main300 = /* @__PURE__ */ defineComponent({
   ...__default__7,
   setup(__props, { expose }) {
     const ns = useNamespace("popper");
@@ -34103,7 +34251,7 @@ var _sfc_main9 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElPopperArrow = /* @__PURE__ */ _export_sfc(_sfc_main9, [["__file", "arrow.vue"]]);
+var ElPopperArrow = /* @__PURE__ */ _export_sfc(_sfc_main300, [["__file", "arrow.vue"]]);
 
 // node_modules/element-plus/es/components/popper/src/trigger.mjs
 var popperTriggerProps = buildProps({
@@ -34177,12 +34325,10 @@ var OnlyChild = defineComponent({
       if (!defaultSlot)
         return null;
       if (defaultSlot.length > 1) {
-        debugWarn(NAME, "requires exact only one valid child.");
         return null;
       }
       const firstLegitNode = findFirstLegitChild(defaultSlot);
       if (!firstLegitNode) {
-        debugWarn(NAME, "no valid child node found");
         return null;
       }
       return withDirectives(cloneVNode(firstLegitNode, attrs), [[forwardRefDirective]]);
@@ -34223,7 +34369,7 @@ var __default__8 = defineComponent({
   name: "ElPopperTrigger",
   inheritAttrs: false
 });
-var _sfc_main10 = /* @__PURE__ */ defineComponent({
+var _sfc_main301 = /* @__PURE__ */ defineComponent({
   ...__default__8,
   props: popperTriggerProps,
   setup(__props, { expose }) {
@@ -34335,7 +34481,7 @@ var _sfc_main10 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElPopperTrigger = /* @__PURE__ */ _export_sfc(_sfc_main10, [["__file", "trigger.vue"]]);
+var ElPopperTrigger = /* @__PURE__ */ _export_sfc(_sfc_main301, [["__file", "trigger.vue"]]);
 
 // node_modules/element-plus/es/components/focus-trap/src/tokens.mjs
 var FOCUS_AFTER_TRAPPED = "focus-trap.focus-after-trapped";
@@ -34379,8 +34525,6 @@ var getVisibleElement = (elements, container) => {
   }
 };
 var isHidden = (element, container) => {
-  if (false)
-    return false;
   if (getComputedStyle(element).visibility === "hidden")
     return true;
   while (element) {
@@ -34541,7 +34685,7 @@ var useEscapeKeydown = (handler) => {
 };
 
 // node_modules/element-plus/es/components/focus-trap/src/focus-trap.mjs
-var _sfc_main11 = defineComponent({
+var _sfc_main302 = defineComponent({
   name: "ElFocusTrap",
   inheritAttrs: false,
   props: {
@@ -34786,7 +34930,7 @@ var _sfc_main11 = defineComponent({
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return renderSlot(_ctx.$slots, "default", { handleKeydown: _ctx.onKeydown });
 }
-var ElFocusTrap = /* @__PURE__ */ _export_sfc(_sfc_main11, [["render", _sfc_render], ["__file", "focus-trap.vue"]]);
+var ElFocusTrap = /* @__PURE__ */ _export_sfc(_sfc_main302, [["render", _sfc_render], ["__file", "focus-trap.vue"]]);
 
 // node_modules/@popperjs/core/dist/index.mjs
 var E = "top";
@@ -35430,14 +35574,8 @@ var popperContentProps = buildProps({
     default: true
   },
   pure: Boolean,
-  focusOnShow: {
-    type: Boolean,
-    default: false
-  },
-  trapping: {
-    type: Boolean,
-    default: false
-  },
+  focusOnShow: Boolean,
+  trapping: Boolean,
   popperClass: {
     type: definePropType([String, Array, Object])
   },
@@ -35764,7 +35902,7 @@ var usePopperContentDOM = (props2, {
 var __default__9 = defineComponent({
   name: "ElPopperContent"
 });
-var _sfc_main12 = /* @__PURE__ */ defineComponent({
+var _sfc_main303 = /* @__PURE__ */ defineComponent({
   ...__default__9,
   props: popperContentProps,
   emits: popperContentEmits,
@@ -35879,7 +36017,7 @@ var _sfc_main12 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElPopperContent = /* @__PURE__ */ _export_sfc(_sfc_main12, [["__file", "content.vue"]]);
+var ElPopperContent = /* @__PURE__ */ _export_sfc(_sfc_main303, [["__file", "content.vue"]]);
 
 // node_modules/element-plus/es/components/popper/index.mjs
 var ElPopper = withInstall(Popper);
@@ -36119,7 +36257,7 @@ var whenMouse = (handler) => {
 var __default__10 = defineComponent({
   name: "ElTooltipTrigger"
 });
-var _sfc_main13 = /* @__PURE__ */ defineComponent({
+var _sfc_main304 = /* @__PURE__ */ defineComponent({
   ...__default__10,
   props: useTooltipTriggerProps,
   setup(__props, { expose }) {
@@ -36179,10 +36317,10 @@ var _sfc_main13 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElTooltipTrigger = /* @__PURE__ */ _export_sfc(_sfc_main13, [["__file", "trigger.vue"]]);
+var ElTooltipTrigger = /* @__PURE__ */ _export_sfc(_sfc_main304, [["__file", "trigger.vue"]]);
 
 // node_modules/element-plus/es/components/teleport/src/teleport2.mjs
-var _sfc_main14 = /* @__PURE__ */ defineComponent({
+var _sfc_main305 = /* @__PURE__ */ defineComponent({
   __name: "teleport",
   props: teleportProps,
   setup(__props) {
@@ -36196,7 +36334,7 @@ var _sfc_main14 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Teleport2 = /* @__PURE__ */ _export_sfc(_sfc_main14, [["__file", "teleport.vue"]]);
+var Teleport2 = /* @__PURE__ */ _export_sfc(_sfc_main305, [["__file", "teleport.vue"]]);
 
 // node_modules/element-plus/es/components/teleport/index.mjs
 var ElTeleport = withInstall(Teleport2);
@@ -36240,7 +36378,7 @@ var __default__11 = defineComponent({
   name: "ElTooltipContent",
   inheritAttrs: false
 });
-var _sfc_main15 = /* @__PURE__ */ defineComponent({
+var _sfc_main306 = /* @__PURE__ */ defineComponent({
   ...__default__11,
   props: useTooltipContentProps,
   setup(__props, { expose }) {
@@ -36269,11 +36407,6 @@ var _sfc_main15 = /* @__PURE__ */ defineComponent({
       return props2.transition || `${ns.namespace.value}-fade-in-linear`;
     });
     const persistentRef = computed2(() => {
-      if (false) {
-        if (!process.env.RUN_TEST_WITH_PERSISTENT) {
-          return true;
-        }
-      }
       return props2.persistent;
     });
     onBeforeUnmount(() => {
@@ -36365,16 +36498,18 @@ var _sfc_main15 = /* @__PURE__ */ defineComponent({
         to: unref(appendTo)
       }, {
         default: withCtx(() => [
-          createVNode(Transition, {
+          unref(shouldRender) || !ariaHidden.value ? (openBlock(), createBlock(Transition, {
+            key: 0,
             name: unref(transitionClass),
+            appear: !unref(persistentRef),
             onAfterLeave: onTransitionLeave,
             onBeforeEnter,
             onAfterEnter: onAfterShow,
-            onBeforeLeave
+            onBeforeLeave,
+            persisted: ""
           }, {
             default: withCtx(() => [
-              unref(shouldRender) ? withDirectives((openBlock(), createBlock(unref(ElPopperContent), mergeProps({
-                key: 0,
+              withDirectives(createVNode(unref(ElPopperContent), mergeProps({
                 id: unref(id2),
                 ref_key: "contentRef",
                 ref: contentRef
@@ -36407,25 +36542,25 @@ var _sfc_main15 = /* @__PURE__ */ defineComponent({
                   renderSlot(_ctx.$slots, "default")
                 ]),
                 _: 3
-              }, 16, ["id", "aria-label", "aria-hidden", "boundaries-padding", "fallback-placements", "gpu-acceleration", "offset", "placement", "popper-options", "arrow-offset", "strategy", "effect", "enterable", "pure", "popper-class", "popper-style", "reference-el", "trigger-target-el", "visible", "z-index", "onMouseenter", "onMouseleave", "onClose"])), [
+              }, 16, ["id", "aria-label", "aria-hidden", "boundaries-padding", "fallback-placements", "gpu-acceleration", "offset", "placement", "popper-options", "arrow-offset", "strategy", "effect", "enterable", "pure", "popper-class", "popper-style", "reference-el", "trigger-target-el", "visible", "z-index", "onMouseenter", "onMouseleave", "onClose"]), [
                 [vShow, unref(shouldShow)]
-              ]) : createCommentVNode("v-if", true)
+              ])
             ]),
             _: 3
-          }, 8, ["name"])
+          }, 8, ["name", "appear"])) : createCommentVNode("v-if", true)
         ]),
         _: 3
       }, 8, ["disabled", "to"]);
     };
   }
 });
-var ElTooltipContent = /* @__PURE__ */ _export_sfc(_sfc_main15, [["__file", "content.vue"]]);
+var ElTooltipContent = /* @__PURE__ */ _export_sfc(_sfc_main306, [["__file", "content.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip/src/tooltip2.mjs
 var __default__12 = defineComponent({
   name: "ElTooltip"
 });
-var _sfc_main16 = /* @__PURE__ */ defineComponent({
+var _sfc_main307 = /* @__PURE__ */ defineComponent({
   ...__default__12,
   props: useTooltipProps,
   emits: tooltipEmits,
@@ -36465,12 +36600,8 @@ var _sfc_main16 = /* @__PURE__ */ defineComponent({
       id: id2,
       open: readonly(open2),
       trigger: toRef(props2, "trigger"),
-      onOpen: (event) => {
-        onOpen(event);
-      },
-      onClose: (event) => {
-        onClose(event);
-      },
+      onOpen,
+      onClose,
       onToggle: (event) => {
         if (unref(open2)) {
           onClose(event);
@@ -36578,13 +36709,14 @@ var _sfc_main16 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Tooltip = /* @__PURE__ */ _export_sfc(_sfc_main16, [["__file", "tooltip.vue"]]);
+var Tooltip = /* @__PURE__ */ _export_sfc(_sfc_main307, [["__file", "tooltip.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip/index.mjs
 var ElTooltip = withInstall(Tooltip);
 
-// node_modules/element-plus/es/components/autocomplete/src/autocomplete2.mjs
+// node_modules/element-plus/es/components/autocomplete/src/autocomplete.mjs
 var autocompleteProps = buildProps({
+  ...inputProps,
   valueKey: {
     type: String,
     default: "value"
@@ -36621,34 +36753,12 @@ var autocompleteProps = buildProps({
     type: Boolean,
     default: true
   },
-  selectWhenUnmatched: {
-    type: Boolean,
-    default: false
-  },
-  hideLoading: {
-    type: Boolean,
-    default: false
-  },
+  selectWhenUnmatched: Boolean,
+  hideLoading: Boolean,
   teleported: useTooltipContentProps.teleported,
   appendTo: useTooltipContentProps.appendTo,
-  highlightFirstItem: {
-    type: Boolean,
-    default: false
-  },
-  fitInputWidth: {
-    type: Boolean,
-    default: false
-  },
-  clearable: {
-    type: Boolean,
-    default: false
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  name: String,
-  ...useAriaProps(["ariaLabel"])
+  highlightFirstItem: Boolean,
+  fitInputWidth: Boolean
 });
 var autocompleteEmits = {
   [UPDATE_MODEL_EVENT]: (value) => isString(value),
@@ -36660,19 +36770,19 @@ var autocompleteEmits = {
   select: (item) => isObject(item)
 };
 
-// node_modules/element-plus/es/components/autocomplete/src/autocomplete.mjs
+// node_modules/element-plus/es/components/autocomplete/src/autocomplete2.mjs
 var COMPONENT_NAME5 = "ElAutocomplete";
 var __default__13 = defineComponent({
   name: COMPONENT_NAME5,
   inheritAttrs: false
 });
-var _sfc_main17 = /* @__PURE__ */ defineComponent({
+var _sfc_main308 = /* @__PURE__ */ defineComponent({
   ...__default__13,
   props: autocompleteProps,
   emits: autocompleteEmits,
   setup(__props, { expose, emit: emit2 }) {
     const props2 = __props;
-    const attrs = useAttrs2();
+    const passInputProps = computed2(() => pick_default(props2, Object.keys(inputProps)));
     const rawAttrs = useAttrs();
     const disabled = useFormDisabled();
     const ns = useNamespace("autocomplete");
@@ -36907,6 +37017,14 @@ var _sfc_main17 = /* @__PURE__ */ defineComponent({
             }),
             role: "region"
           }, [
+            _ctx.$slots.header ? (openBlock(), createElementBlock("div", {
+              key: 0,
+              class: normalizeClass(unref(ns).be("suggestion", "header")),
+              onClick: withModifiers(() => {
+              }, ["stop"])
+            }, [
+              renderSlot(_ctx.$slots, "header")
+            ], 10, ["onClick"])) : createCommentVNode("v-if", true),
             createVNode(unref(ElScrollbar), {
               id: unref(listboxId),
               tag: "ul",
@@ -36942,7 +37060,15 @@ var _sfc_main17 = /* @__PURE__ */ defineComponent({
                 }), 128))
               ]),
               _: 3
-            }, 8, ["id", "wrap-class", "view-class"])
+            }, 8, ["id", "wrap-class", "view-class"]),
+            _ctx.$slots.footer ? (openBlock(), createElementBlock("div", {
+              key: 1,
+              class: normalizeClass(unref(ns).be("suggestion", "footer")),
+              onClick: withModifiers(() => {
+              }, ["stop"])
+            }, [
+              renderSlot(_ctx.$slots, "footer")
+            ], 10, ["onClick"])) : createCommentVNode("v-if", true)
           ], 6)
         ]),
         default: withCtx(() => [
@@ -36959,12 +37085,9 @@ var _sfc_main17 = /* @__PURE__ */ defineComponent({
             createVNode(unref(ElInput), mergeProps({
               ref_key: "inputRef",
               ref: inputRef
-            }, unref(attrs), {
-              clearable: _ctx.clearable,
-              disabled: unref(disabled),
-              name: _ctx.name,
+            }, mergeProps(unref(passInputProps), _ctx.$attrs), {
               "model-value": _ctx.modelValue,
-              "aria-label": _ctx.ariaLabel,
+              disabled: unref(disabled),
               onInput: handleInput,
               onChange: handleChange,
               onFocus: handleFocus,
@@ -37005,7 +37128,7 @@ var _sfc_main17 = /* @__PURE__ */ defineComponent({
                   renderSlot(_ctx.$slots, "suffix")
                 ])
               } : void 0
-            ]), 1040, ["clearable", "disabled", "name", "model-value", "aria-label", "onKeydown"])
+            ]), 1040, ["model-value", "disabled", "onKeydown"])
           ], 14, ["aria-expanded", "aria-owns"])
         ]),
         _: 3
@@ -37013,12 +37136,12 @@ var _sfc_main17 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Autocomplete = /* @__PURE__ */ _export_sfc(_sfc_main17, [["__file", "autocomplete.vue"]]);
+var Autocomplete = /* @__PURE__ */ _export_sfc(_sfc_main308, [["__file", "autocomplete.vue"]]);
 
 // node_modules/element-plus/es/components/autocomplete/index.mjs
 var ElAutocomplete = withInstall(Autocomplete);
 
-// node_modules/element-plus/es/components/avatar/src/avatar2.mjs
+// node_modules/element-plus/es/components/avatar/src/avatar.mjs
 var avatarProps = buildProps({
   size: {
     type: [Number, String],
@@ -37049,11 +37172,11 @@ var avatarEmits = {
   error: (evt) => evt instanceof Event
 };
 
-// node_modules/element-plus/es/components/avatar/src/avatar.mjs
+// node_modules/element-plus/es/components/avatar/src/avatar2.mjs
 var __default__14 = defineComponent({
   name: "ElAvatar"
 });
-var _sfc_main18 = /* @__PURE__ */ defineComponent({
+var _sfc_main309 = /* @__PURE__ */ defineComponent({
   ...__default__14,
   props: avatarProps,
   emits: avatarEmits,
@@ -37108,7 +37231,7 @@ var _sfc_main18 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Avatar = /* @__PURE__ */ _export_sfc(_sfc_main18, [["__file", "avatar.vue"]]);
+var Avatar = /* @__PURE__ */ _export_sfc(_sfc_main309, [["__file", "avatar.vue"]]);
 
 // node_modules/element-plus/es/components/avatar/index.mjs
 var ElAvatar = withInstall(Avatar);
@@ -37176,7 +37299,7 @@ var COMPONENT_NAME6 = "ElBacktop";
 var __default__15 = defineComponent({
   name: COMPONENT_NAME6
 });
-var _sfc_main19 = /* @__PURE__ */ defineComponent({
+var _sfc_main310 = /* @__PURE__ */ defineComponent({
   ...__default__15,
   props: backtopProps,
   emits: backtopEmits,
@@ -37216,7 +37339,7 @@ var _sfc_main19 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Backtop = /* @__PURE__ */ _export_sfc(_sfc_main19, [["__file", "backtop.vue"]]);
+var Backtop = /* @__PURE__ */ _export_sfc(_sfc_main310, [["__file", "backtop.vue"]]);
 
 // node_modules/element-plus/es/components/backtop/index.mjs
 var ElBacktop = withInstall(Backtop);
@@ -37259,7 +37382,7 @@ var badgeProps = buildProps({
 var __default__16 = defineComponent({
   name: "ElBadge"
 });
-var _sfc_main20 = /* @__PURE__ */ defineComponent({
+var _sfc_main311 = /* @__PURE__ */ defineComponent({
   ...__default__16,
   props: badgeProps,
   setup(__props, { expose }) {
@@ -37321,7 +37444,7 @@ var _sfc_main20 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Badge = /* @__PURE__ */ _export_sfc(_sfc_main20, [["__file", "badge.vue"]]);
+var Badge = /* @__PURE__ */ _export_sfc(_sfc_main311, [["__file", "badge.vue"]]);
 
 // node_modules/element-plus/es/components/badge/index.mjs
 var ElBadge = withInstall(Badge);
@@ -37344,7 +37467,7 @@ var breadcrumbProps = buildProps({
 var __default__17 = defineComponent({
   name: "ElBreadcrumb"
 });
-var _sfc_main21 = /* @__PURE__ */ defineComponent({
+var _sfc_main312 = /* @__PURE__ */ defineComponent({
   ...__default__17,
   props: breadcrumbProps,
   setup(__props) {
@@ -37372,7 +37495,7 @@ var _sfc_main21 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Breadcrumb = /* @__PURE__ */ _export_sfc(_sfc_main21, [["__file", "breadcrumb.vue"]]);
+var Breadcrumb = /* @__PURE__ */ _export_sfc(_sfc_main312, [["__file", "breadcrumb.vue"]]);
 
 // node_modules/element-plus/es/components/breadcrumb/src/breadcrumb-item.mjs
 var breadcrumbItemProps = buildProps({
@@ -37387,7 +37510,7 @@ var breadcrumbItemProps = buildProps({
 var __default__18 = defineComponent({
   name: "ElBreadcrumbItem"
 });
-var _sfc_main22 = /* @__PURE__ */ defineComponent({
+var _sfc_main313 = /* @__PURE__ */ defineComponent({
   ...__default__18,
   props: breadcrumbItemProps,
   setup(__props) {
@@ -37433,7 +37556,7 @@ var _sfc_main22 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var BreadcrumbItem = /* @__PURE__ */ _export_sfc(_sfc_main22, [["__file", "breadcrumb-item.vue"]]);
+var BreadcrumbItem = /* @__PURE__ */ _export_sfc(_sfc_main313, [["__file", "breadcrumb-item.vue"]]);
 
 // node_modules/element-plus/es/components/breadcrumb/index.mjs
 var ElBreadcrumb = withInstall(Breadcrumb, {
@@ -37447,11 +37570,6 @@ var buttonGroupContextKey = Symbol("buttonGroupContextKey");
 // node_modules/element-plus/es/hooks/use-deprecated/index.mjs
 var useDeprecated = ({ from, replacement, scope, version: version4, ref: ref3, type: type5 = "API" }, condition) => {
   watch2(() => unref(condition), (val) => {
-    if (val) {
-      debugWarn(scope, `[${type5}] ${from} is about to be deprecated in version ${version4}, please use ${replacement} instead.
-For more detail, please visit: ${ref3}
-`);
-    }
   }, {
     immediate: true
   });
@@ -37488,6 +37606,10 @@ var useButton = (props2, emit2) => {
   const _round = computed2(() => {
     var _a26, _b25, _c;
     return (_c = (_b25 = props2.round) != null ? _b25 : (_a26 = globalConfig2.value) == null ? void 0 : _a26.round) != null ? _c : false;
+  });
+  const _text = computed2(() => {
+    var _a26, _b25, _c;
+    return (_c = (_b25 = props2.text) != null ? _b25 : (_a26 = globalConfig2.value) == null ? void 0 : _a26.text) != null ? _c : false;
   });
   const _props = computed2(() => {
     if (props2.tag === "button") {
@@ -37530,6 +37652,7 @@ var useButton = (props2, emit2) => {
     _props,
     _plain,
     _round,
+    _text,
     shouldAddSpace,
     handleClick
   };
@@ -37572,7 +37695,10 @@ var buttonProps = buildProps({
     type: Boolean,
     default: void 0
   },
-  text: Boolean,
+  text: {
+    type: Boolean,
+    default: void 0
+  },
   link: Boolean,
   bg: Boolean,
   autofocus: Boolean,
@@ -38556,7 +38682,7 @@ function useButtonCustomStyle(props2) {
 var __default__19 = defineComponent({
   name: "ElButton"
 });
-var _sfc_main23 = /* @__PURE__ */ defineComponent({
+var _sfc_main314 = /* @__PURE__ */ defineComponent({
   ...__default__19,
   props: buttonProps,
   emits: buttonEmits,
@@ -38572,6 +38698,7 @@ var _sfc_main23 = /* @__PURE__ */ defineComponent({
       _props,
       _plain,
       _round,
+      _text,
       shouldAddSpace,
       handleClick
     } = useButton(props2, emit2);
@@ -38584,7 +38711,7 @@ var _sfc_main23 = /* @__PURE__ */ defineComponent({
       ns.is("plain", _plain.value),
       ns.is("round", _round.value),
       ns.is("circle", props2.circle),
-      ns.is("text", props2.text),
+      ns.is("text", _text.value),
       ns.is("link", props2.link),
       ns.is("has-bg", props2.bg)
     ]);
@@ -38633,7 +38760,7 @@ var _sfc_main23 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Button = /* @__PURE__ */ _export_sfc(_sfc_main23, [["__file", "button.vue"]]);
+var Button = /* @__PURE__ */ _export_sfc(_sfc_main314, [["__file", "button.vue"]]);
 
 // node_modules/element-plus/es/components/button/src/button-group.mjs
 var buttonGroupProps = {
@@ -38645,7 +38772,7 @@ var buttonGroupProps = {
 var __default__20 = defineComponent({
   name: "ElButtonGroup"
 });
-var _sfc_main24 = /* @__PURE__ */ defineComponent({
+var _sfc_main315 = /* @__PURE__ */ defineComponent({
   ...__default__20,
   props: buttonGroupProps,
   setup(__props) {
@@ -38664,7 +38791,7 @@ var _sfc_main24 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ButtonGroup = /* @__PURE__ */ _export_sfc(_sfc_main24, [["__file", "button-group.vue"]]);
+var ButtonGroup = /* @__PURE__ */ _export_sfc(_sfc_main315, [["__file", "button-group.vue"]]);
 
 // node_modules/element-plus/es/components/button/index.mjs
 var ElButton = withInstall(Button, {
@@ -38886,7 +39013,7 @@ var useDateTable = (props2, emit2) => {
 var __default__21 = defineComponent({
   name: "DateTable"
 });
-var _sfc_main25 = /* @__PURE__ */ defineComponent({
+var _sfc_main316 = /* @__PURE__ */ defineComponent({
   ...__default__21,
   props: dateTableProps,
   emits: dateTableEmits,
@@ -38968,7 +39095,7 @@ var _sfc_main25 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var DateTable = /* @__PURE__ */ _export_sfc(_sfc_main25, [["__file", "date-table.vue"]]);
+var DateTable = /* @__PURE__ */ _export_sfc(_sfc_main316, [["__file", "date-table.vue"]]);
 
 // node_modules/element-plus/es/components/calendar/src/use-calendar.mjs
 var import_dayjs3 = __toESM(require_dayjs_min(), 1);
@@ -39020,14 +39147,12 @@ var useCalendar = (props2, emit2, componentName2) => {
     const rangeArrDayjs = props2.range.map((_2) => (0, import_dayjs3.default)(_2).locale(lang.value));
     const [startDayjs, endDayjs] = rangeArrDayjs;
     if (startDayjs.isAfter(endDayjs)) {
-      debugWarn(componentName2, "end time should be greater than start time");
       return [];
     }
     if (startDayjs.isSame(endDayjs, "month")) {
       return calculateValidatedDateRange(startDayjs, endDayjs);
     } else {
       if (startDayjs.add(1, "month").month() !== endDayjs.month()) {
-        debugWarn(componentName2, "start time and end time interval must not exceed two months");
         return [];
       }
       return calculateValidatedDateRange(startDayjs, endDayjs);
@@ -39056,7 +39181,6 @@ var useCalendar = (props2, emit2, componentName2) => {
     } else if (firstMonth + 2 === lastMonth || (firstMonth + 1) % 11 === lastMonth) {
       return threeConsecutiveMonth(firstDay, lastDay);
     } else {
-      debugWarn(componentName2, "start time and end time interval must not exceed two months");
       return [];
     }
   };
@@ -39086,7 +39210,7 @@ var useCalendar = (props2, emit2, componentName2) => {
   };
 };
 
-// node_modules/element-plus/es/components/calendar/src/calendar2.mjs
+// node_modules/element-plus/es/components/calendar/src/calendar.mjs
 var isValidRange = (range7) => isArray(range7) && range7.length === 2 && range7.every((item) => isDate(item));
 var calendarProps = buildProps({
   modelValue: {
@@ -39102,12 +39226,12 @@ var calendarEmits = {
   [INPUT_EVENT]: (value) => isDate(value)
 };
 
-// node_modules/element-plus/es/components/calendar/src/calendar.mjs
+// node_modules/element-plus/es/components/calendar/src/calendar2.mjs
 var COMPONENT_NAME7 = "ElCalendar";
 var __default__22 = defineComponent({
   name: COMPONENT_NAME7
 });
-var _sfc_main26 = /* @__PURE__ */ defineComponent({
+var _sfc_main317 = /* @__PURE__ */ defineComponent({
   ...__default__22,
   props: calendarProps,
   emits: calendarEmits,
@@ -39121,7 +39245,7 @@ var _sfc_main26 = /* @__PURE__ */ defineComponent({
       realSelectedDay,
       selectDate,
       validatedRange
-    } = useCalendar(props2, emit2, COMPONENT_NAME7);
+    } = useCalendar(props2, emit2);
     const { t } = useLocale();
     const i18nDate = computed2(() => {
       const pickedMonth = `el.datepicker.month${date5.value.format("M")}`;
@@ -39229,7 +39353,7 @@ var _sfc_main26 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Calendar = /* @__PURE__ */ _export_sfc(_sfc_main26, [["__file", "calendar.vue"]]);
+var Calendar = /* @__PURE__ */ _export_sfc(_sfc_main317, [["__file", "calendar.vue"]]);
 
 // node_modules/element-plus/es/components/calendar/index.mjs
 var ElCalendar = withInstall(Calendar);
@@ -39254,22 +39378,28 @@ var cardProps = buildProps({
   shadow: {
     type: String,
     values: ["always", "hover", "never"],
-    default: "always"
+    default: void 0
   }
 });
+var cardContextKey = Symbol("cardContextKey");
 
 // node_modules/element-plus/es/components/card/src/card2.mjs
 var __default__23 = defineComponent({
   name: "ElCard"
 });
-var _sfc_main27 = /* @__PURE__ */ defineComponent({
+var _sfc_main318 = /* @__PURE__ */ defineComponent({
   ...__default__23,
   props: cardProps,
   setup(__props) {
+    const globalConfig2 = useGlobalConfig("card");
     const ns = useNamespace("card");
     return (_ctx, _cache) => {
+      var _a26;
       return openBlock(), createElementBlock("div", {
-        class: normalizeClass([unref(ns).b(), unref(ns).is(`${_ctx.shadow}-shadow`)])
+        class: normalizeClass([
+          unref(ns).b(),
+          unref(ns).is(`${_ctx.shadow || ((_a26 = unref(globalConfig2)) == null ? void 0 : _a26.shadow) || "always"}-shadow`)
+        ])
       }, [
         _ctx.$slots.header || _ctx.header ? (openBlock(), createElementBlock("div", {
           key: 0,
@@ -39297,7 +39427,7 @@ var _sfc_main27 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Card = /* @__PURE__ */ _export_sfc(_sfc_main27, [["__file", "card.vue"]]);
+var Card = /* @__PURE__ */ _export_sfc(_sfc_main318, [["__file", "card.vue"]]);
 
 // node_modules/element-plus/es/components/card/index.mjs
 var ElCard = withInstall(Card);
@@ -39368,7 +39498,6 @@ var carouselContextKey = Symbol("carouselContextKey");
 var CAROUSEL_ITEM_NAME = "ElCarouselItem";
 
 // node_modules/element-plus/es/utils/vue/vnode.mjs
-var SCOPE3 = "utils/vue/vnode";
 var PatchFlags = /* @__PURE__ */ ((PatchFlags2) => {
   PatchFlags2[PatchFlags2["TEXT"] = 1] = "TEXT";
   PatchFlags2[PatchFlags2["CLASS"] = 2] = "CLASS";
@@ -39396,7 +39525,6 @@ function isValidElementNode(node) {
 }
 var getNormalizedProps = (node) => {
   if (!isVNode(node)) {
-    debugWarn(SCOPE3, "[getNormalizedProps] must be a VNode");
     return {};
   }
   const raw = node.props || {};
@@ -39448,20 +39576,58 @@ var getOrderedChildren = (vm, childComponentName, children2) => {
   return uids.map((uid3) => children2[uid3]).filter((p3) => !!p3);
 };
 var useOrderedChildren = (vm, childComponentName) => {
-  const children2 = {};
+  const children2 = shallowRef({});
   const orderedChildren = shallowRef([]);
+  const nodesMap = /* @__PURE__ */ new WeakMap();
   const addChild = (child) => {
-    children2[child.uid] = child;
-    orderedChildren.value = getOrderedChildren(vm, childComponentName, children2);
+    children2.value[child.uid] = child;
+    triggerRef(children2);
+    onMounted(() => {
+      const childNode = child.getVnode().el;
+      const parentNode = childNode.parentNode;
+      if (!nodesMap.has(parentNode)) {
+        nodesMap.set(parentNode, []);
+        const originalFn = parentNode.insertBefore.bind(parentNode);
+        parentNode.insertBefore = (node, anchor) => {
+          const shouldSortChildren = nodesMap.get(parentNode).some((el) => node === el || anchor === el);
+          if (shouldSortChildren)
+            triggerRef(children2);
+          return originalFn(node, anchor);
+        };
+      }
+      nodesMap.get(parentNode).push(childNode);
+    });
   };
-  const removeChild = (uid3) => {
-    delete children2[uid3];
-    orderedChildren.value = orderedChildren.value.filter((children22) => children22.uid !== uid3);
+  const removeChild = (child) => {
+    delete children2.value[child.uid];
+    triggerRef(children2);
+    const childNode = child.getVnode().el;
+    const parentNode = childNode.parentNode;
+    const childNodes = nodesMap.get(parentNode);
+    const index3 = childNodes.indexOf(childNode);
+    childNodes.splice(index3, 1);
   };
+  const sortChildren = () => {
+    orderedChildren.value = getOrderedChildren(vm, childComponentName, children2.value);
+  };
+  const IsolatedRenderer = (props2) => {
+    return props2.render();
+  };
+  const ChildrenSorter = defineComponent({
+    setup(_2, { slots }) {
+      return () => {
+        sortChildren();
+        return slots.default ? h(IsolatedRenderer, {
+          render: slots.default
+        }) : null;
+      };
+    }
+  });
   return {
     children: orderedChildren,
     addChild,
-    removeChild
+    removeChild,
+    ChildrenSorter
   };
 };
 
@@ -39471,7 +39637,8 @@ var useCarousel = (props2, emit2, componentName2) => {
   const {
     children: items,
     addChild: addItem,
-    removeChild: removeItem
+    removeChild: removeItem,
+    ChildrenSorter: ItemsSorter
   } = useOrderedChildren(getCurrentInstance(), CAROUSEL_ITEM_NAME);
   const slots = useSlots();
   const activeIndex = ref(-1);
@@ -39535,7 +39702,6 @@ var useCarousel = (props2, emit2, componentName2) => {
     }
     index3 = Number(index3);
     if (Number.isNaN(index3) || index3 !== Math.floor(index3)) {
-      debugWarn(componentName2, "index must be integer.");
       return;
     }
     const itemCount = items.value.length;
@@ -39653,6 +39819,12 @@ var useCarousel = (props2, emit2, componentName2) => {
       emit2(CHANGE_EVENT, current, prev2);
     }
   });
+  const exposeActiveIndex = computed2({
+    get: () => {
+      return isItemsTwoLength.value ? activeIndex.value % 2 : activeIndex.value;
+    },
+    set: (value) => activeIndex.value = value
+  });
   watch2(() => props2.autoplay, (autoplay) => {
     autoplay ? startTimer() : pauseTimer();
   });
@@ -39695,6 +39867,7 @@ var useCarousel = (props2, emit2, componentName2) => {
   return {
     root: root4,
     activeIndex,
+    exposeActiveIndex,
     arrowDisplay,
     hasLabel,
     hover,
@@ -39713,6 +39886,7 @@ var useCarousel = (props2, emit2, componentName2) => {
     next,
     PlaceholderItem,
     isTwoLengthShow,
+    ItemsSorter,
     throttledArrowClick,
     throttledIndicatorHover
   };
@@ -39723,7 +39897,7 @@ var COMPONENT_NAME8 = "ElCarousel";
 var __default__24 = defineComponent({
   name: COMPONENT_NAME8
 });
-var _sfc_main28 = /* @__PURE__ */ defineComponent({
+var _sfc_main319 = /* @__PURE__ */ defineComponent({
   ...__default__24,
   props: carouselProps,
   emits: carouselEmits,
@@ -39732,6 +39906,7 @@ var _sfc_main28 = /* @__PURE__ */ defineComponent({
     const {
       root: root4,
       activeIndex,
+      exposeActiveIndex,
       arrowDisplay,
       hasLabel,
       hover,
@@ -39749,9 +39924,10 @@ var _sfc_main28 = /* @__PURE__ */ defineComponent({
       next,
       PlaceholderItem,
       isTwoLengthShow,
+      ItemsSorter,
       throttledArrowClick,
       throttledIndicatorHover
-    } = useCarousel(props2, emit2, COMPONENT_NAME8);
+    } = useCarousel(props2, emit2);
     const ns = useNamespace("carousel");
     const { t } = useLocale();
     const carouselClasses = computed2(() => {
@@ -39787,7 +39963,7 @@ var _sfc_main28 = /* @__PURE__ */ defineComponent({
       e.currentTarget.classList.remove(kls);
     }
     expose({
-      activeIndex,
+      activeIndex: exposeActiveIndex,
       setActiveItem,
       prev,
       next
@@ -39867,34 +40043,39 @@ var _sfc_main28 = /* @__PURE__ */ defineComponent({
           createVNode(unref(PlaceholderItem)),
           renderSlot(_ctx.$slots, "default")
         ], 38),
-        _ctx.indicatorPosition !== "none" ? (openBlock(), createElementBlock("ul", {
-          key: 2,
-          class: normalizeClass(unref(indicatorsClasses))
-        }, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(items), (item, index3) => {
-            return withDirectives((openBlock(), createElementBlock("li", {
-              key: index3,
-              class: normalizeClass([
-                unref(ns).e("indicator"),
-                unref(ns).em("indicator", _ctx.direction),
-                unref(ns).is("active", index3 === unref(activeIndex))
-              ]),
-              onMouseenter: ($event) => unref(throttledIndicatorHover)(index3),
-              onClick: withModifiers(($event) => unref(handleIndicatorClick)(index3), ["stop"])
+        createVNode(unref(ItemsSorter), null, {
+          default: withCtx(() => [
+            _ctx.indicatorPosition !== "none" ? (openBlock(), createElementBlock("ul", {
+              key: 0,
+              class: normalizeClass(unref(indicatorsClasses))
             }, [
-              createBaseVNode("button", {
-                class: normalizeClass(unref(ns).e("button")),
-                "aria-label": unref(t)("el.carousel.indicator", { index: index3 + 1 })
-              }, [
-                unref(hasLabel) ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(item.props.label), 1)) : createCommentVNode("v-if", true)
-              ], 10, ["aria-label"])
-            ], 42, ["onMouseenter", "onClick"])), [
-              [vShow, unref(isTwoLengthShow)(index3)]
-            ]);
-          }), 128))
-        ], 2)) : createCommentVNode("v-if", true),
+              (openBlock(true), createElementBlock(Fragment, null, renderList(unref(items), (item, index3) => {
+                return withDirectives((openBlock(), createElementBlock("li", {
+                  key: index3,
+                  class: normalizeClass([
+                    unref(ns).e("indicator"),
+                    unref(ns).em("indicator", _ctx.direction),
+                    unref(ns).is("active", index3 === unref(activeIndex))
+                  ]),
+                  onMouseenter: ($event) => unref(throttledIndicatorHover)(index3),
+                  onClick: withModifiers(($event) => unref(handleIndicatorClick)(index3), ["stop"])
+                }, [
+                  createBaseVNode("button", {
+                    class: normalizeClass(unref(ns).e("button")),
+                    "aria-label": unref(t)("el.carousel.indicator", { index: index3 + 1 })
+                  }, [
+                    unref(hasLabel) ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(item.props.label), 1)) : createCommentVNode("v-if", true)
+                  ], 10, ["aria-label"])
+                ], 42, ["onMouseenter", "onClick"])), [
+                  [vShow, unref(isTwoLengthShow)(index3)]
+                ]);
+              }), 128))
+            ], 2)) : createCommentVNode("v-if", true)
+          ]),
+          _: 1
+        }),
         props2.motionBlur ? (openBlock(), createElementBlock("svg", {
-          key: 3,
+          key: 2,
           xmlns: "http://www.w3.org/2000/svg",
           version: "1.1",
           style: { "display": "none" }
@@ -39918,7 +40099,7 @@ var _sfc_main28 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Carousel = /* @__PURE__ */ _export_sfc(_sfc_main28, [["__file", "carousel.vue"]]);
+var Carousel = /* @__PURE__ */ _export_sfc(_sfc_main319, [["__file", "carousel.vue"]]);
 
 // node_modules/element-plus/es/components/carousel/src/carousel-item.mjs
 var carouselItemProps = buildProps({
@@ -39933,12 +40114,6 @@ var carouselItemProps = buildProps({
 var useCarouselItem = (props2) => {
   const carouselContext = inject(carouselContextKey);
   const instance = getCurrentInstance();
-  if (!carouselContext) {
-    debugWarn(CAROUSEL_ITEM_NAME, "usage: <el-carousel></el-carousel-item></el-carousel>");
-  }
-  if (!instance) {
-    debugWarn(CAROUSEL_ITEM_NAME, "compositional hook can only be invoked inside setups");
-  }
   const carouselItemRef = ref();
   const hover = ref(false);
   const translate2 = ref(0);
@@ -40013,24 +40188,24 @@ var useCarouselItem = (props2) => {
       carouselContext.setActiveItem(index3);
     }
   }
-  onMounted(() => {
-    carouselContext.addItem({
-      props: props2,
-      states: reactive({
-        hover,
-        translate: translate2,
-        scale: scale2,
-        active,
-        ready,
-        inStage,
-        animating
-      }),
-      uid: instance.uid,
-      translateItem
-    });
-  });
-  onUnmounted(() => {
-    carouselContext.removeItem(instance.uid);
+  const carouselItemContext = {
+    props: props2,
+    states: reactive({
+      hover,
+      translate: translate2,
+      scale: scale2,
+      active,
+      ready,
+      inStage,
+      animating
+    }),
+    uid: instance.uid,
+    getVnode: () => instance.vnode,
+    translateItem
+  };
+  carouselContext.addItem(carouselItemContext);
+  onBeforeUnmount(() => {
+    carouselContext.removeItem(carouselItemContext);
   });
   return {
     carouselItemRef,
@@ -40051,7 +40226,7 @@ var useCarouselItem = (props2) => {
 var __default__25 = defineComponent({
   name: CAROUSEL_ITEM_NAME
 });
-var _sfc_main29 = /* @__PURE__ */ defineComponent({
+var _sfc_main320 = /* @__PURE__ */ defineComponent({
   ...__default__25,
   props: carouselItemProps,
   setup(__props) {
@@ -40111,7 +40286,7 @@ var _sfc_main29 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var CarouselItem = /* @__PURE__ */ _export_sfc(_sfc_main29, [["__file", "carousel-item.vue"]]);
+var CarouselItem = /* @__PURE__ */ _export_sfc(_sfc_main320, [["__file", "carousel-item.vue"]]);
 
 // node_modules/element-plus/es/components/carousel/index.mjs
 var ElCarousel = withInstall(Carousel, {
@@ -40236,7 +40411,7 @@ var useCheckboxEvent = (props2, {
   const validateEvent = computed2(() => (checkboxGroup == null ? void 0 : checkboxGroup.validateEvent) || props2.validateEvent);
   watch2(() => props2.modelValue, () => {
     if (validateEvent.value) {
-      formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err));
+      formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn());
     }
   });
   return {
@@ -40402,7 +40577,7 @@ var useCheckbox = (props2, slots) => {
 var __default__26 = defineComponent({
   name: "ElCheckbox"
 });
-var _sfc_main30 = /* @__PURE__ */ defineComponent({
+var _sfc_main321 = /* @__PURE__ */ defineComponent({
   ...__default__26,
   props: checkboxProps,
   emits: checkboxEmits,
@@ -40511,13 +40686,13 @@ var _sfc_main30 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Checkbox = /* @__PURE__ */ _export_sfc(_sfc_main30, [["__file", "checkbox.vue"]]);
+var Checkbox = /* @__PURE__ */ _export_sfc(_sfc_main321, [["__file", "checkbox.vue"]]);
 
 // node_modules/element-plus/es/components/checkbox/src/checkbox-button.mjs
 var __default__27 = defineComponent({
   name: "ElCheckboxButton"
 });
-var _sfc_main31 = /* @__PURE__ */ defineComponent({
+var _sfc_main323 = /* @__PURE__ */ defineComponent({
   ...__default__27,
   props: checkboxProps,
   emits: checkboxEmits,
@@ -40606,7 +40781,7 @@ var _sfc_main31 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var CheckboxButton = /* @__PURE__ */ _export_sfc(_sfc_main31, [["__file", "checkbox-button.vue"]]);
+var CheckboxButton = /* @__PURE__ */ _export_sfc(_sfc_main323, [["__file", "checkbox-button.vue"]]);
 
 // node_modules/element-plus/es/components/checkbox/src/checkbox-group.mjs
 var checkboxGroupProps = buildProps({
@@ -40639,7 +40814,7 @@ var checkboxGroupEmits = {
 var __default__28 = defineComponent({
   name: "ElCheckboxGroup"
 });
-var _sfc_main32 = /* @__PURE__ */ defineComponent({
+var _sfc_main324 = /* @__PURE__ */ defineComponent({
   ...__default__28,
   props: checkboxGroupProps,
   emits: checkboxGroupEmits,
@@ -40676,9 +40851,9 @@ var _sfc_main32 = /* @__PURE__ */ defineComponent({
       modelValue,
       changeEvent
     });
-    watch2(() => props2.modelValue, () => {
-      if (props2.validateEvent) {
-        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err));
+    watch2(() => props2.modelValue, (newVal, oldValue) => {
+      if (props2.validateEvent && !isEqual_default(newVal, oldValue)) {
+        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn());
       }
     });
     return (_ctx, _cache) => {
@@ -40698,7 +40873,7 @@ var _sfc_main32 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var CheckboxGroup = /* @__PURE__ */ _export_sfc(_sfc_main32, [["__file", "checkbox-group.vue"]]);
+var CheckboxGroup = /* @__PURE__ */ _export_sfc(_sfc_main324, [["__file", "checkbox-group.vue"]]);
 
 // node_modules/element-plus/es/components/checkbox/index.mjs
 var ElCheckbox = withInstall(Checkbox, {
@@ -40795,7 +40970,7 @@ var useRadio = (props2, emit2) => {
 var __default__29 = defineComponent({
   name: "ElRadio"
 });
-var _sfc_main33 = /* @__PURE__ */ defineComponent({
+var _sfc_main325 = /* @__PURE__ */ defineComponent({
   ...__default__29,
   props: radioProps,
   emits: radioEmits,
@@ -40860,7 +41035,7 @@ var _sfc_main33 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Radio = /* @__PURE__ */ _export_sfc(_sfc_main33, [["__file", "radio.vue"]]);
+var Radio = /* @__PURE__ */ _export_sfc(_sfc_main325, [["__file", "radio.vue"]]);
 
 // node_modules/element-plus/es/components/radio/src/radio-button.mjs
 var radioButtonProps = buildProps({
@@ -40871,7 +41046,7 @@ var radioButtonProps = buildProps({
 var __default__30 = defineComponent({
   name: "ElRadioButton"
 });
-var _sfc_main34 = /* @__PURE__ */ defineComponent({
+var _sfc_main326 = /* @__PURE__ */ defineComponent({
   ...__default__30,
   props: radioButtonProps,
   setup(__props) {
@@ -40927,7 +41102,7 @@ var _sfc_main34 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var RadioButton = /* @__PURE__ */ _export_sfc(_sfc_main34, [["__file", "radio-button.vue"]]);
+var RadioButton = /* @__PURE__ */ _export_sfc(_sfc_main326, [["__file", "radio-button.vue"]]);
 
 // node_modules/element-plus/es/components/radio/src/radio-group.mjs
 var radioGroupProps = buildProps({
@@ -40965,7 +41140,7 @@ var radioGroupEmits = radioEmits;
 var __default__31 = defineComponent({
   name: "ElRadioGroup"
 });
-var _sfc_main35 = /* @__PURE__ */ defineComponent({
+var _sfc_main327 = /* @__PURE__ */ defineComponent({
   ...__default__31,
   props: radioGroupProps,
   emits: radioGroupEmits,
@@ -40997,9 +41172,9 @@ var _sfc_main35 = /* @__PURE__ */ defineComponent({
       changeEvent,
       name
     }));
-    watch2(() => props2.modelValue, () => {
-      if (props2.validateEvent) {
-        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err));
+    watch2(() => props2.modelValue, (newVal, oldValue) => {
+      if (props2.validateEvent && !isEqual_default(newVal, oldValue)) {
+        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn());
       }
     });
     return (_ctx, _cache) => {
@@ -41017,7 +41192,7 @@ var _sfc_main35 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var RadioGroup = /* @__PURE__ */ _export_sfc(_sfc_main35, [["__file", "radio-group.vue"]]);
+var RadioGroup = /* @__PURE__ */ _export_sfc(_sfc_main327, [["__file", "radio-group.vue"]]);
 
 // node_modules/element-plus/es/components/radio/index.mjs
 var ElRadio = withInstall(Radio, {
@@ -41027,49 +41202,54 @@ var ElRadio = withInstall(Radio, {
 var ElRadioGroup = withNoopInstall(RadioGroup);
 var ElRadioButton = withNoopInstall(RadioButton);
 
-// node_modules/element-plus/es/components/cascader-panel/src/node-content.mjs
-function isVNodeEmpty(vnodes) {
-  return !!(vnodes == null ? void 0 : vnodes.every((vnode) => vnode.type === Comment));
-}
-var NodeContent = defineComponent({
-  name: "NodeContent",
-  setup() {
-    const ns = useNamespace("cascader-node");
-    return {
-      ns
-    };
-  },
-  render() {
-    const { ns } = this;
-    const { node, panel } = this.$parent;
-    const { data, label: nodeLabel } = node;
-    const { renderLabelFn } = panel;
-    const label = () => {
-      let renderLabel = renderLabelFn == null ? void 0 : renderLabelFn({ node, data });
-      if (isVNodeEmpty(renderLabel)) {
-        renderLabel = nodeLabel;
-      }
-      return renderLabel != null ? renderLabel : nodeLabel;
-    };
-    return h("span", { class: ns.e("label") }, label());
-  }
-});
-
 // node_modules/element-plus/es/components/cascader-panel/src/types.mjs
 var CASCADER_PANEL_INJECTION_KEY = Symbol();
 
-// node_modules/element-plus/es/components/cascader-panel/src/node2.mjs
-var _sfc_main36 = defineComponent({
-  name: "ElCascaderNode",
-  components: {
-    ElCheckbox,
-    ElRadio,
-    NodeContent,
-    ElIcon,
-    Check: check_default,
-    Loading: loading_default,
-    ArrowRight: arrow_right_default
+// node_modules/element-plus/es/components/cascader-panel/src/node-content.mjs
+function isVNodeEmpty(vnodes) {
+  return !!(isArray(vnodes) ? vnodes.every(({
+    type: type5
+  }) => type5 === Comment) : (vnodes == null ? void 0 : vnodes.type) === Comment);
+}
+var NodeContent = defineComponent({
+  name: "NodeContent",
+  props: {
+    node: {
+      type: Object,
+      required: true
+    }
   },
+  setup(props2) {
+    const ns = useNamespace("cascader-node");
+    const {
+      renderLabelFn
+    } = inject(CASCADER_PANEL_INJECTION_KEY);
+    const {
+      node
+    } = props2;
+    const {
+      data,
+      label: nodeLabel
+    } = node;
+    const label = () => {
+      const renderLabel = renderLabelFn == null ? void 0 : renderLabelFn({
+        node,
+        data
+      });
+      return isVNodeEmpty(renderLabel) ? nodeLabel : renderLabel != null ? renderLabel : nodeLabel;
+    };
+    return () => createVNode("span", {
+      "class": ns.e("label")
+    }, [label()]);
+  }
+});
+
+// node_modules/element-plus/es/components/cascader-panel/src/node2.mjs
+var __default__32 = defineComponent({
+  name: "ElCascaderNode"
+});
+var _sfc_main328 = /* @__PURE__ */ defineComponent({
+  ...__default__32,
   props: {
     node: {
       type: Object,
@@ -41078,12 +41258,14 @@ var _sfc_main36 = defineComponent({
     menuId: String
   },
   emits: ["expand"],
-  setup(props2, { emit: emit2 }) {
+  setup(__props, { emit: emit2 }) {
+    const props2 = __props;
     const panel = inject(CASCADER_PANEL_INJECTION_KEY);
     const ns = useNamespace("cascader-node");
     const isHoverMenu = computed2(() => panel.isHoverMenu);
     const multiple = computed2(() => panel.config.multiple);
     const checkStrictly = computed2(() => panel.config.checkStrictly);
+    const showPrefix = computed2(() => panel.config.showPrefix);
     const checkedNodeId = computed2(() => {
       var _a26;
       return (_a26 = panel.checkedNodes[0]) == null ? void 0 : _a26.uid;
@@ -41128,10 +41310,12 @@ var _sfc_main36 = defineComponent({
       node.loaded ? doExpand() : doLoad();
     };
     const handleClick = () => {
-      if (isHoverMenu.value && !isLeaf2.value)
+      if (isHoverMenu.value)
         return;
       if (isLeaf2.value && !isDisabled.value && !checkStrictly.value && !multiple.value) {
         handleCheck(true);
+      } else if ((panel.config.checkOnClickNode || isLeaf2.value && panel.config.checkOnClickLeaf) && !isDisabled.value) {
+        handleSelectCheck(!props2.node.checked);
       } else {
         handleExpand();
       }
@@ -41154,120 +41338,92 @@ var _sfc_main36 = defineComponent({
         !checkStrictly.value && doExpand();
       }
     };
-    return {
-      panel,
-      isHoverMenu,
-      multiple,
-      checkStrictly,
-      checkedNodeId,
-      isDisabled,
-      isLeaf: isLeaf2,
-      expandable,
-      inExpandingPath,
-      inCheckedPath,
-      ns,
-      handleHoverExpand,
-      handleExpand,
-      handleClick,
-      handleCheck,
-      handleSelectCheck
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("li", {
+        id: `${__props.menuId}-${__props.node.uid}`,
+        role: "menuitem",
+        "aria-haspopup": !unref(isLeaf2),
+        "aria-owns": unref(isLeaf2) ? void 0 : __props.menuId,
+        "aria-expanded": unref(inExpandingPath),
+        tabindex: unref(expandable) ? -1 : void 0,
+        class: normalizeClass([
+          unref(ns).b(),
+          unref(ns).is("selectable", unref(checkStrictly)),
+          unref(ns).is("active", __props.node.checked),
+          unref(ns).is("disabled", !unref(expandable)),
+          unref(inExpandingPath) && "in-active-path",
+          unref(inCheckedPath) && "in-checked-path"
+        ]),
+        onMouseenter: handleHoverExpand,
+        onFocus: handleHoverExpand,
+        onClick: handleClick
+      }, [
+        createCommentVNode(" prefix "),
+        unref(multiple) && unref(showPrefix) ? (openBlock(), createBlock(unref(ElCheckbox), {
+          key: 0,
+          "model-value": __props.node.checked,
+          indeterminate: __props.node.indeterminate,
+          disabled: unref(isDisabled),
+          onClick: withModifiers(() => {
+          }, ["stop"]),
+          "onUpdate:modelValue": handleSelectCheck
+        }, null, 8, ["model-value", "indeterminate", "disabled", "onClick"])) : unref(checkStrictly) && unref(showPrefix) ? (openBlock(), createBlock(unref(ElRadio), {
+          key: 1,
+          "model-value": unref(checkedNodeId),
+          label: __props.node.uid,
+          disabled: unref(isDisabled),
+          "onUpdate:modelValue": handleSelectCheck,
+          onClick: withModifiers(() => {
+          }, ["stop"])
+        }, {
+          default: withCtx(() => [
+            createCommentVNode("\n        Add an empty element to avoid render label,\n        do not use empty fragment here for https://github.com/vuejs/vue-next/pull/2485\n      "),
+            createBaseVNode("span")
+          ]),
+          _: 1
+        }, 8, ["model-value", "label", "disabled", "onClick"])) : unref(isLeaf2) && __props.node.checked ? (openBlock(), createBlock(unref(ElIcon), {
+          key: 2,
+          class: normalizeClass(unref(ns).e("prefix"))
+        }, {
+          default: withCtx(() => [
+            createVNode(unref(check_default))
+          ]),
+          _: 1
+        }, 8, ["class"])) : createCommentVNode("v-if", true),
+        createCommentVNode(" content "),
+        createVNode(unref(NodeContent), { node: __props.node }, null, 8, ["node"]),
+        createCommentVNode(" postfix "),
+        !unref(isLeaf2) ? (openBlock(), createElementBlock(Fragment, { key: 3 }, [
+          __props.node.loading ? (openBlock(), createBlock(unref(ElIcon), {
+            key: 0,
+            class: normalizeClass([unref(ns).is("loading"), unref(ns).e("postfix")])
+          }, {
+            default: withCtx(() => [
+              createVNode(unref(loading_default))
+            ]),
+            _: 1
+          }, 8, ["class"])) : (openBlock(), createBlock(unref(ElIcon), {
+            key: 1,
+            class: normalizeClass(["arrow-right", unref(ns).e("postfix")])
+          }, {
+            default: withCtx(() => [
+              createVNode(unref(arrow_right_default))
+            ]),
+            _: 1
+          }, 8, ["class"]))
+        ], 64)) : createCommentVNode("v-if", true)
+      ], 42, ["id", "aria-haspopup", "aria-owns", "aria-expanded", "tabindex"]);
     };
   }
 });
-function _sfc_render2(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_el_checkbox = resolveComponent("el-checkbox");
-  const _component_el_radio = resolveComponent("el-radio");
-  const _component_check = resolveComponent("check");
-  const _component_el_icon = resolveComponent("el-icon");
-  const _component_node_content = resolveComponent("node-content");
-  const _component_loading = resolveComponent("loading");
-  const _component_arrow_right = resolveComponent("arrow-right");
-  return openBlock(), createElementBlock("li", {
-    id: `${_ctx.menuId}-${_ctx.node.uid}`,
-    role: "menuitem",
-    "aria-haspopup": !_ctx.isLeaf,
-    "aria-owns": _ctx.isLeaf ? void 0 : _ctx.menuId,
-    "aria-expanded": _ctx.inExpandingPath,
-    tabindex: _ctx.expandable ? -1 : void 0,
-    class: normalizeClass([
-      _ctx.ns.b(),
-      _ctx.ns.is("selectable", _ctx.checkStrictly),
-      _ctx.ns.is("active", _ctx.node.checked),
-      _ctx.ns.is("disabled", !_ctx.expandable),
-      _ctx.inExpandingPath && "in-active-path",
-      _ctx.inCheckedPath && "in-checked-path"
-    ]),
-    onMouseenter: _ctx.handleHoverExpand,
-    onFocus: _ctx.handleHoverExpand,
-    onClick: _ctx.handleClick
-  }, [
-    createCommentVNode(" prefix "),
-    _ctx.multiple ? (openBlock(), createBlock(_component_el_checkbox, {
-      key: 0,
-      "model-value": _ctx.node.checked,
-      indeterminate: _ctx.node.indeterminate,
-      disabled: _ctx.isDisabled,
-      onClick: withModifiers(() => {
-      }, ["stop"]),
-      "onUpdate:modelValue": _ctx.handleSelectCheck
-    }, null, 8, ["model-value", "indeterminate", "disabled", "onClick", "onUpdate:modelValue"])) : _ctx.checkStrictly ? (openBlock(), createBlock(_component_el_radio, {
-      key: 1,
-      "model-value": _ctx.checkedNodeId,
-      label: _ctx.node.uid,
-      disabled: _ctx.isDisabled,
-      "onUpdate:modelValue": _ctx.handleSelectCheck,
-      onClick: withModifiers(() => {
-      }, ["stop"])
-    }, {
-      default: withCtx(() => [
-        createCommentVNode("\n        Add an empty element to avoid render label,\n        do not use empty fragment here for https://github.com/vuejs/vue-next/pull/2485\n      "),
-        createBaseVNode("span")
-      ]),
-      _: 1
-    }, 8, ["model-value", "label", "disabled", "onUpdate:modelValue", "onClick"])) : _ctx.isLeaf && _ctx.node.checked ? (openBlock(), createBlock(_component_el_icon, {
-      key: 2,
-      class: normalizeClass(_ctx.ns.e("prefix"))
-    }, {
-      default: withCtx(() => [
-        createVNode(_component_check)
-      ]),
-      _: 1
-    }, 8, ["class"])) : createCommentVNode("v-if", true),
-    createCommentVNode(" content "),
-    createVNode(_component_node_content),
-    createCommentVNode(" postfix "),
-    !_ctx.isLeaf ? (openBlock(), createElementBlock(Fragment, { key: 3 }, [
-      _ctx.node.loading ? (openBlock(), createBlock(_component_el_icon, {
-        key: 0,
-        class: normalizeClass([_ctx.ns.is("loading"), _ctx.ns.e("postfix")])
-      }, {
-        default: withCtx(() => [
-          createVNode(_component_loading)
-        ]),
-        _: 1
-      }, 8, ["class"])) : (openBlock(), createBlock(_component_el_icon, {
-        key: 1,
-        class: normalizeClass(["arrow-right", _ctx.ns.e("postfix")])
-      }, {
-        default: withCtx(() => [
-          createVNode(_component_arrow_right)
-        ]),
-        _: 1
-      }, 8, ["class"]))
-    ], 64)) : createCommentVNode("v-if", true)
-  ], 42, ["id", "aria-haspopup", "aria-owns", "aria-expanded", "tabindex", "onMouseenter", "onFocus", "onClick"]);
-}
-var ElCascaderNode = /* @__PURE__ */ _export_sfc(_sfc_main36, [["render", _sfc_render2], ["__file", "node.vue"]]);
+var ElCascaderNode = /* @__PURE__ */ _export_sfc(_sfc_main328, [["__file", "node.vue"]]);
 
 // node_modules/element-plus/es/components/cascader-panel/src/menu.mjs
-var _sfc_main37 = defineComponent({
-  name: "ElCascaderMenu",
-  components: {
-    Loading: loading_default,
-    ElIcon,
-    ElScrollbar,
-    ElCascaderNode
-  },
+var __default__33 = defineComponent({
+  name: "ElCascaderMenu"
+});
+var _sfc_main329 = /* @__PURE__ */ defineComponent({
+  ...__default__33,
   props: {
     nodes: {
       type: Array,
@@ -41278,15 +41434,16 @@ var _sfc_main37 = defineComponent({
       required: true
     }
   },
-  setup(props2) {
+  setup(__props) {
+    const props2 = __props;
     const instance = getCurrentInstance();
     const ns = useNamespace("cascader-menu");
     const { t } = useLocale();
     const id2 = useId();
-    let activeNode = null;
-    let hoverTimer = null;
+    let activeNode;
+    let hoverTimer;
     const panel = inject(CASCADER_PANEL_INJECTION_KEY);
-    const hoverZone = ref(null);
+    const hoverZone = ref();
     const isEmpty2 = computed2(() => !props2.nodes.length);
     const isLoading = computed2(() => !panel.initialLoaded);
     const menuId = computed2(() => `${id2.value}-${props2.index}`);
@@ -41316,7 +41473,7 @@ var _sfc_main37 = defineComponent({
       if (!hoverTimer)
         return;
       clearTimeout(hoverTimer);
-      hoverTimer = null;
+      hoverTimer = void 0;
     };
     const clearHoverZone = () => {
       if (!hoverZone.value)
@@ -41324,84 +41481,65 @@ var _sfc_main37 = defineComponent({
       hoverZone.value.innerHTML = "";
       clearHoverTimer();
     };
-    return {
-      ns,
-      panel,
-      hoverZone,
-      isEmpty: isEmpty2,
-      isLoading,
-      menuId,
-      t,
-      handleExpand,
-      handleMouseMove,
-      clearHoverZone
+    return (_ctx, _cache) => {
+      return openBlock(), createBlock(unref(ElScrollbar), {
+        key: unref(menuId),
+        tag: "ul",
+        role: "menu",
+        class: normalizeClass(unref(ns).b()),
+        "wrap-class": unref(ns).e("wrap"),
+        "view-class": [unref(ns).e("list"), unref(ns).is("empty", unref(isEmpty2))],
+        onMousemove: handleMouseMove,
+        onMouseleave: clearHoverZone
+      }, {
+        default: withCtx(() => {
+          var _a26;
+          return [
+            (openBlock(true), createElementBlock(Fragment, null, renderList(__props.nodes, (node) => {
+              return openBlock(), createBlock(ElCascaderNode, {
+                key: node.uid,
+                node,
+                "menu-id": unref(menuId),
+                onExpand: handleExpand
+              }, null, 8, ["node", "menu-id"]);
+            }), 128)),
+            unref(isLoading) ? (openBlock(), createElementBlock("div", {
+              key: 0,
+              class: normalizeClass(unref(ns).e("empty-text"))
+            }, [
+              createVNode(unref(ElIcon), {
+                size: "14",
+                class: normalizeClass(unref(ns).is("loading"))
+              }, {
+                default: withCtx(() => [
+                  createVNode(unref(loading_default))
+                ]),
+                _: 1
+              }, 8, ["class"]),
+              createTextVNode(" " + toDisplayString(unref(t)("el.cascader.loading")), 1)
+            ], 2)) : unref(isEmpty2) ? (openBlock(), createElementBlock("div", {
+              key: 1,
+              class: normalizeClass(unref(ns).e("empty-text"))
+            }, [
+              renderSlot(_ctx.$slots, "empty", {}, () => [
+                createTextVNode(toDisplayString(unref(t)("el.cascader.noData")), 1)
+              ])
+            ], 2)) : ((_a26 = unref(panel)) == null ? void 0 : _a26.isHoverMenu) ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
+              createCommentVNode(" eslint-disable-next-line vue/html-self-closing "),
+              (openBlock(), createElementBlock("svg", {
+                ref_key: "hoverZone",
+                ref: hoverZone,
+                class: normalizeClass(unref(ns).e("hover-zone"))
+              }, null, 2))
+            ], 2112)) : createCommentVNode("v-if", true)
+          ];
+        }),
+        _: 3
+      }, 8, ["class", "wrap-class", "view-class"]);
     };
   }
 });
-function _sfc_render3(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_el_cascader_node = resolveComponent("el-cascader-node");
-  const _component_loading = resolveComponent("loading");
-  const _component_el_icon = resolveComponent("el-icon");
-  const _component_el_scrollbar = resolveComponent("el-scrollbar");
-  return openBlock(), createBlock(_component_el_scrollbar, {
-    key: _ctx.menuId,
-    tag: "ul",
-    role: "menu",
-    class: normalizeClass(_ctx.ns.b()),
-    "wrap-class": _ctx.ns.e("wrap"),
-    "view-class": [_ctx.ns.e("list"), _ctx.ns.is("empty", _ctx.isEmpty)],
-    onMousemove: _ctx.handleMouseMove,
-    onMouseleave: _ctx.clearHoverZone
-  }, {
-    default: withCtx(() => {
-      var _a26;
-      return [
-        (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.nodes, (node) => {
-          return openBlock(), createBlock(_component_el_cascader_node, {
-            key: node.uid,
-            node,
-            "menu-id": _ctx.menuId,
-            onExpand: _ctx.handleExpand
-          }, null, 8, ["node", "menu-id", "onExpand"]);
-        }), 128)),
-        _ctx.isLoading ? (openBlock(), createElementBlock("div", {
-          key: 0,
-          class: normalizeClass(_ctx.ns.e("empty-text"))
-        }, [
-          createVNode(_component_el_icon, {
-            size: "14",
-            class: normalizeClass(_ctx.ns.is("loading"))
-          }, {
-            default: withCtx(() => [
-              createVNode(_component_loading)
-            ]),
-            _: 1
-          }, 8, ["class"]),
-          createTextVNode(" " + toDisplayString(_ctx.t("el.cascader.loading")), 1)
-        ], 2)) : _ctx.isEmpty ? (openBlock(), createElementBlock("div", {
-          key: 1,
-          class: normalizeClass(_ctx.ns.e("empty-text"))
-        }, [
-          renderSlot(_ctx.$slots, "empty", {}, () => [
-            createTextVNode(toDisplayString(_ctx.t("el.cascader.noData")), 1)
-          ])
-        ], 2)) : ((_a26 = _ctx.panel) == null ? void 0 : _a26.isHoverMenu) ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
-          createCommentVNode(" eslint-disable-next-line vue/html-self-closing "),
-          (openBlock(), createElementBlock("svg", {
-            ref: "hoverZone",
-            class: normalizeClass(_ctx.ns.e("hover-zone"))
-          }, null, 2))
-        ], 2112)) : createCommentVNode("v-if", true)
-      ];
-    }),
-    _: 3
-  }, 8, ["class", "wrap-class", "view-class", "onMousemove", "onMouseleave"]);
-}
-var ElCascaderMenu = /* @__PURE__ */ _export_sfc(_sfc_main37, [["render", _sfc_render3], ["__file", "menu.vue"]]);
-
-// node_modules/element-plus/es/utils/strings.mjs
-var escapeStringRegexp = (string3 = "") => string3.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
-var capitalize2 = (str2) => capitalize(str2);
+var ElCascaderMenu = /* @__PURE__ */ _export_sfc(_sfc_main329, [["__file", "menu.vue"]]);
 
 // node_modules/element-plus/es/components/cascader-panel/src/node.mjs
 var uid2 = 0;
@@ -41436,12 +41574,13 @@ var Node2 = class _Node {
     this.childrenData = childrenData;
     this.children = (childrenData || []).map((child) => new _Node(child, config, this));
     this.loaded = !config.lazy || this.isLeaf || !isEmpty(childrenData);
+    this.text = "";
   }
   get isDisabled() {
     const { data, parent: parent2, config } = this;
     const { disabled, checkStrictly } = config;
     const isDisabled = isFunction(disabled) ? disabled(data, this) : !!data[disabled];
-    return isDisabled || !checkStrictly && (parent2 == null ? void 0 : parent2.isDisabled);
+    return isDisabled || !checkStrictly && !!(parent2 == null ? void 0 : parent2.isDisabled);
   }
   get isLeaf() {
     const { data, config, childrenData, loaded } = this;
@@ -41468,21 +41607,21 @@ var Node2 = class _Node {
     this.text = text;
     return text;
   }
-  broadcast(event, ...args) {
-    const handlerName = `onParent${capitalize2(event)}`;
+  broadcast(checked) {
     this.children.forEach((child) => {
+      var _a26;
       if (child) {
-        child.broadcast(event, ...args);
-        child[handlerName] && child[handlerName](...args);
+        child.broadcast(checked);
+        (_a26 = child.onParentCheck) == null ? void 0 : _a26.call(child, checked);
       }
     });
   }
-  emit(event, ...args) {
+  emit() {
+    var _a26;
     const { parent: parent2 } = this;
-    const handlerName = `onChild${capitalize2(event)}`;
     if (parent2) {
-      parent2[handlerName] && parent2[handlerName](...args);
-      parent2.emit(event, ...args);
+      (_a26 = parent2.onChildCheck) == null ? void 0 : _a26.call(parent2);
+      parent2.emit();
     }
   }
   onParentCheck(checked) {
@@ -41512,9 +41651,9 @@ var Node2 = class _Node {
     if (checkStrictly || !multiple) {
       this.checked = checked;
     } else {
-      this.broadcast("check", checked);
+      this.broadcast(checked);
       this.setCheckState(checked);
-      this.emit("check");
+      this.emit();
     }
   }
 };
@@ -41552,7 +41691,11 @@ var Store = class {
     this.appendAllNodesAndLeafNodes(node);
   }
   appendNodes(nodeDataList, parentNode) {
-    nodeDataList.forEach((nodeData) => this.appendNode(nodeData, parentNode));
+    if (nodeDataList.length > 0) {
+      nodeDataList.forEach((nodeData) => this.appendNode(nodeData, parentNode));
+    } else {
+      parentNode && parentNode.isLeaf && this.leafNodes.push(parentNode);
+    }
   }
   appendAllNodesAndLeafNodes(node) {
     this.allNodes.push(node);
@@ -41603,7 +41746,27 @@ var DefaultProps = {
   children: "children",
   leaf: "leaf",
   disabled: "disabled",
-  hoverThreshold: 500
+  hoverThreshold: 500,
+  checkOnClickNode: false,
+  checkOnClickLeaf: true,
+  showPrefix: true
+};
+var cascaderPanelProps = buildProps({
+  ...CommonProps,
+  border: {
+    type: Boolean,
+    default: true
+  },
+  renderLabel: {
+    type: Function
+  }
+});
+var emitChangeFn = (value) => true;
+var cascaderPanelEmits = {
+  [UPDATE_MODEL_EVENT]: emitChangeFn,
+  [CHANGE_EVENT]: emitChangeFn,
+  close: () => true,
+  "expand-change": (value) => value
 };
 var useCascaderConfig = (props2) => {
   return computed2(() => ({
@@ -41654,30 +41817,26 @@ var castArray2 = (arr) => {
 };
 
 // node_modules/element-plus/es/components/cascader-panel/src/index.mjs
-var _sfc_main38 = defineComponent({
+var __default__34 = defineComponent({
   name: "ElCascaderPanel",
-  components: {
-    ElCascaderMenu
-  },
-  props: {
-    ...CommonProps,
-    border: {
-      type: Boolean,
-      default: true
-    },
-    renderLabel: Function
-  },
-  emits: [UPDATE_MODEL_EVENT, CHANGE_EVENT, "close", "expand-change"],
-  setup(props2, { emit: emit2, slots }) {
+  inheritAttrs: false
+});
+var _sfc_main330 = /* @__PURE__ */ defineComponent({
+  ...__default__34,
+  props: cascaderPanelProps,
+  emits: cascaderPanelEmits,
+  setup(__props, { expose, emit: emit2 }) {
+    const props2 = __props;
     let manualChecked = false;
     const ns = useNamespace("cascader");
     const config = useCascaderConfig(props2);
-    let store = null;
+    const slots = useSlots();
+    let store;
     const initialLoaded = ref(true);
     const menuList = ref([]);
-    const checkedValue = ref(null);
+    const checkedValue = ref();
     const menus = ref([]);
-    const expandingNode = ref(null);
+    const expandingNode = ref();
     const checkedNodes = ref([]);
     const isHoverMenu = computed2(() => config.value.expandTrigger === "hover");
     const renderLabelFn = computed2(() => props2.renderLabel || slots.default);
@@ -41708,11 +41867,11 @@ var _sfc_main38 = defineComponent({
       const resolve2 = (dataList) => {
         const _node = node;
         const parent2 = _node.root ? null : _node;
-        dataList && (store == null ? void 0 : store.appendNodes(dataList, parent2));
         _node.loading = false;
         _node.loaded = true;
         _node.childrenData = _node.childrenData || [];
-        cb && cb(dataList);
+        dataList && (store == null ? void 0 : store.appendNodes(dataList, parent2));
+        dataList && (cb == null ? void 0 : cb(dataList));
       };
       cfg.lazyLoad(node, resolve2);
     };
@@ -41750,18 +41909,16 @@ var _sfc_main38 = defineComponent({
       expandParentNode(node);
       node && expandNode(node);
     };
-    const getFlattedNodes = (leafOnly) => {
-      return store == null ? void 0 : store.getFlattedNodes(leafOnly);
-    };
+    const getFlattedNodes = (leafOnly) => store == null ? void 0 : store.getFlattedNodes(leafOnly);
     const getCheckedNodes = (leafOnly) => {
       var _a26;
-      return (_a26 = getFlattedNodes(leafOnly)) == null ? void 0 : _a26.filter((node) => node.checked !== false);
+      return (_a26 = getFlattedNodes(leafOnly)) == null ? void 0 : _a26.filter(({ checked }) => checked !== false);
     };
     const clearCheckedNodes = () => {
       checkedNodes.value.forEach((node) => node.doCheck(false));
       calculateCheckedValue();
       menus.value = menus.value.slice(0, 1);
-      expandingNode.value = null;
+      expandingNode.value = void 0;
       emit2("expand-change", []);
     };
     const calculateCheckedValue = () => {
@@ -41794,7 +41951,7 @@ var _sfc_main38 = defineComponent({
         const values = multiple ? castArray2(modelValue) : [modelValue];
         const nodes = unique(values.map((val) => store == null ? void 0 : store.getNodeByValue(val, leafOnly)));
         syncMenuState(nodes, forced);
-        checkedValue.value = cloneDeep_default(modelValue);
+        checkedValue.value = cloneDeep_default(modelValue != null ? modelValue : void 0);
       }
     };
     const syncMenuState = (newCheckedNodes, reserveExpandingState = true) => {
@@ -41806,7 +41963,7 @@ var _sfc_main38 = defineComponent({
       if (newExpandingNode) {
         newExpandingNode.pathNodes.forEach((node) => expandNode(node, true));
       } else {
-        expandingNode.value = null;
+        expandingNode.value = void 0;
       }
       oldNodes.forEach((node) => node.doCheck(false));
       reactive(newNodes).forEach((node) => node.doCheck(true));
@@ -41867,9 +42024,15 @@ var _sfc_main38 = defineComponent({
       expandNode,
       handleCheckChange
     }));
-    watch2([config, () => props2.options], initStore, {
-      deep: true,
+    watch2(config, (newVal, oldVal) => {
+      if (isEqual_default(newVal, oldVal))
+        return;
+      initStore();
+    }, {
       immediate: true
+    });
+    watch2(() => props2.options, initStore, {
+      deep: true
     });
     watch2(() => props2.modelValue, () => {
       manualChecked = false;
@@ -41885,8 +42048,7 @@ var _sfc_main38 = defineComponent({
     });
     onBeforeUpdate(() => menuList.value = []);
     onMounted(() => !isEmpty(props2.modelValue) && syncCheckedValue());
-    return {
-      ns,
+    expose({
       menuList,
       menus,
       checkedNodes,
@@ -41897,32 +42059,31 @@ var _sfc_main38 = defineComponent({
       clearCheckedNodes,
       calculateCheckedValue,
       scrollToExpandingNode
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        class: normalizeClass([unref(ns).b("panel"), unref(ns).is("bordered", _ctx.border)]),
+        onKeydown: handleKeyDown
+      }, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList(menus.value, (menu, index3) => {
+          return openBlock(), createBlock(ElCascaderMenu, {
+            key: index3,
+            ref_for: true,
+            ref: (item) => menuList.value[index3] = item,
+            index: index3,
+            nodes: [...menu]
+          }, {
+            empty: withCtx(() => [
+              renderSlot(_ctx.$slots, "empty")
+            ]),
+            _: 2
+          }, 1032, ["index", "nodes"]);
+        }), 128))
+      ], 34);
     };
   }
 });
-function _sfc_render4(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_el_cascader_menu = resolveComponent("el-cascader-menu");
-  return openBlock(), createElementBlock("div", {
-    class: normalizeClass([_ctx.ns.b("panel"), _ctx.ns.is("bordered", _ctx.border)]),
-    onKeydown: _ctx.handleKeyDown
-  }, [
-    (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.menus, (menu, index3) => {
-      return openBlock(), createBlock(_component_el_cascader_menu, {
-        key: index3,
-        ref_for: true,
-        ref: (item) => _ctx.menuList[index3] = item,
-        index: index3,
-        nodes: [...menu]
-      }, {
-        empty: withCtx(() => [
-          renderSlot(_ctx.$slots, "empty")
-        ]),
-        _: 2
-      }, 1032, ["index", "nodes"]);
-    }), 128))
-  ], 42, ["onKeydown"]);
-}
-var CascaderPanel = /* @__PURE__ */ _export_sfc(_sfc_main38, [["render", _sfc_render4], ["__file", "index.vue"]]);
+var CascaderPanel = /* @__PURE__ */ _export_sfc(_sfc_main330, [["__file", "index.vue"]]);
 
 // node_modules/element-plus/es/components/cascader-panel/index.mjs
 var ElCascaderPanel = withInstall(CascaderPanel);
@@ -41955,11 +42116,11 @@ var tagEmits = {
 };
 
 // node_modules/element-plus/es/components/tag/src/tag2.mjs
-var __default__32 = defineComponent({
+var __default__35 = defineComponent({
   name: "ElTag"
 });
-var _sfc_main39 = /* @__PURE__ */ defineComponent({
-  ...__default__32,
+var _sfc_main331 = /* @__PURE__ */ defineComponent({
+  ...__default__35,
   props: tagProps,
   emits: tagEmits,
   setup(__props, { emit: emit2 }) {
@@ -42046,7 +42207,7 @@ var _sfc_main39 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Tag = /* @__PURE__ */ _export_sfc(_sfc_main39, [["__file", "tag.vue"]]);
+var Tag = /* @__PURE__ */ _export_sfc(_sfc_main331, [["__file", "tag.vue"]]);
 
 // node_modules/element-plus/es/components/tag/index.mjs
 var ElTag = withInstall(Tag);
@@ -42058,6 +42219,10 @@ var cascaderProps = buildProps({
   placeholder: String,
   disabled: Boolean,
   clearable: Boolean,
+  clearIcon: {
+    type: iconPropType,
+    default: circle_close_default
+  },
   filterable: Boolean,
   filterMethod: {
     type: definePropType(Function),
@@ -42076,10 +42241,7 @@ var cascaderProps = buildProps({
     type: Number,
     default: 1
   },
-  collapseTagsTooltip: {
-    type: Boolean,
-    default: false
-  },
+  collapseTagsTooltip: Boolean,
   maxCollapseTagsTooltipHeight: {
     type: [String, Number]
   },
@@ -42100,11 +42262,13 @@ var cascaderProps = buildProps({
     type: definePropType(Array),
     default: ["bottom-start", "bottom", "top-start", "top", "right", "left"]
   },
-  popperClass: {
-    type: String,
-    default: ""
-  },
+  popperClass: useTooltipContentProps.popperClass,
+  popperStyle: useTooltipContentProps.popperStyle,
   teleported: useTooltipContentProps.teleported,
+  effect: {
+    type: definePropType(String),
+    default: "light"
+  },
   tagType: { ...tagProps.type, default: "info" },
   tagEffect: { ...tagProps.effect, default: "light" },
   validateEvent: {
@@ -42115,11 +42279,22 @@ var cascaderProps = buildProps({
     type: Boolean,
     default: true
   },
+  showCheckedStrategy: {
+    type: String,
+    values: ["parent", "child"],
+    default: "child"
+  },
+  checkOnClickNode: Boolean,
+  showPrefix: {
+    type: Boolean,
+    default: true
+  },
   ...useEmptyValuesProps
 });
+var emitChangeFn2 = (value) => true;
 var cascaderEmits = {
-  [UPDATE_MODEL_EVENT]: (_2) => true,
-  [CHANGE_EVENT]: (_2) => true,
+  [UPDATE_MODEL_EVENT]: emitChangeFn2,
+  [CHANGE_EVENT]: emitChangeFn2,
   focus: (evt) => evt instanceof FocusEvent,
   blur: (evt) => evt instanceof FocusEvent,
   clear: () => true,
@@ -42200,11 +42375,11 @@ var ClickOutside = {
 
 // node_modules/element-plus/es/components/cascader/src/cascader2.mjs
 var COMPONENT_NAME9 = "ElCascader";
-var __default__33 = defineComponent({
+var __default__36 = defineComponent({
   name: COMPONENT_NAME9
 });
-var _sfc_main40 = /* @__PURE__ */ defineComponent({
-  ...__default__33,
+var _sfc_main332 = /* @__PURE__ */ defineComponent({
+  ...__default__36,
   props: cascaderProps,
   emits: cascaderEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -42233,7 +42408,8 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
     const nsCascader = useNamespace("cascader");
     const nsInput = useNamespace("input");
     const { t } = useLocale();
-    const { form, formItem } = useFormItem();
+    const { formItem } = useFormItem();
+    const isDisabled = useFormDisabled();
     const { valueOnClear } = useEmptyValues(props2);
     const { isComposing, handleComposition } = useComposition({
       afterComposition(event) {
@@ -42243,14 +42419,14 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
       }
     });
     const tooltipRef = ref(null);
-    const input = ref(null);
+    const tagTooltipRef = ref();
+    const inputRef = ref();
     const tagWrapper = ref(null);
     const cascaderPanelRef = ref(null);
     const suggestionPanel = ref(null);
     const popperVisible = ref(false);
     const inputHover = ref(false);
     const filtering = ref(false);
-    const filterFocus = ref(false);
     const inputValue = ref("");
     const searchInputValue = ref("");
     const presentTags = ref([]);
@@ -42259,7 +42435,6 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
     const cascaderStyle = computed2(() => {
       return attrs.style;
     });
-    const isDisabled = computed2(() => props2.disabled || (form == null ? void 0 : form.disabled));
     const inputPlaceholder = computed2(() => {
       var _a26;
       return (_a26 = props2.placeholder) != null ? _a26 : t("el.cascader.placeholder");
@@ -42274,8 +42449,22 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
       var _a26;
       return ((_a26 = cascaderPanelRef.value) == null ? void 0 : _a26.checkedNodes) || [];
     });
+    const { wrapperRef, isFocused, handleBlur } = useFocusController(inputRef, {
+      disabled: isDisabled,
+      beforeBlur(event) {
+        var _a26, _b25, _c;
+        return ((_a26 = tooltipRef.value) == null ? void 0 : _a26.isFocusInsideContent(event)) || ((_c = (_b25 = tagTooltipRef.value) == null ? void 0 : _b25[0]) == null ? void 0 : _c.isFocusInsideContent(event));
+      },
+      afterBlur() {
+        var _a26;
+        popperVisible.value = false;
+        if (props2.validateEvent) {
+          (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "blur").catch((err) => debugWarn());
+        }
+      }
+    });
     const clearBtnVisible = computed2(() => {
-      if (!props2.clearable || isDisabled.value || filtering.value || !inputHover.value)
+      if (!props2.clearable || isDisabled.value || filtering.value || !inputHover.value && !isFocused.value)
         return false;
       return !!checkedNodes.value.length;
     });
@@ -42294,7 +42483,7 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
         emit2(UPDATE_MODEL_EVENT, value);
         emit2(CHANGE_EVENT, value);
         if (props2.validateEvent) {
-          formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err));
+          formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn());
         }
       }
     });
@@ -42313,13 +42502,18 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
         nsCascader.is("reverse", popperVisible.value)
       ];
     });
-    const inputClass = computed2(() => {
-      return nsCascader.is("focus", popperVisible.value || filterFocus.value);
-    });
+    const inputClass = computed2(() => nsCascader.is("focus", isFocused.value));
     const contentRef = computed2(() => {
       var _a26, _b25;
       return (_b25 = (_a26 = tooltipRef.value) == null ? void 0 : _a26.popperRef) == null ? void 0 : _b25.contentRef;
     });
+    const handleClickOutside = (event) => {
+      if (isFocused.value) {
+        const _event2 = new FocusEvent("blur", event);
+        handleBlur(_event2);
+      }
+      togglePopperVisible(false);
+    };
     const togglePopperVisible = (visible) => {
       var _a26, _b25, _c;
       if (isDisabled.value)
@@ -42327,7 +42521,7 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
       visible = visible != null ? visible : !popperVisible.value;
       if (visible !== popperVisible.value) {
         popperVisible.value = visible;
-        (_b25 = (_a26 = input.value) == null ? void 0 : _a26.input) == null ? void 0 : _b25.setAttribute("aria-expanded", `${visible}`);
+        (_b25 = (_a26 = inputRef.value) == null ? void 0 : _a26.input) == null ? void 0 : _b25.setAttribute("aria-expanded", `${visible}`);
         if (visible) {
           updatePopperPosition();
           nextTick((_c = cascaderPanelRef.value) == null ? void 0 : _c.scrollToExpandingNode);
@@ -42364,10 +42558,24 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
       (_a26 = cascaderPanelRef.value) == null ? void 0 : _a26.calculateCheckedValue();
       emit2("removeTag", node.valueByOption);
     };
+    const getStrategyCheckedNodes = () => {
+      switch (props2.showCheckedStrategy) {
+        case "child":
+          return checkedNodes.value;
+        case "parent": {
+          const clickedNodes = getCheckedNodes(false);
+          const clickedNodesValue = clickedNodes.map((o2) => o2.value);
+          const parentNodes = clickedNodes.filter((o2) => !o2.parent || !clickedNodesValue.includes(o2.parent.value));
+          return parentNodes;
+        }
+        default:
+          return [];
+      }
+    };
     const calculatePresentTags = () => {
       if (!multiple.value)
         return;
-      const nodes = checkedNodes.value;
+      const nodes = getStrategyCheckedNodes();
       const tags = [];
       const allTags = [];
       nodes.forEach((node) => allTags.push(genTag3(node)));
@@ -42427,7 +42635,7 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
     };
     const updateStyle = () => {
       var _a26, _b25;
-      const inputInner = (_a26 = input.value) == null ? void 0 : _a26.input;
+      const inputInner = (_a26 = inputRef.value) == null ? void 0 : _a26.input;
       const tagWrapperEl = tagWrapper.value;
       const suggestionPanelEl = (_b25 = suggestionPanel.value) == null ? void 0 : _b25.$el;
       if (!isClient || !inputInner)
@@ -42529,18 +42737,6 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
         lastTag.hitState = true;
       }
     };
-    const handleFocus = (e) => {
-      const el = e.target;
-      const name = nsCascader.e("search-input");
-      if (el.className === name) {
-        filterFocus.value = true;
-      }
-      emit2("focus", e);
-    };
-    const handleBlur = (e) => {
-      filterFocus.value = false;
-      emit2("blur", e);
-    };
     const handleFilter = debounce_default(() => {
       const { value } = searchKeyword;
       if (!value)
@@ -42569,13 +42765,13 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
     });
     watch2(realSize, async () => {
       await nextTick();
-      const inputInner = input.value.input;
+      const inputInner = inputRef.value.input;
       inputInitialHeight = getInputInnerHeight(inputInner) || inputInitialHeight;
       updateStyle();
     });
     watch2(presentText, syncPresentTextValue, { immediate: true });
     onMounted(() => {
-      const inputInner = input.value.input;
+      const inputInner = inputRef.value.input;
       const inputInnerHeight = getInputInnerHeight(inputInner);
       inputInitialHeight = inputInner.offsetHeight || inputInnerHeight;
       useResizeObserver(inputInner, updateStyle);
@@ -42594,19 +42790,22 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
         visible: popperVisible.value,
         teleported: _ctx.teleported,
         "popper-class": [unref(nsCascader).e("dropdown"), _ctx.popperClass],
+        "popper-style": _ctx.popperStyle,
         "popper-options": popperOptions,
         "fallback-placements": _ctx.fallbackPlacements,
         "stop-popper-mouse-event": false,
         "gpu-acceleration": false,
         placement: _ctx.placement,
         transition: `${unref(nsCascader).namespace.value}-zoom-in-top`,
-        effect: "light",
+        effect: _ctx.effect,
         pure: "",
         persistent: _ctx.persistent,
         onHide: hideSuggestionPanel
       }, {
         default: withCtx(() => [
           withDirectives((openBlock(), createElementBlock("div", {
+            ref_key: "wrapperRef",
+            ref: wrapperRef,
             class: normalizeClass(unref(cascaderKls)),
             style: normalizeStyle(unref(cascaderStyle)),
             onClick: () => togglePopperVisible(unref(readonly2) ? void 0 : true),
@@ -42615,8 +42814,8 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
             onMouseleave: ($event) => inputHover.value = false
           }, [
             createVNode(unref(ElInput), {
-              ref_key: "input",
-              ref: input,
+              ref_key: "inputRef",
+              ref: inputRef,
               modelValue: inputValue.value,
               "onUpdate:modelValue": ($event) => inputValue.value = $event,
               placeholder: unref(currentPlaceholder),
@@ -42629,8 +42828,6 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
               onCompositionstart: unref(handleComposition),
               onCompositionupdate: unref(handleComposition),
               onCompositionend: unref(handleComposition),
-              onFocus: handleFocus,
-              onBlur: handleBlur,
               onInput: handleInput
             }, createSlots({
               suffix: withCtx(() => [
@@ -42640,7 +42837,7 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
                   onClick: withModifiers(handleClear, ["stop"])
                 }, {
                   default: withCtx(() => [
-                    createVNode(unref(circle_close_default))
+                    (openBlock(), createBlock(resolveDynamicComponent(_ctx.clearIcon)))
                   ]),
                   _: 1
                 }, 8, ["class", "onClick"])) : (openBlock(), createBlock(unref(ElIcon), {
@@ -42672,68 +42869,78 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
                 unref(nsCascader).is("validate", Boolean(unref(validateState)))
               ])
             }, [
-              (openBlock(true), createElementBlock(Fragment, null, renderList(presentTags.value, (tag) => {
-                return openBlock(), createBlock(unref(ElTag), {
-                  key: tag.key,
-                  type: _ctx.tagType,
-                  size: unref(tagSize),
-                  effect: _ctx.tagEffect,
-                  hit: tag.hitState,
-                  closable: tag.closable,
-                  "disable-transitions": "",
-                  onClose: ($event) => deleteTag(tag)
-                }, {
-                  default: withCtx(() => [
-                    tag.isCollapseTag === false ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(tag.text), 1)) : (openBlock(), createBlock(unref(ElTooltip), {
-                      key: 1,
-                      disabled: popperVisible.value || !_ctx.collapseTagsTooltip,
-                      "fallback-placements": ["bottom", "top", "right", "left"],
-                      placement: "bottom",
-                      effect: "light"
-                    }, {
-                      default: withCtx(() => [
-                        createBaseVNode("span", null, toDisplayString(tag.text), 1)
-                      ]),
-                      content: withCtx(() => [
-                        createVNode(unref(ElScrollbar), { "max-height": _ctx.maxCollapseTagsTooltipHeight }, {
-                          default: withCtx(() => [
-                            createBaseVNode("div", {
-                              class: normalizeClass(unref(nsCascader).e("collapse-tags"))
-                            }, [
-                              (openBlock(true), createElementBlock(Fragment, null, renderList(allPresentTags.value.slice(_ctx.maxCollapseTags), (tag2, idx) => {
-                                return openBlock(), createElementBlock("div", {
-                                  key: idx,
-                                  class: normalizeClass(unref(nsCascader).e("collapse-tag"))
-                                }, [
-                                  (openBlock(), createBlock(unref(ElTag), {
-                                    key: tag2.key,
-                                    class: "in-tooltip",
-                                    type: _ctx.tagType,
-                                    size: unref(tagSize),
-                                    effect: _ctx.tagEffect,
-                                    hit: tag2.hitState,
-                                    closable: tag2.closable,
-                                    "disable-transitions": "",
-                                    onClose: ($event) => deleteTag(tag2)
-                                  }, {
-                                    default: withCtx(() => [
-                                      createBaseVNode("span", null, toDisplayString(tag2.text), 1)
-                                    ]),
-                                    _: 2
-                                  }, 1032, ["type", "size", "effect", "hit", "closable", "onClose"]))
-                                ], 2);
-                              }), 128))
-                            ], 2)
-                          ]),
-                          _: 1
-                        }, 8, ["max-height"])
-                      ]),
-                      _: 2
-                    }, 1032, ["disabled"]))
-                  ]),
-                  _: 2
-                }, 1032, ["type", "size", "effect", "hit", "closable", "onClose"]);
-              }), 128)),
+              renderSlot(_ctx.$slots, "tag", {
+                data: allPresentTags.value,
+                deleteTag
+              }, () => [
+                (openBlock(true), createElementBlock(Fragment, null, renderList(presentTags.value, (tag) => {
+                  return openBlock(), createBlock(unref(ElTag), {
+                    key: tag.key,
+                    type: _ctx.tagType,
+                    size: unref(tagSize),
+                    effect: _ctx.tagEffect,
+                    hit: tag.hitState,
+                    closable: tag.closable,
+                    "disable-transitions": "",
+                    onClose: ($event) => deleteTag(tag)
+                  }, {
+                    default: withCtx(() => [
+                      tag.isCollapseTag === false ? (openBlock(), createElementBlock("span", { key: 0 }, toDisplayString(tag.text), 1)) : (openBlock(), createBlock(unref(ElTooltip), {
+                        key: 1,
+                        ref_for: true,
+                        ref_key: "tagTooltipRef",
+                        ref: tagTooltipRef,
+                        disabled: popperVisible.value || !_ctx.collapseTagsTooltip,
+                        "fallback-placements": ["bottom", "top", "right", "left"],
+                        placement: "bottom",
+                        "popper-class": _ctx.popperClass,
+                        "popper-style": _ctx.popperStyle,
+                        effect: _ctx.effect
+                      }, {
+                        default: withCtx(() => [
+                          createBaseVNode("span", null, toDisplayString(tag.text), 1)
+                        ]),
+                        content: withCtx(() => [
+                          createVNode(unref(ElScrollbar), { "max-height": _ctx.maxCollapseTagsTooltipHeight }, {
+                            default: withCtx(() => [
+                              createBaseVNode("div", {
+                                class: normalizeClass(unref(nsCascader).e("collapse-tags"))
+                              }, [
+                                (openBlock(true), createElementBlock(Fragment, null, renderList(allPresentTags.value.slice(_ctx.maxCollapseTags), (tag2, idx) => {
+                                  return openBlock(), createElementBlock("div", {
+                                    key: idx,
+                                    class: normalizeClass(unref(nsCascader).e("collapse-tag"))
+                                  }, [
+                                    (openBlock(), createBlock(unref(ElTag), {
+                                      key: tag2.key,
+                                      class: "in-tooltip",
+                                      type: _ctx.tagType,
+                                      size: unref(tagSize),
+                                      effect: _ctx.tagEffect,
+                                      hit: tag2.hitState,
+                                      closable: tag2.closable,
+                                      "disable-transitions": "",
+                                      onClose: ($event) => deleteTag(tag2)
+                                    }, {
+                                      default: withCtx(() => [
+                                        createBaseVNode("span", null, toDisplayString(tag2.text), 1)
+                                      ]),
+                                      _: 2
+                                    }, 1032, ["type", "size", "effect", "hit", "closable", "onClose"]))
+                                  ], 2);
+                                }), 128))
+                              ], 2)
+                            ]),
+                            _: 1
+                          }, 8, ["max-height"])
+                        ]),
+                        _: 2
+                      }, 1032, ["disabled", "popper-class", "popper-style", "effect"]))
+                    ]),
+                    _: 2
+                  }, 1032, ["type", "size", "effect", "hit", "closable", "onClose"]);
+                }), 128))
+              ]),
               _ctx.filterable && !unref(isDisabled) ? withDirectives((openBlock(), createElementBlock("input", {
                 key: 0,
                 "onUpdate:modelValue": ($event) => searchInputValue.value = $event,
@@ -42745,18 +42952,24 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
                 onKeydown: withKeys(handleDelete, ["delete"]),
                 onCompositionstart: unref(handleComposition),
                 onCompositionupdate: unref(handleComposition),
-                onCompositionend: unref(handleComposition),
-                onFocus: handleFocus,
-                onBlur: handleBlur
+                onCompositionend: unref(handleComposition)
               }, null, 42, ["onUpdate:modelValue", "placeholder", "onInput", "onClick", "onKeydown", "onCompositionstart", "onCompositionupdate", "onCompositionend"])), [
                 [vModelText, searchInputValue.value]
               ]) : createCommentVNode("v-if", true)
             ], 2)) : createCommentVNode("v-if", true)
           ], 46, ["onClick", "onMouseenter", "onMouseleave"])), [
-            [unref(ClickOutside), () => togglePopperVisible(false), unref(contentRef)]
+            [unref(ClickOutside), handleClickOutside, unref(contentRef)]
           ])
         ]),
         content: withCtx(() => [
+          _ctx.$slots.header ? (openBlock(), createElementBlock("div", {
+            key: 0,
+            class: normalizeClass(unref(nsCascader).e("header")),
+            onClick: withModifiers(() => {
+            }, ["stop"])
+          }, [
+            renderSlot(_ctx.$slots, "header")
+          ], 10, ["onClick"])) : createCommentVNode("v-if", true),
           withDirectives(createVNode(unref(ElCascaderPanel), {
             ref_key: "cascaderPanelRef",
             ref: cascaderPanelRef,
@@ -42777,7 +42990,7 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
             [vShow, !filtering.value]
           ]),
           _ctx.filterable ? withDirectives((openBlock(), createBlock(unref(ElScrollbar), {
-            key: 0,
+            key: 1,
             ref_key: "suggestionPanel",
             ref: suggestionPanel,
             tag: "ul",
@@ -42815,14 +43028,22 @@ var _sfc_main40 = /* @__PURE__ */ defineComponent({
             _: 3
           }, 8, ["class", "view-class"])), [
             [vShow, filtering.value]
-          ]) : createCommentVNode("v-if", true)
+          ]) : createCommentVNode("v-if", true),
+          _ctx.$slots.footer ? (openBlock(), createElementBlock("div", {
+            key: 2,
+            class: normalizeClass(unref(nsCascader).e("footer")),
+            onClick: withModifiers(() => {
+            }, ["stop"])
+          }, [
+            renderSlot(_ctx.$slots, "footer")
+          ], 10, ["onClick"])) : createCommentVNode("v-if", true)
         ]),
         _: 3
-      }, 8, ["visible", "teleported", "popper-class", "fallback-placements", "placement", "transition", "persistent"]);
+      }, 8, ["visible", "teleported", "popper-class", "popper-style", "fallback-placements", "placement", "transition", "effect", "persistent"]);
     };
   }
 });
-var Cascader = /* @__PURE__ */ _export_sfc(_sfc_main40, [["__file", "cascader.vue"]]);
+var Cascader = /* @__PURE__ */ _export_sfc(_sfc_main332, [["__file", "cascader.vue"]]);
 
 // node_modules/element-plus/es/components/cascader/index.mjs
 var ElCascader = withInstall(Cascader);
@@ -42843,11 +43064,11 @@ var checkTagEmits = {
 };
 
 // node_modules/element-plus/es/components/check-tag/src/check-tag2.mjs
-var __default__34 = defineComponent({
+var __default__37 = defineComponent({
   name: "ElCheckTag"
 });
-var _sfc_main41 = /* @__PURE__ */ defineComponent({
-  ...__default__34,
+var _sfc_main333 = /* @__PURE__ */ defineComponent({
+  ...__default__37,
   props: checkTagProps,
   emits: checkTagEmits,
   setup(__props, { emit: emit2 }) {
@@ -42877,12 +43098,12 @@ var _sfc_main41 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var CheckTag = /* @__PURE__ */ _export_sfc(_sfc_main41, [["__file", "check-tag.vue"]]);
+var CheckTag = /* @__PURE__ */ _export_sfc(_sfc_main333, [["__file", "check-tag.vue"]]);
 
 // node_modules/element-plus/es/components/check-tag/index.mjs
 var ElCheckTag = withInstall(CheckTag);
 
-// node_modules/element-plus/es/components/col/src/col2.mjs
+// node_modules/element-plus/es/components/col/src/col.mjs
 var colProps = buildProps({
   tag: {
     type: String,
@@ -42929,12 +43150,12 @@ var colProps = buildProps({
 // node_modules/element-plus/es/components/row/src/constants.mjs
 var rowContextKey = Symbol("rowContextKey");
 
-// node_modules/element-plus/es/components/col/src/col.mjs
-var __default__35 = defineComponent({
+// node_modules/element-plus/es/components/col/src/col2.mjs
+var __default__38 = defineComponent({
   name: "ElCol"
 });
-var _sfc_main42 = /* @__PURE__ */ defineComponent({
-  ...__default__35,
+var _sfc_main334 = /* @__PURE__ */ defineComponent({
+  ...__default__38,
   props: colProps,
   setup(__props) {
     const props2 = __props;
@@ -42987,13 +43208,13 @@ var _sfc_main42 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Col = /* @__PURE__ */ _export_sfc(_sfc_main42, [["__file", "col.vue"]]);
+var Col = /* @__PURE__ */ _export_sfc(_sfc_main334, [["__file", "col.vue"]]);
 
 // node_modules/element-plus/es/components/col/index.mjs
 var ElCol = withInstall(Col);
 
-// node_modules/element-plus/es/components/collapse/src/collapse2.mjs
-var emitChangeFn = (value) => isNumber2(value) || isString(value) || isArray(value);
+// node_modules/element-plus/es/components/collapse/src/collapse.mjs
+var emitChangeFn3 = (value) => isNumber2(value) || isString(value) || isArray(value);
 var collapseProps = buildProps({
   accordion: Boolean,
   modelValue: {
@@ -43009,15 +43230,15 @@ var collapseProps = buildProps({
   }
 });
 var collapseEmits = {
-  [UPDATE_MODEL_EVENT]: emitChangeFn,
-  [CHANGE_EVENT]: emitChangeFn
+  [UPDATE_MODEL_EVENT]: emitChangeFn3,
+  [CHANGE_EVENT]: emitChangeFn3
 };
 
 // node_modules/element-plus/es/components/collapse/src/constants.mjs
 var collapseContextKey = Symbol("collapseContextKey");
 
 // node_modules/element-plus/es/components/collapse/src/use-collapse.mjs
-var SCOPE4 = "ElCollapse";
+var SCOPE = "ElCollapse";
 var useCollapse = (props2, emit2) => {
   const activeNames = ref(castArray_default(props2.modelValue));
   const setActiveNames = (_activeNames) => {
@@ -43052,7 +43273,7 @@ var useCollapse = (props2, emit2) => {
       isBoolean3(shouldChange)
     ].includes(true);
     if (!isPromiseOrBool) {
-      throwError(SCOPE4, "beforeCollapse must return type `Promise<boolean>` or `boolean`");
+      throwError(SCOPE, "beforeCollapse must return type `Promise<boolean>` or `boolean`");
     }
     if (isPromise(shouldChange)) {
       shouldChange.then((result) => {
@@ -43060,7 +43281,6 @@ var useCollapse = (props2, emit2) => {
           handleChange(name);
         }
       }).catch((e) => {
-        debugWarn(SCOPE4, `some error occurred: ${e}`);
       });
     } else if (shouldChange) {
       handleChange(name);
@@ -43087,12 +43307,12 @@ var useCollapseDOM = (props2) => {
   };
 };
 
-// node_modules/element-plus/es/components/collapse/src/collapse.mjs
-var __default__36 = defineComponent({
+// node_modules/element-plus/es/components/collapse/src/collapse2.mjs
+var __default__39 = defineComponent({
   name: "ElCollapse"
 });
-var _sfc_main43 = /* @__PURE__ */ defineComponent({
-  ...__default__36,
+var _sfc_main335 = /* @__PURE__ */ defineComponent({
+  ...__default__39,
   props: collapseProps,
   emits: collapseEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -43112,14 +43332,14 @@ var _sfc_main43 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Collapse = /* @__PURE__ */ _export_sfc(_sfc_main43, [["__file", "collapse.vue"]]);
+var Collapse = /* @__PURE__ */ _export_sfc(_sfc_main335, [["__file", "collapse.vue"]]);
 
 // node_modules/element-plus/es/components/collapse-transition/src/collapse-transition.mjs
-var __default__37 = defineComponent({
+var __default__40 = defineComponent({
   name: "ElCollapseTransition"
 });
-var _sfc_main44 = /* @__PURE__ */ defineComponent({
-  ...__default__37,
+var _sfc_main336 = /* @__PURE__ */ defineComponent({
+  ...__default__40,
   setup(__props) {
     const ns = useNamespace("collapse-transition");
     const reset = (el) => {
@@ -43197,7 +43417,7 @@ var _sfc_main44 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var CollapseTransition = /* @__PURE__ */ _export_sfc(_sfc_main44, [["__file", "collapse-transition.vue"]]);
+var CollapseTransition = /* @__PURE__ */ _export_sfc(_sfc_main336, [["__file", "collapse-transition.vue"]]);
 
 // node_modules/element-plus/es/components/collapse-transition/index.mjs
 var ElCollapseTransition = withInstall(CollapseTransition);
@@ -43301,11 +43521,11 @@ var useCollapseItemDOM = (props2, { focusing, isActive, id: id2 }) => {
 };
 
 // node_modules/element-plus/es/components/collapse/src/collapse-item2.mjs
-var __default__38 = defineComponent({
+var __default__41 = defineComponent({
   name: "ElCollapseItem"
 });
-var _sfc_main45 = /* @__PURE__ */ defineComponent({
-  ...__default__38,
+var _sfc_main337 = /* @__PURE__ */ defineComponent({
+  ...__default__41,
   props: collapseItemProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -43389,7 +43609,7 @@ var _sfc_main45 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var CollapseItem = /* @__PURE__ */ _export_sfc(_sfc_main45, [["__file", "collapse-item.vue"]]);
+var CollapseItem = /* @__PURE__ */ _export_sfc(_sfc_main337, [["__file", "collapse-item.vue"]]);
 
 // node_modules/element-plus/es/components/collapse/index.mjs
 var ElCollapse = withInstall(Collapse, {
@@ -43397,19 +43617,17 @@ var ElCollapse = withInstall(Collapse, {
 });
 var ElCollapseItem = withNoopInstall(CollapseItem);
 
-// node_modules/element-plus/es/components/color-picker/src/props/alpha-slider.mjs
+// node_modules/element-plus/es/components/color-picker-panel/src/props/alpha-slider.mjs
 var alphaSliderProps = buildProps({
   color: {
     type: definePropType(Object),
     required: true
   },
-  vertical: {
-    type: Boolean,
-    default: false
-  }
+  vertical: Boolean,
+  disabled: Boolean
 });
 
-// node_modules/element-plus/es/components/color-picker/src/utils/draggable.mjs
+// node_modules/element-plus/es/components/color-picker-panel/src/utils/draggable.mjs
 var isDragging = false;
 function draggable(element, options) {
   if (!isClient)
@@ -43448,23 +43666,6 @@ function draggable(element, options) {
 }
 
 // node_modules/element-plus/es/utils/dom/position.mjs
-var isInContainer = (el, container) => {
-  if (!isClient || !el || !container)
-    return false;
-  const elRect = el.getBoundingClientRect();
-  let containerRect;
-  if (container instanceof Element) {
-    containerRect = container.getBoundingClientRect();
-  } else {
-    containerRect = {
-      top: 0,
-      right: window.innerWidth,
-      bottom: window.innerHeight,
-      left: 0
-    };
-  }
-  return elRect.top < containerRect.bottom && elRect.bottom > containerRect.top && elRect.right > containerRect.left && elRect.left < containerRect.right;
-};
 var getOffsetTop = (el) => {
   let offset3 = 0;
   let parent2 = el;
@@ -43496,7 +43697,7 @@ var getClientXY = (event) => {
   };
 };
 
-// node_modules/element-plus/es/components/color-picker/src/composables/use-alpha-slider.mjs
+// node_modules/element-plus/es/components/color-picker-panel/src/composables/use-alpha-slider.mjs
 var useAlphaSlider = (props2) => {
   const instance = getCurrentInstance();
   const { t } = useLocale();
@@ -43506,6 +43707,8 @@ var useAlphaSlider = (props2) => {
   const alphaLabel = computed2(() => t("el.colorpicker.alphaLabel"));
   function handleClick(event) {
     var _a26;
+    if (props2.disabled)
+      return;
     const target2 = event.target;
     if (target2 !== thumb.value) {
       handleDrag(event);
@@ -43513,7 +43716,7 @@ var useAlphaSlider = (props2) => {
     (_a26 = thumb.value) == null ? void 0 : _a26.focus();
   }
   function handleDrag(event) {
-    if (!bar.value || !thumb.value)
+    if (!bar.value || !thumb.value || props2.disabled)
       return;
     const el = instance.vnode.el;
     const rect = el.getBoundingClientRect();
@@ -43531,6 +43734,8 @@ var useAlphaSlider = (props2) => {
     }
   }
   function handleKeydown(event) {
+    if (props2.disabled)
+      return;
     const { code, shiftKey } = event;
     const step2 = shiftKey ? 10 : 1;
     switch (code) {
@@ -43624,7 +43829,11 @@ var useAlphaSliderDOM = (props2, {
   });
   watch2(() => props2.color.get("alpha"), () => update2());
   watch2(() => props2.color.value, () => update2());
-  const rootKls = computed2(() => [ns.b(), ns.is("vertical", props2.vertical)]);
+  const rootKls = computed2(() => [
+    ns.b(),
+    ns.is("vertical", props2.vertical),
+    ns.is("disabled", props2.disabled)
+  ]);
   const barKls = computed2(() => ns.e("bar"));
   const thumbKls = computed2(() => ns.e("thumb"));
   const barStyle = computed2(() => ({ background: background.value }));
@@ -43635,13 +43844,13 @@ var useAlphaSliderDOM = (props2, {
   return { rootKls, barKls, barStyle, thumbKls, thumbStyle, update: update2 };
 };
 
-// node_modules/element-plus/es/components/color-picker/src/components/alpha-slider.mjs
+// node_modules/element-plus/es/components/color-picker-panel/src/components/alpha-slider.mjs
 var COMPONENT_NAME10 = "ElColorAlphaSlider";
-var __default__39 = defineComponent({
+var __default__42 = defineComponent({
   name: COMPONENT_NAME10
 });
-var _sfc_main46 = /* @__PURE__ */ defineComponent({
-  ...__default__39,
+var _sfc_main338 = /* @__PURE__ */ defineComponent({
+  ...__default__42,
   props: alphaSliderProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -43693,17 +43902,18 @@ var _sfc_main46 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var AlphaSlider = /* @__PURE__ */ _export_sfc(_sfc_main46, [["__file", "alpha-slider.vue"]]);
+var AlphaSlider = /* @__PURE__ */ _export_sfc(_sfc_main338, [["__file", "alpha-slider.vue"]]);
 
-// node_modules/element-plus/es/components/color-picker/src/components/hue-slider.mjs
-var _sfc_main47 = defineComponent({
+// node_modules/element-plus/es/components/color-picker-panel/src/components/hue-slider.mjs
+var _sfc_main339 = defineComponent({
   name: "ElColorHueSlider",
   props: {
     color: {
       type: Object,
       required: true
     },
-    vertical: Boolean
+    vertical: Boolean,
+    disabled: Boolean
   },
   setup(props2) {
     const ns = useNamespace("color-hue-slider");
@@ -43719,13 +43929,15 @@ var _sfc_main47 = defineComponent({
       update2();
     });
     function handleClick(event) {
+      if (props2.disabled)
+        return;
       const target2 = event.target;
       if (target2 !== thumb.value) {
         handleDrag(event);
       }
     }
     function handleDrag(event) {
-      if (!bar.value || !thumb.value)
+      if (!bar.value || !thumb.value || props2.disabled)
         return;
       const el = instance.vnode.el;
       const rect = el.getBoundingClientRect();
@@ -43771,7 +43983,7 @@ var _sfc_main47 = defineComponent({
       thumbTop.value = getThumbTop();
     }
     onMounted(() => {
-      if (!bar.value || !thumb.value)
+      if (!bar.value || !thumb.value || props2.disabled)
         return;
       const dragConfig = {
         drag: (event) => {
@@ -43797,7 +44009,7 @@ var _sfc_main47 = defineComponent({
     };
   }
 });
-function _sfc_render5(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass([_ctx.ns.b(), _ctx.ns.is("vertical", _ctx.vertical)])
   }, [
@@ -43816,44 +44028,32 @@ function _sfc_render5(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 6)
   ], 2);
 }
-var HueSlider = /* @__PURE__ */ _export_sfc(_sfc_main47, [["render", _sfc_render5], ["__file", "hue-slider.vue"]]);
+var HueSlider = /* @__PURE__ */ _export_sfc(_sfc_main339, [["render", _sfc_render2], ["__file", "hue-slider.vue"]]);
 
-// node_modules/element-plus/es/components/color-picker/src/color-picker.mjs
-var colorPickerProps = buildProps({
-  modelValue: String,
-  id: String,
-  showAlpha: Boolean,
-  colorFormat: String,
-  disabled: Boolean,
-  size: useSizeProp,
-  popperClass: {
-    type: String,
-    default: ""
+// node_modules/element-plus/es/components/color-picker-panel/src/color-picker-panel.mjs
+var colorPickerPanelProps = buildProps({
+  modelValue: {
+    type: definePropType(String),
+    default: void 0
   },
-  tabindex: {
-    type: [String, Number],
-    default: 0
-  },
-  teleported: useTooltipContentProps.teleported,
-  predefine: {
-    type: definePropType(Array)
-  },
-  validateEvent: {
+  border: {
     type: Boolean,
     default: true
   },
-  ...useAriaProps(["ariaLabel"])
+  showAlpha: Boolean,
+  colorFormat: String,
+  disabled: Boolean,
+  predefine: {
+    type: definePropType(Array)
+  }
 });
-var colorPickerEmits = {
-  [UPDATE_MODEL_EVENT]: (val) => isString(val) || isNil_default(val),
-  [CHANGE_EVENT]: (val) => isString(val) || isNil_default(val),
-  activeChange: (val) => isString(val) || isNil_default(val),
-  focus: (evt) => evt instanceof FocusEvent,
-  blur: (evt) => evt instanceof FocusEvent
+var colorPickerPanelEmits = {
+  [UPDATE_MODEL_EVENT]: (val) => isString(val) || isNil_default(val)
 };
-var colorPickerContextKey = Symbol("colorPickerContextKey");
+var ROOT_COMMON_COLOR_INJECTION_KEY = Symbol("colorCommonPickerKey");
+var colorPickerPanelContextKey = Symbol("colorPickerPanelContextKey");
 
-// node_modules/element-plus/es/components/color-picker/src/utils/color.mjs
+// node_modules/element-plus/es/components/color-picker-panel/src/utils/color.mjs
 var Color = class {
   constructor(options = {}) {
     this._hue = 0;
@@ -43940,8 +44140,8 @@ var Color = class {
   }
 };
 
-// node_modules/element-plus/es/components/color-picker/src/components/predefine.mjs
-var _sfc_main48 = defineComponent({
+// node_modules/element-plus/es/components/color-picker-panel/src/components/predefine.mjs
+var _sfc_main340 = defineComponent({
   props: {
     colors: {
       type: Array,
@@ -43954,11 +44154,12 @@ var _sfc_main48 = defineComponent({
     enableAlpha: {
       type: Boolean,
       required: true
-    }
+    },
+    disabled: Boolean
   },
   setup(props2) {
     const ns = useNamespace("color-predefine");
-    const { currentColor } = inject(colorPickerContextKey);
+    const { currentColor } = inject(colorPickerPanelContextKey);
     const rgbaColors = ref(parseColors(props2.colors, props2.color));
     watch2(() => currentColor.value, (val) => {
       const color2 = new Color({
@@ -43972,6 +44173,8 @@ var _sfc_main48 = defineComponent({
       rgbaColors.value = parseColors(props2.colors, props2.color);
     });
     function handleSelect(index3) {
+      if (props2.disabled)
+        return;
       props2.color.fromString(props2.colors[index3]);
     }
     function parseColors(colors, color2) {
@@ -43990,7 +44193,7 @@ var _sfc_main48 = defineComponent({
     };
   }
 });
-function _sfc_render6(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render3(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass(_ctx.ns.b())
   }, [
@@ -44015,16 +44218,17 @@ function _sfc_render6(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)
   ], 2);
 }
-var Predefine = /* @__PURE__ */ _export_sfc(_sfc_main48, [["render", _sfc_render6], ["__file", "predefine.vue"]]);
+var Predefine = /* @__PURE__ */ _export_sfc(_sfc_main340, [["render", _sfc_render3], ["__file", "predefine.vue"]]);
 
-// node_modules/element-plus/es/components/color-picker/src/components/sv-panel.mjs
-var _sfc_main49 = defineComponent({
+// node_modules/element-plus/es/components/color-picker-panel/src/components/sv-panel.mjs
+var _sfc_main341 = defineComponent({
   name: "ElSlPanel",
   props: {
     color: {
       type: Object,
       required: true
-    }
+    },
+    disabled: Boolean
   },
   setup(props2) {
     const ns = useNamespace("color-svpanel");
@@ -44047,6 +44251,8 @@ var _sfc_main49 = defineComponent({
       background.value = `hsl(${props2.color.get("hue")}, 100%, 50%)`;
     }
     function handleDrag(event) {
+      if (props2.disabled)
+        return;
       const el = instance.vnode.el;
       const rect = el.getBoundingClientRect();
       const { clientX, clientY } = getClientXY(event);
@@ -44088,7 +44294,7 @@ var _sfc_main49 = defineComponent({
     };
   }
 });
-function _sfc_render7(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render4(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass(_ctx.ns.b()),
     style: normalizeStyle({
@@ -44112,14 +44318,187 @@ function _sfc_render7(_ctx, _cache, $props, $setup, $data, $options) {
     ], 6)
   ], 6);
 }
-var SvPanel = /* @__PURE__ */ _export_sfc(_sfc_main49, [["render", _sfc_render7], ["__file", "sv-panel.vue"]]);
+var SvPanel = /* @__PURE__ */ _export_sfc(_sfc_main341, [["render", _sfc_render4], ["__file", "sv-panel.vue"]]);
+
+// node_modules/element-plus/es/components/color-picker-panel/src/composables/use-common-color.mjs
+var useCommonColor = (props2, emit2) => {
+  const color2 = reactive(new Color({
+    enableAlpha: props2.showAlpha,
+    format: props2.colorFormat || "",
+    value: props2.modelValue
+  }));
+  watch2(() => [props2.colorFormat, props2.showAlpha], () => {
+    color2.enableAlpha = props2.showAlpha;
+    color2.format = props2.colorFormat || color2.format;
+    color2.doOnChange();
+    emit2(UPDATE_MODEL_EVENT, color2.value);
+  });
+  return {
+    color: color2
+  };
+};
+
+// node_modules/element-plus/es/components/color-picker-panel/src/color-picker-panel2.mjs
+var __default__43 = defineComponent({
+  name: "ElColorPickerPanel"
+});
+var _sfc_main342 = /* @__PURE__ */ defineComponent({
+  ...__default__43,
+  props: colorPickerPanelProps,
+  emits: colorPickerPanelEmits,
+  setup(__props, { expose, emit: emit2 }) {
+    const props2 = __props;
+    const ns = useNamespace("color-picker-panel");
+    const disabled = useFormDisabled();
+    const hue2 = ref();
+    const sv = ref();
+    const alpha = ref();
+    const inputRef = ref();
+    const customInput = ref("");
+    const { color: color2 } = inject(ROOT_COMMON_COLOR_INJECTION_KEY, () => useCommonColor(props2, emit2), true);
+    function handleConfirm() {
+      color2.fromString(customInput.value);
+      if (color2.value !== customInput.value) {
+        customInput.value = color2.value;
+      }
+    }
+    onMounted(() => {
+      if (props2.modelValue) {
+        customInput.value = color2.value;
+      }
+      nextTick(() => {
+        var _a26, _b25, _c;
+        (_a26 = hue2.value) == null ? void 0 : _a26.update();
+        (_b25 = sv.value) == null ? void 0 : _b25.update();
+        (_c = alpha.value) == null ? void 0 : _c.update();
+      });
+    });
+    watch2(() => props2.modelValue, (newVal) => {
+      if (newVal && newVal !== color2.value) {
+        color2.fromString(newVal);
+      }
+    });
+    watch2(() => color2.value, (val) => {
+      emit2(UPDATE_MODEL_EVENT, val);
+      customInput.value = val;
+    });
+    provide(colorPickerPanelContextKey, {
+      currentColor: computed2(() => color2.value)
+    });
+    expose({
+      color: color2,
+      inputRef
+    });
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        class: normalizeClass([unref(ns).b(), unref(ns).is("disabled", unref(disabled)), unref(ns).is("border", _ctx.border)])
+      }, [
+        createBaseVNode("div", {
+          class: normalizeClass(unref(ns).e("wrapper"))
+        }, [
+          createVNode(HueSlider, {
+            ref_key: "hue",
+            ref: hue2,
+            class: "hue-slider",
+            color: unref(color2),
+            vertical: "",
+            disabled: unref(disabled)
+          }, null, 8, ["color", "disabled"]),
+          createVNode(SvPanel, {
+            ref_key: "sv",
+            ref: sv,
+            color: unref(color2),
+            disabled: unref(disabled)
+          }, null, 8, ["color", "disabled"])
+        ], 2),
+        _ctx.showAlpha ? (openBlock(), createBlock(AlphaSlider, {
+          key: 0,
+          ref_key: "alpha",
+          ref: alpha,
+          color: unref(color2),
+          disabled: unref(disabled)
+        }, null, 8, ["color", "disabled"])) : createCommentVNode("v-if", true),
+        _ctx.predefine ? (openBlock(), createBlock(Predefine, {
+          key: 1,
+          ref: "predefine",
+          "enable-alpha": _ctx.showAlpha,
+          color: unref(color2),
+          colors: _ctx.predefine,
+          disabled: unref(disabled)
+        }, null, 8, ["enable-alpha", "color", "colors", "disabled"])) : createCommentVNode("v-if", true),
+        createBaseVNode("div", {
+          class: normalizeClass(unref(ns).e("footer"))
+        }, [
+          createVNode(unref(ElInput), {
+            ref_key: "inputRef",
+            ref: inputRef,
+            modelValue: customInput.value,
+            "onUpdate:modelValue": ($event) => customInput.value = $event,
+            "validate-event": false,
+            size: "small",
+            disabled: unref(disabled),
+            onChange: handleConfirm
+          }, null, 8, ["modelValue", "onUpdate:modelValue", "disabled"]),
+          renderSlot(_ctx.$slots, "footer")
+        ], 2)
+      ], 2);
+    };
+  }
+});
+var ColorPickerPanel = /* @__PURE__ */ _export_sfc(_sfc_main342, [["__file", "color-picker-panel.vue"]]);
+
+// node_modules/element-plus/es/components/color-picker-panel/index.mjs
+var ElColorPickerPanel = withInstall(ColorPickerPanel);
+
+// node_modules/element-plus/es/components/color-picker/src/color-picker.mjs
+var colorPickerProps = buildProps({
+  persistent: {
+    type: Boolean,
+    default: true
+  },
+  modelValue: {
+    type: definePropType(String),
+    default: void 0
+  },
+  id: String,
+  showAlpha: Boolean,
+  colorFormat: String,
+  disabled: Boolean,
+  size: useSizeProp,
+  popperClass: {
+    type: String,
+    default: ""
+  },
+  tabindex: {
+    type: [String, Number],
+    default: 0
+  },
+  teleported: useTooltipContentProps.teleported,
+  appendTo: useTooltipContentProps.appendTo,
+  predefine: {
+    type: definePropType(Array)
+  },
+  validateEvent: {
+    type: Boolean,
+    default: true
+  },
+  ...useEmptyValuesProps,
+  ...useAriaProps(["ariaLabel"])
+});
+var colorPickerEmits = {
+  [UPDATE_MODEL_EVENT]: (val) => isString(val) || isNil_default(val),
+  [CHANGE_EVENT]: (val) => isString(val) || isNil_default(val),
+  activeChange: (val) => isString(val) || isNil_default(val),
+  focus: (evt) => evt instanceof FocusEvent,
+  blur: (evt) => evt instanceof FocusEvent
+};
 
 // node_modules/element-plus/es/components/color-picker/src/color-picker2.mjs
-var __default__40 = defineComponent({
+var __default__44 = defineComponent({
   name: "ElColorPicker"
 });
-var _sfc_main50 = /* @__PURE__ */ defineComponent({
-  ...__default__40,
+var _sfc_main343 = /* @__PURE__ */ defineComponent({
+  ...__default__44,
   props: colorPickerProps,
   emits: colorPickerEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -44129,19 +44508,19 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
     const { formItem } = useFormItem();
     const colorSize = useFormSize();
     const colorDisabled = useFormDisabled();
+    const { valueOnClear, isEmptyValue: isEmptyValue2 } = useEmptyValues(props2, null);
+    const commonColor = useCommonColor(props2, emit2);
     const { inputId: buttonId, isLabeledByFormItem } = useFormItemInputId(props2, {
       formItemContext: formItem
     });
-    const hue2 = ref();
-    const sv = ref();
-    const alpha = ref();
     const popper = ref();
     const triggerRef2 = ref();
-    const inputRef = ref();
+    const pickerPanelRef = ref();
+    const showPicker = ref(false);
+    const showPanelColor = ref(false);
+    let shouldActiveChange = true;
     const { isFocused, handleFocus, handleBlur } = useFocusController(triggerRef2, {
-      beforeFocus() {
-        return colorDisabled.value;
-      },
+      disabled: colorDisabled,
       beforeBlur(event) {
         var _a26;
         return (_a26 = popper.value) == null ? void 0 : _a26.isFocusInsideContent(event);
@@ -44151,15 +44530,11 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
         resetColor();
       }
     });
-    let shouldActiveChange = true;
-    const color2 = reactive(new Color({
-      enableAlpha: props2.showAlpha,
-      format: props2.colorFormat || "",
-      value: props2.modelValue
-    }));
-    const showPicker = ref(false);
-    const showPanelColor = ref(false);
-    const customInput = ref("");
+    const color2 = reactiveComputed(() => {
+      var _a26, _b25;
+      return (_b25 = (_a26 = pickerPanelRef.value) == null ? void 0 : _a26.color) != null ? _b25 : commonColor.color;
+    });
+    const panelProps = computed2(() => pick_default(props2, Object.keys(colorPickerPanelProps)));
     const displayedColor = computed2(() => {
       if (!props2.modelValue && !showPanelColor.value) {
         return "transparent";
@@ -44206,9 +44581,6 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
           color2.fromString(props2.modelValue);
         } else {
           color2.value = "";
-          if (!currentColor.value && customInput.value) {
-            customInput.value = "";
-          }
           nextTick(() => {
             showPanelColor.value = false;
           });
@@ -44223,18 +44595,12 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
       }
       debounceSetShowPicker(!showPicker.value);
     }
-    function handleConfirm() {
-      color2.fromString(customInput.value);
-      if (color2.value !== customInput.value) {
-        customInput.value = color2.value;
-      }
-    }
     function confirmValue() {
-      const value = color2.value;
+      const value = isEmptyValue2(color2.value) ? valueOnClear.value : color2.value;
       emit2(UPDATE_MODEL_EVENT, value);
       emit2(CHANGE_EVENT, value);
       if (props2.validateEvent) {
-        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err));
+        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn());
       }
       debounceSetShowPicker(false);
       nextTick(() => {
@@ -44250,10 +44616,10 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
     }
     function clear() {
       debounceSetShowPicker(false);
-      emit2(UPDATE_MODEL_EVENT, null);
-      emit2(CHANGE_EVENT, null);
-      if (props2.modelValue !== null && props2.validateEvent) {
-        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err));
+      emit2(UPDATE_MODEL_EVENT, valueOnClear.value);
+      emit2(CHANGE_EVENT, valueOnClear.value);
+      if (props2.modelValue !== valueOnClear.value && props2.validateEvent) {
+        formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn());
       }
       resetColor();
     }
@@ -44270,6 +44636,7 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
       resetColor();
     }
     function handleKeyDown(event) {
+      var _a26, _b25;
       switch (event.code) {
         case EVENT_CODE.enter:
         case EVENT_CODE.numpadEnter:
@@ -44277,7 +44644,7 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
           event.preventDefault();
           event.stopPropagation();
           show();
-          inputRef.value.focus();
+          (_b25 = (_a26 = pickerPanelRef == null ? void 0 : pickerPanelRef.value) == null ? void 0 : _a26.inputRef) == null ? void 0 : _b25.focus();
           break;
         case EVENT_CODE.esc:
           handleEsc(event);
@@ -44290,9 +44657,13 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
     function blur3() {
       triggerRef2.value.blur();
     }
-    onMounted(() => {
-      if (props2.modelValue) {
-        customInput.value = currentColor.value;
+    watch2(() => currentColor.value, (val) => {
+      shouldActiveChange && emit2("activeChange", val);
+      shouldActiveChange = true;
+    });
+    watch2(() => color2.value, () => {
+      if (!props2.modelValue && !showPanelColor.value) {
+        showPanelColor.value = true;
       }
     });
     watch2(() => props2.modelValue, (newVal) => {
@@ -44303,33 +44674,7 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
         color2.fromString(newVal);
       }
     });
-    watch2(() => [props2.colorFormat, props2.showAlpha], () => {
-      color2.enableAlpha = props2.showAlpha;
-      color2.format = props2.colorFormat || color2.format;
-      color2.doOnChange();
-      emit2(UPDATE_MODEL_EVENT, color2.value);
-    });
-    watch2(() => currentColor.value, (val) => {
-      customInput.value = val;
-      shouldActiveChange && emit2("activeChange", val);
-      shouldActiveChange = true;
-    });
-    watch2(() => color2.value, () => {
-      if (!props2.modelValue && !showPanelColor.value) {
-        showPanelColor.value = true;
-      }
-    });
-    watch2(() => showPicker.value, () => {
-      nextTick(() => {
-        var _a26, _b25, _c;
-        (_a26 = hue2.value) == null ? void 0 : _a26.update();
-        (_b25 = sv.value) == null ? void 0 : _b25.update();
-        (_c = alpha.value) == null ? void 0 : _c.update();
-      });
-    });
-    provide(colorPickerContextKey, {
-      currentColor
-    });
+    provide(ROOT_COMMON_COLOR_INJECTION_KEY, commonColor);
     expose({
       color: color2,
       show,
@@ -44346,88 +44691,53 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
         "fallback-placements": ["bottom", "top", "right", "left"],
         offset: 0,
         "gpu-acceleration": false,
-        "popper-class": [unref(ns).be("picker", "panel"), unref(ns).b("dropdown"), _ctx.popperClass],
+        "popper-class": [unref(ns).be("picker", "panel"), _ctx.popperClass],
         "stop-popper-mouse-event": false,
+        pure: "",
         effect: "light",
         trigger: "click",
         teleported: _ctx.teleported,
         transition: `${unref(ns).namespace.value}-zoom-in-top`,
-        persistent: "",
+        persistent: _ctx.persistent,
+        "append-to": _ctx.appendTo,
         onHide: ($event) => setShowPicker(false)
       }, {
         content: withCtx(() => [
-          withDirectives((openBlock(), createElementBlock("div", {
+          withDirectives((openBlock(), createBlock(unref(ElColorPickerPanel), mergeProps({
+            ref_key: "pickerPanelRef",
+            ref: pickerPanelRef
+          }, unref(panelProps), {
+            border: false,
             onKeydown: withKeys(handleEsc, ["esc"])
-          }, [
-            createBaseVNode("div", {
-              class: normalizeClass(unref(ns).be("dropdown", "main-wrapper"))
-            }, [
-              createVNode(HueSlider, {
-                ref_key: "hue",
-                ref: hue2,
-                class: "hue-slider",
-                color: unref(color2),
-                vertical: ""
-              }, null, 8, ["color"]),
-              createVNode(SvPanel, {
-                ref_key: "sv",
-                ref: sv,
-                color: unref(color2)
-              }, null, 8, ["color"])
-            ], 2),
-            _ctx.showAlpha ? (openBlock(), createBlock(AlphaSlider, {
-              key: 0,
-              ref_key: "alpha",
-              ref: alpha,
-              color: unref(color2)
-            }, null, 8, ["color"])) : createCommentVNode("v-if", true),
-            _ctx.predefine ? (openBlock(), createBlock(Predefine, {
-              key: 1,
-              ref: "predefine",
-              "enable-alpha": _ctx.showAlpha,
-              color: unref(color2),
-              colors: _ctx.predefine
-            }, null, 8, ["enable-alpha", "color", "colors"])) : createCommentVNode("v-if", true),
-            createBaseVNode("div", {
-              class: normalizeClass(unref(ns).be("dropdown", "btns"))
-            }, [
-              createBaseVNode("span", {
-                class: normalizeClass(unref(ns).be("dropdown", "value"))
-              }, [
-                createVNode(unref(ElInput), {
-                  ref_key: "inputRef",
-                  ref: inputRef,
-                  modelValue: customInput.value,
-                  "onUpdate:modelValue": ($event) => customInput.value = $event,
-                  "validate-event": false,
+          }), {
+            footer: withCtx(() => [
+              createBaseVNode("div", null, [
+                createVNode(unref(ElButton), {
+                  class: normalizeClass(unref(ns).be("footer", "link-btn")),
+                  text: "",
                   size: "small",
-                  onChange: handleConfirm
-                }, null, 8, ["modelValue", "onUpdate:modelValue"])
-              ], 2),
-              createVNode(unref(ElButton), {
-                class: normalizeClass(unref(ns).be("dropdown", "link-btn")),
-                text: "",
-                size: "small",
-                onClick: clear
-              }, {
-                default: withCtx(() => [
-                  createTextVNode(toDisplayString(unref(t)("el.colorpicker.clear")), 1)
-                ]),
-                _: 1
-              }, 8, ["class"]),
-              createVNode(unref(ElButton), {
-                plain: "",
-                size: "small",
-                class: normalizeClass(unref(ns).be("dropdown", "btn")),
-                onClick: confirmValue
-              }, {
-                default: withCtx(() => [
-                  createTextVNode(toDisplayString(unref(t)("el.colorpicker.confirm")), 1)
-                ]),
-                _: 1
-              }, 8, ["class"])
-            ], 2)
-          ], 40, ["onKeydown"])), [
+                  onClick: clear
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(unref(t)("el.colorpicker.clear")), 1)
+                  ]),
+                  _: 1
+                }, 8, ["class"]),
+                createVNode(unref(ElButton), {
+                  plain: "",
+                  size: "small",
+                  class: normalizeClass(unref(ns).be("footer", "btn")),
+                  onClick: confirmValue
+                }, {
+                  default: withCtx(() => [
+                    createTextVNode(toDisplayString(unref(t)("el.colorpicker.confirm")), 1)
+                  ]),
+                  _: 1
+                }, 8, ["class"])
+              ])
+            ]),
+            _: 1
+          }, 16, ["onKeydown"])), [
             [unref(ClickOutside), handleClickOutside, triggerRef2.value]
           ])
         ]),
@@ -44487,11 +44797,11 @@ var _sfc_main50 = /* @__PURE__ */ defineComponent({
           ], 16, ["id", "aria-label", "aria-labelledby", "aria-description", "aria-disabled", "tabindex", "onFocus", "onBlur"])
         ]),
         _: 1
-      }, 8, ["visible", "popper-class", "teleported", "transition", "onHide"]);
+      }, 8, ["visible", "popper-class", "teleported", "transition", "persistent", "append-to", "onHide"]);
     };
   }
 });
-var ColorPicker = /* @__PURE__ */ _export_sfc(_sfc_main50, [["__file", "color-picker.vue"]]);
+var ColorPicker = /* @__PURE__ */ _export_sfc(_sfc_main343, [["__file", "color-picker.vue"]]);
 
 // node_modules/element-plus/es/components/color-picker/index.mjs
 var ElColorPicker = withInstall(ColorPicker);
@@ -44507,6 +44817,12 @@ var configProviderProps = buildProps({
   },
   size: useSizeProp,
   button: {
+    type: definePropType(Object)
+  },
+  card: {
+    type: definePropType(Object)
+  },
+  dialog: {
     type: definePropType(Object)
   },
   link: {
@@ -44531,7 +44847,9 @@ var configProviderProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/config-provider/src/config-provider.mjs
-var messageConfig = {};
+var messageConfig = {
+  placement: "top"
+};
 var ConfigProvider = defineComponent({
   name: "ElConfigProvider",
   props: configProviderProps,
@@ -44549,11 +44867,11 @@ var ConfigProvider = defineComponent({
 var ElConfigProvider = withInstall(ConfigProvider);
 
 // node_modules/element-plus/es/components/container/src/container.mjs
-var __default__41 = defineComponent({
+var __default__45 = defineComponent({
   name: "ElContainer"
 });
-var _sfc_main51 = /* @__PURE__ */ defineComponent({
-  ...__default__41,
+var _sfc_main344 = /* @__PURE__ */ defineComponent({
+  ...__default__45,
   props: {
     direction: {
       type: String
@@ -44588,14 +44906,14 @@ var _sfc_main51 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Container = /* @__PURE__ */ _export_sfc(_sfc_main51, [["__file", "container.vue"]]);
+var Container = /* @__PURE__ */ _export_sfc(_sfc_main344, [["__file", "container.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/aside.mjs
-var __default__42 = defineComponent({
+var __default__46 = defineComponent({
   name: "ElAside"
 });
-var _sfc_main52 = /* @__PURE__ */ defineComponent({
-  ...__default__42,
+var _sfc_main345 = /* @__PURE__ */ defineComponent({
+  ...__default__46,
   props: {
     width: {
       type: String,
@@ -44616,14 +44934,14 @@ var _sfc_main52 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Aside = /* @__PURE__ */ _export_sfc(_sfc_main52, [["__file", "aside.vue"]]);
+var Aside = /* @__PURE__ */ _export_sfc(_sfc_main345, [["__file", "aside.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/footer.mjs
-var __default__43 = defineComponent({
+var __default__47 = defineComponent({
   name: "ElFooter"
 });
-var _sfc_main53 = /* @__PURE__ */ defineComponent({
-  ...__default__43,
+var _sfc_main346 = /* @__PURE__ */ defineComponent({
+  ...__default__47,
   props: {
     height: {
       type: String,
@@ -44644,14 +44962,14 @@ var _sfc_main53 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Footer = /* @__PURE__ */ _export_sfc(_sfc_main53, [["__file", "footer.vue"]]);
+var Footer = /* @__PURE__ */ _export_sfc(_sfc_main346, [["__file", "footer.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/header.mjs
-var __default__44 = defineComponent({
+var __default__48 = defineComponent({
   name: "ElHeader"
 });
-var _sfc_main54 = /* @__PURE__ */ defineComponent({
-  ...__default__44,
+var _sfc_main347 = /* @__PURE__ */ defineComponent({
+  ...__default__48,
   props: {
     height: {
       type: String,
@@ -44676,14 +44994,14 @@ var _sfc_main54 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Header = /* @__PURE__ */ _export_sfc(_sfc_main54, [["__file", "header.vue"]]);
+var Header = /* @__PURE__ */ _export_sfc(_sfc_main347, [["__file", "header.vue"]]);
 
 // node_modules/element-plus/es/components/container/src/main.mjs
-var __default__45 = defineComponent({
+var __default__49 = defineComponent({
   name: "ElMain"
 });
-var _sfc_main55 = /* @__PURE__ */ defineComponent({
-  ...__default__45,
+var _sfc_main348 = /* @__PURE__ */ defineComponent({
+  ...__default__49,
   setup(__props) {
     const ns = useNamespace("main");
     return (_ctx, _cache) => {
@@ -44695,7 +45013,7 @@ var _sfc_main55 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Main = /* @__PURE__ */ _export_sfc(_sfc_main55, [["__file", "main.vue"]]);
+var Main = /* @__PURE__ */ _export_sfc(_sfc_main348, [["__file", "main.vue"]]);
 
 // node_modules/element-plus/es/components/container/index.mjs
 var ElContainer = withInstall(Container, {
@@ -44709,17 +45027,6 @@ var ElFooter = withNoopInstall(Footer);
 var ElHeader = withNoopInstall(Header);
 var ElMain = withNoopInstall(Main);
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker.mjs
-var import_dayjs17 = __toESM(require_dayjs_min(), 1);
-var import_customParseFormat2 = __toESM(require_customParseFormat(), 1);
-var import_advancedFormat = __toESM(require_advancedFormat(), 1);
-var import_localeData2 = __toESM(require_localeData(), 1);
-var import_weekOfYear = __toESM(require_weekOfYear(), 1);
-var import_weekYear = __toESM(require_weekYear(), 1);
-var import_dayOfYear = __toESM(require_dayOfYear(), 1);
-var import_isSameOrAfter = __toESM(require_isSameOrAfter(), 1);
-var import_isSameOrBefore = __toESM(require_isSameOrBefore(), 1);
-
 // node_modules/element-plus/es/components/time-picker/src/time-picker.mjs
 var import_dayjs6 = __toESM(require_dayjs_min(), 1);
 var import_customParseFormat = __toESM(require_customParseFormat(), 1);
@@ -44728,6 +45035,7 @@ var import_customParseFormat = __toESM(require_customParseFormat(), 1);
 var timeUnits = ["hours", "minutes", "seconds"];
 var PICKER_BASE_INJECTION_KEY = "EP_PICKER_BASE";
 var PICKER_POPPER_OPTIONS_INJECTION_KEY = "ElPopperOptions";
+var ROOT_COMMON_PICKER_INJECTION_KEY = Symbol("commonPickerContextKey");
 var DEFAULT_FORMATS_TIME = "HH:mm:ss";
 var DEFAULT_FORMATS_DATE = "YYYY-MM-DD";
 var DEFAULT_FORMATS_DATEPICKER = {
@@ -44743,6 +45051,93 @@ var DEFAULT_FORMATS_DATEPICKER = {
   yearrange: "YYYY",
   daterange: DEFAULT_FORMATS_DATE,
   datetimerange: `${DEFAULT_FORMATS_DATE} ${DEFAULT_FORMATS_TIME}`
+};
+
+// node_modules/element-plus/es/components/time-picker/src/composables/use-common-picker.mjs
+var useCommonPicker = (props2, emit2) => {
+  const { lang } = useLocale();
+  const pickerVisible = ref(false);
+  const pickerActualVisible = ref(false);
+  const userInput = ref(null);
+  const valueIsEmpty = computed2(() => {
+    const { modelValue } = props2;
+    return !modelValue || isArray(modelValue) && !modelValue.filter(Boolean).length;
+  });
+  const emitInput = (input) => {
+    if (!valueEquals(props2.modelValue, input)) {
+      let formatted;
+      if (isArray(input)) {
+        formatted = input.map((item) => formatter(item, props2.valueFormat, lang.value));
+      } else if (input) {
+        formatted = formatter(input, props2.valueFormat, lang.value);
+      }
+      const emitVal = input ? formatted : input;
+      emit2(UPDATE_MODEL_EVENT, emitVal, lang.value);
+    }
+  };
+  const parsedValue = computed2(() => {
+    var _a26;
+    let dayOrDays;
+    if (valueIsEmpty.value) {
+      if (pickerOptions.value.getDefaultValue) {
+        dayOrDays = pickerOptions.value.getDefaultValue();
+      }
+    } else {
+      if (isArray(props2.modelValue)) {
+        dayOrDays = props2.modelValue.map((d2) => parseDate(d2, props2.valueFormat, lang.value));
+      } else {
+        dayOrDays = parseDate((_a26 = props2.modelValue) != null ? _a26 : "", props2.valueFormat, lang.value);
+      }
+    }
+    if (pickerOptions.value.getRangeAvailableTime) {
+      const availableResult = pickerOptions.value.getRangeAvailableTime(dayOrDays);
+      if (!isEqual_default(availableResult, dayOrDays)) {
+        dayOrDays = availableResult;
+        if (!valueIsEmpty.value) {
+          emitInput(dayOrDaysToDate(dayOrDays));
+        }
+      }
+    }
+    if (isArray(dayOrDays) && dayOrDays.some((day) => !day)) {
+      dayOrDays = [];
+    }
+    return dayOrDays;
+  });
+  const pickerOptions = ref({});
+  const onSetPickerOption = (e) => {
+    pickerOptions.value[e[0]] = e[1];
+    pickerOptions.value.panelReady = true;
+  };
+  const onCalendarChange = (e) => {
+    emit2("calendar-change", e);
+  };
+  const onPanelChange = (value, mode2, view) => {
+    emit2("panel-change", value, mode2, view);
+  };
+  const onPick = (date5 = "", visible = false) => {
+    pickerVisible.value = visible;
+    let result;
+    if (isArray(date5)) {
+      result = date5.map((_2) => _2.toDate());
+    } else {
+      result = date5 ? date5.toDate() : date5;
+    }
+    userInput.value = null;
+    emitInput(result);
+  };
+  return {
+    parsedValue,
+    pickerActualVisible,
+    pickerOptions,
+    pickerVisible,
+    userInput,
+    valueIsEmpty,
+    emitInput,
+    onCalendarChange,
+    onPanelChange,
+    onPick,
+    onSetPickerOption
+  };
 };
 
 // node_modules/element-plus/es/components/time-picker/src/props/shared.mjs
@@ -44777,10 +45172,8 @@ var timePickerDefaultProps = buildProps({
   name: {
     type: definePropType([Array, String])
   },
-  popperClass: {
-    type: String,
-    default: ""
-  },
+  popperClass: useTooltipContentProps.popperClass,
+  popperStyle: useTooltipContentProps.popperStyle,
   format: String,
   valueFormat: String,
   dateFormat: String,
@@ -44868,7 +45261,16 @@ var timePickerDefaultProps = buildProps({
   showNow: {
     type: Boolean,
     default: true
-  }
+  },
+  showConfirm: {
+    type: Boolean,
+    default: true
+  },
+  showFooter: {
+    type: Boolean,
+    default: true
+  },
+  showWeekNumber: Boolean
 });
 var timePickerRangeTriggerProps = buildProps({
   id: {
@@ -44886,12 +45288,12 @@ var timePickerRangeTriggerProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/time-picker/src/common/picker-range-trigger.mjs
-var __default__46 = defineComponent({
+var __default__50 = defineComponent({
   name: "PickerRangeTrigger",
   inheritAttrs: false
 });
-var _sfc_main56 = /* @__PURE__ */ defineComponent({
-  ...__default__46,
+var _sfc_main349 = /* @__PURE__ */ defineComponent({
+  ...__default__50,
   props: timePickerRangeTriggerProps,
   emits: [
     "mouseenter",
@@ -44906,12 +45308,15 @@ var _sfc_main56 = /* @__PURE__ */ defineComponent({
     "endChange"
   ],
   setup(__props, { expose, emit: emit2 }) {
+    const props2 = __props;
     const attrs = useAttrs2();
     const nsDate = useNamespace("date");
     const nsRange = useNamespace("range");
     const inputRef = ref();
     const endInputRef = ref();
-    const { wrapperRef, isFocused } = useFocusController(inputRef);
+    const { wrapperRef, isFocused } = useFocusController(inputRef, {
+      disabled: computed2(() => props2.disabled)
+    });
     const handleClick = (evt) => {
       emit2("click", evt);
     };
@@ -44922,7 +45327,7 @@ var _sfc_main56 = /* @__PURE__ */ defineComponent({
       emit2("mouseleave", evt);
     };
     const handleTouchStart = (evt) => {
-      emit2("mouseenter", evt);
+      emit2("touchstart", evt);
     };
     const handleStartInput = (evt) => {
       emit2("startInput", evt);
@@ -44991,14 +45396,14 @@ var _sfc_main56 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var PickerRangeTrigger = /* @__PURE__ */ _export_sfc(_sfc_main56, [["__file", "picker-range-trigger.vue"]]);
+var PickerRangeTrigger = /* @__PURE__ */ _export_sfc(_sfc_main349, [["__file", "picker-range-trigger.vue"]]);
 
 // node_modules/element-plus/es/components/time-picker/src/common/picker.mjs
-var __default__47 = defineComponent({
+var __default__51 = defineComponent({
   name: "Picker"
 });
-var _sfc_main57 = /* @__PURE__ */ defineComponent({
-  ...__default__47,
+var _sfc_main350 = /* @__PURE__ */ defineComponent({
+  ...__default__51,
   props: timePickerDefaultProps,
   emits: [
     UPDATE_MODEL_EVENT,
@@ -45014,22 +45419,35 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
   setup(__props, { expose, emit: emit2 }) {
     const props2 = __props;
     const attrs = useAttrs();
-    const { lang } = useLocale();
     const nsDate = useNamespace("date");
     const nsInput = useNamespace("input");
     const nsRange = useNamespace("range");
-    const { form, formItem } = useFormItem();
+    const { formItem } = useFormItem();
     const elPopperOptions = inject(PICKER_POPPER_OPTIONS_INJECTION_KEY, {});
     const { valueOnClear } = useEmptyValues(props2, null);
     const refPopper = ref();
     const inputRef = ref();
-    const pickerVisible = ref(false);
-    const pickerActualVisible = ref(false);
     const valueOnOpen = ref(null);
     let hasJustTabExitedInput = false;
+    const pickerDisabled = useFormDisabled();
+    const commonPicker = useCommonPicker(props2, emit2);
+    const {
+      parsedValue,
+      pickerActualVisible,
+      userInput,
+      pickerVisible,
+      pickerOptions,
+      valueIsEmpty,
+      emitInput,
+      onPick,
+      onSetPickerOption,
+      onCalendarChange,
+      onPanelChange
+    } = commonPicker;
     const { isFocused, handleFocus, handleBlur } = useFocusController(inputRef, {
+      disabled: pickerDisabled,
       beforeFocus() {
-        return props2.readonly || pickerDisabled.value;
+        return props2.readonly;
       },
       afterFocus() {
         pickerVisible.value = true;
@@ -45042,9 +45460,10 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
         handleChange();
         pickerVisible.value = false;
         hasJustTabExitedInput = false;
-        props2.validateEvent && (formItem == null ? void 0 : formItem.validate("blur").catch((err) => debugWarn(err)));
+        props2.validateEvent && (formItem == null ? void 0 : formItem.validate("blur").catch((err) => debugWarn()));
       }
     });
+    const hovering = ref(false);
     const rangeInputKls = computed2(() => [
       nsDate.b("editor"),
       nsDate.bm("editor", props2.type),
@@ -45058,7 +45477,7 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
     const clearIconKls = computed2(() => [
       nsInput.e("icon"),
       nsRange.e("close-icon"),
-      !showClose.value ? nsRange.e("close-icon--hidden") : ""
+      !showClearBtn.value ? nsRange.e("close-icon--hidden") : ""
     ]);
     watch2(pickerVisible, (val) => {
       if (!val) {
@@ -45078,18 +45497,7 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
       if (isClear || !valueEquals(val, valueOnOpen.value)) {
         emit2(CHANGE_EVENT, val);
         isClear && (valueOnOpen.value = val);
-        props2.validateEvent && (formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err)));
-      }
-    };
-    const emitInput = (input) => {
-      if (!valueEquals(props2.modelValue, input)) {
-        let formatted;
-        if (isArray(input)) {
-          formatted = input.map((item) => formatter(item, props2.valueFormat, lang.value));
-        } else if (input) {
-          formatted = formatter(input, props2.valueFormat, lang.value);
-        }
-        emit2(UPDATE_MODEL_EVENT, input ? formatted : input, lang.value);
+        props2.validateEvent && (formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn()));
       }
     };
     const emitKeydown = (e) => {
@@ -45113,17 +45521,6 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
         _inputs[1].focus();
       }
     };
-    const onPick = (date5 = "", visible = false) => {
-      pickerVisible.value = visible;
-      let result;
-      if (isArray(date5)) {
-        result = date5.map((_2) => _2.toDate());
-      } else {
-        result = date5 ? date5.toDate() : date5;
-      }
-      userInput.value = null;
-      emitInput(result);
-    };
     const onBeforeShow = () => {
       pickerActualVisible.value = true;
     };
@@ -45141,36 +45538,6 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
     const handleClose = () => {
       pickerVisible.value = false;
     };
-    const pickerDisabled = computed2(() => {
-      return props2.disabled || (form == null ? void 0 : form.disabled);
-    });
-    const parsedValue = computed2(() => {
-      let dayOrDays;
-      if (valueIsEmpty.value) {
-        if (pickerOptions.value.getDefaultValue) {
-          dayOrDays = pickerOptions.value.getDefaultValue();
-        }
-      } else {
-        if (isArray(props2.modelValue)) {
-          dayOrDays = props2.modelValue.map((d2) => parseDate(d2, props2.valueFormat, lang.value));
-        } else {
-          dayOrDays = parseDate(props2.modelValue, props2.valueFormat, lang.value);
-        }
-      }
-      if (pickerOptions.value.getRangeAvailableTime) {
-        const availableResult = pickerOptions.value.getRangeAvailableTime(dayOrDays);
-        if (!isEqual_default(availableResult, dayOrDays)) {
-          dayOrDays = availableResult;
-          if (!valueIsEmpty.value) {
-            emitInput(dayOrDaysToDate(dayOrDays));
-          }
-        }
-      }
-      if (isArray(dayOrDays) && dayOrDays.some((day) => !day)) {
-        dayOrDays = [];
-      }
-      return dayOrDays;
-    });
     const displayValue = computed2(() => {
       if (!pickerOptions.value.panelReady)
         return "";
@@ -45198,11 +45565,11 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
     const isMonthsPicker = computed2(() => props2.type === "months");
     const isYearsPicker = computed2(() => props2.type === "years");
     const triggerIcon = computed2(() => props2.prefixIcon || (isTimeLikePicker.value ? clock_default : calendar_default));
-    const showClose = ref(false);
+    const showClearBtn = computed2(() => props2.clearable && !pickerDisabled.value && !props2.readonly && !valueIsEmpty.value && (hovering.value || isFocused.value));
     const onClearIconClick = (event) => {
       if (props2.readonly || pickerDisabled.value)
         return;
-      if (showClose.value) {
+      if (showClearBtn.value) {
         event.stopPropagation();
         if (pickerOptions.value.handleClear) {
           pickerOptions.value.handleClear();
@@ -45210,15 +45577,10 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
           emitInput(valueOnClear.value);
         }
         emitChange(valueOnClear.value, true);
-        showClose.value = false;
         onHide();
       }
       emit2("clear");
     };
-    const valueIsEmpty = computed2(() => {
-      const { modelValue } = props2;
-      return !modelValue || isArray(modelValue) && !modelValue.filter(Boolean).length;
-    });
     const onMouseDownInput = async (event) => {
       var _a26;
       if (props2.readonly || pickerDisabled.value)
@@ -45231,11 +45593,11 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
       if (props2.readonly || pickerDisabled.value)
         return;
       if (!valueIsEmpty.value && props2.clearable) {
-        showClose.value = true;
+        hovering.value = true;
       }
     };
     const onMouseLeave = () => {
-      showClose.value = false;
+      hovering.value = false;
     };
     const onTouchStartInput = (event) => {
       var _a26;
@@ -45263,7 +45625,6 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
     onBeforeUnmount(() => {
       stophandle == null ? void 0 : stophandle();
     });
-    const userInput = ref(null);
     const handleChange = () => {
       if (userInput.value) {
         const value = parseUserInputToDayjs(displayValue.value);
@@ -45396,17 +45757,6 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
         }
       }
     };
-    const pickerOptions = ref({});
-    const onSetPickerOption = (e) => {
-      pickerOptions.value[e[0]] = e[1];
-      pickerOptions.value.panelReady = true;
-    };
-    const onCalendarChange = (e) => {
-      emit2("calendar-change", e);
-    };
-    const onPanelChange = (value, mode2, view) => {
-      emit2("panel-change", value, mode2, view);
-    };
     const focus = () => {
       var _a26;
       (_a26 = inputRef.value) == null ? void 0 : _a26.focus();
@@ -45418,6 +45768,7 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
     provide(PICKER_BASE_INJECTION_KEY, {
       props: props2
     });
+    provide(ROOT_COMMON_PICKER_INJECTION_KEY, commonPicker);
     expose({
       focus,
       blur: blur3,
@@ -45429,7 +45780,7 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
       return openBlock(), createBlock(unref(ElTooltip), mergeProps({
         ref_key: "refPopper",
         ref: refPopper,
-        visible: pickerVisible.value,
+        visible: unref(pickerVisible),
         effect: "light",
         pure: "",
         trigger: "click"
@@ -45438,6 +45789,7 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
         teleported: "",
         transition: `${unref(nsDate).namespace.value}-zoom-in-top`,
         "popper-class": [`${unref(nsDate).namespace.value}-picker__popper`, _ctx.popperClass],
+        "popper-style": _ctx.popperStyle,
         "popper-options": unref(elPopperOptions),
         "fallback-placements": _ctx.fallbackPlacements,
         "gpu-acceleration": false,
@@ -45461,7 +45813,12 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
             size: unref(pickerSize),
             disabled: unref(pickerDisabled),
             placeholder: _ctx.placeholder,
-            class: normalizeClass([unref(nsDate).b("editor"), unref(nsDate).bm("editor", _ctx.type), _ctx.$attrs.class]),
+            class: normalizeClass([
+              unref(nsDate).b("editor"),
+              unref(nsDate).bm("editor", _ctx.type),
+              unref(nsDate).is("focus", unref(pickerVisible)),
+              _ctx.$attrs.class
+            ]),
             style: normalizeStyle(_ctx.$attrs.style),
             readonly: !_ctx.editable || _ctx.readonly || unref(isDatesPicker) || unref(isMonthsPicker) || unref(isYearsPicker) || _ctx.type === "week",
             "aria-label": _ctx.ariaLabel,
@@ -45493,7 +45850,7 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
               }, 8, ["class", "onMousedown"])) : createCommentVNode("v-if", true)
             ]),
             suffix: withCtx(() => [
-              showClose.value && _ctx.clearIcon ? (openBlock(), createBlock(unref(ElIcon), {
+              unref(showClearBtn) && _ctx.clearIcon ? (openBlock(), createBlock(unref(ElIcon), {
                 key: 0,
                 class: normalizeClass(`${unref(nsInput).e("icon")} clear-icon`),
                 onMousedown: withModifiers(unref(NOOP), ["prevent"]),
@@ -45572,8 +45929,8 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
         ]),
         content: withCtx(() => [
           renderSlot(_ctx.$slots, "default", {
-            visible: pickerVisible.value,
-            actualVisible: pickerActualVisible.value,
+            visible: unref(pickerVisible),
+            actualVisible: unref(pickerActualVisible),
             parsedValue: unref(parsedValue),
             format: _ctx.format,
             dateFormat: _ctx.dateFormat,
@@ -45582,21 +45939,24 @@ var _sfc_main57 = /* @__PURE__ */ defineComponent({
             type: _ctx.type,
             defaultValue: _ctx.defaultValue,
             showNow: _ctx.showNow,
-            onPick,
+            showConfirm: _ctx.showConfirm,
+            showFooter: _ctx.showFooter,
+            showWeekNumber: _ctx.showWeekNumber,
+            onPick: unref(onPick),
             onSelectRange: setSelectionRange,
-            onSetPickerOption,
-            onCalendarChange,
-            onPanelChange,
+            onSetPickerOption: unref(onSetPickerOption),
+            onCalendarChange: unref(onCalendarChange),
+            onPanelChange: unref(onPanelChange),
             onMousedown: withModifiers(() => {
             }, ["stop"])
           })
         ]),
         _: 3
-      }, 16, ["visible", "transition", "popper-class", "popper-options", "fallback-placements", "placement"]);
+      }, 16, ["visible", "transition", "popper-class", "popper-style", "popper-options", "fallback-placements", "placement"]);
     };
   }
 });
-var CommonPicker = /* @__PURE__ */ _export_sfc(_sfc_main57, [["__file", "picker.vue"]]);
+var CommonPicker = /* @__PURE__ */ _export_sfc(_sfc_main350, [["__file", "picker.vue"]]);
 
 // node_modules/element-plus/es/components/time-picker/src/time-picker-com/panel-time-pick.mjs
 var import_dayjs4 = __toESM(require_dayjs_min(), 1);
@@ -45769,7 +46129,7 @@ var vRepeatClick = {
 };
 
 // node_modules/element-plus/es/components/time-picker/src/time-picker-com/basic-time-spinner.mjs
-var _sfc_main58 = /* @__PURE__ */ defineComponent({
+var _sfc_main351 = /* @__PURE__ */ defineComponent({
   __name: "basic-time-spinner",
   props: basicTimeSpinnerProps,
   emits: [CHANGE_EVENT, "select-range", "set-option"],
@@ -45833,18 +46193,26 @@ var _sfc_main58 = /* @__PURE__ */ defineComponent({
     };
     const emitSelectRange = (type5) => {
       let range7 = [0, 0];
-      if (!format3 || format3 === DEFAULT_FORMATS_TIME) {
-        switch (type5) {
-          case "hours":
-            range7 = [0, 2];
-            break;
-          case "minutes":
-            range7 = [3, 5];
-            break;
-          case "seconds":
-            range7 = [6, 8];
-            break;
-        }
+      const actualFormat = format3 || DEFAULT_FORMATS_TIME;
+      const hourIndex = actualFormat.indexOf("HH");
+      const minuteIndex = actualFormat.indexOf("mm");
+      const secondIndex = actualFormat.indexOf("ss");
+      switch (type5) {
+        case "hours":
+          if (hourIndex !== -1) {
+            range7 = [hourIndex, hourIndex + 2];
+          }
+          break;
+        case "minutes":
+          if (minuteIndex !== -1) {
+            range7 = [minuteIndex, minuteIndex + 2];
+          }
+          break;
+        case "seconds":
+          if (secondIndex !== -1) {
+            range7 = [secondIndex, secondIndex + 2];
+          }
+          break;
       }
       const [left2, right2] = range7;
       emit2("select-range", left2, right2);
@@ -46064,10 +46432,10 @@ var _sfc_main58 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TimeSpinner = /* @__PURE__ */ _export_sfc(_sfc_main58, [["__file", "basic-time-spinner.vue"]]);
+var TimeSpinner = /* @__PURE__ */ _export_sfc(_sfc_main351, [["__file", "basic-time-spinner.vue"]]);
 
 // node_modules/element-plus/es/components/time-picker/src/time-picker-com/panel-time-pick.mjs
-var _sfc_main59 = /* @__PURE__ */ defineComponent({
+var _sfc_main352 = /* @__PURE__ */ defineComponent({
   __name: "panel-time-pick",
   props: panelTimePickerProps,
   emits: ["pick", "select-range", "set-picker-option"],
@@ -46124,8 +46492,24 @@ var _sfc_main59 = /* @__PURE__ */ defineComponent({
       selectionRange.value = [start2, end];
     };
     const changeSelectionRange = (step2) => {
-      const list = [0, 3].concat(showSeconds.value ? [6] : []);
-      const mapping = ["hours", "minutes"].concat(showSeconds.value ? ["seconds"] : []);
+      const actualFormat = props2.format;
+      const hourIndex = actualFormat.indexOf("HH");
+      const minuteIndex = actualFormat.indexOf("mm");
+      const secondIndex = actualFormat.indexOf("ss");
+      const list = [];
+      const mapping = [];
+      if (hourIndex !== -1) {
+        list.push(hourIndex);
+        mapping.push("hours");
+      }
+      if (minuteIndex !== -1) {
+        list.push(minuteIndex);
+        mapping.push("minutes");
+      }
+      if (secondIndex !== -1 && showSeconds.value) {
+        list.push(secondIndex);
+        mapping.push("seconds");
+      }
       const index3 = list.indexOf(selectionRange.value[0]);
       const next = (index3 + step2 + list.length) % list.length;
       timePickerOptions["start_emitSelectRange"](mapping[next]);
@@ -46219,7 +46603,7 @@ var _sfc_main59 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TimePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main59, [["__file", "panel-time-pick.vue"]]);
+var TimePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main352, [["__file", "panel-time-pick.vue"]]);
 
 // node_modules/element-plus/es/components/time-picker/src/time-picker-com/panel-time-range.mjs
 var import_dayjs5 = __toESM(require_dayjs_min(), 1);
@@ -46233,7 +46617,7 @@ var panelTimeRangeProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/time-picker/src/time-picker-com/panel-time-range.mjs
-var _sfc_main60 = /* @__PURE__ */ defineComponent({
+var _sfc_main353 = /* @__PURE__ */ defineComponent({
   __name: "panel-time-range",
   props: panelTimeRangeProps,
   emits: ["pick", "select-range", "set-picker-option"],
@@ -46504,7 +46888,7 @@ var _sfc_main60 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TimeRangePanel = /* @__PURE__ */ _export_sfc(_sfc_main60, [["__file", "panel-time-range.vue"]]);
+var TimeRangePanel = /* @__PURE__ */ _export_sfc(_sfc_main353, [["__file", "panel-time-range.vue"]]);
 
 // node_modules/element-plus/es/components/time-picker/src/time-picker.mjs
 import_dayjs6.default.extend(import_customParseFormat.default);
@@ -46513,10 +46897,7 @@ var TimePicker = defineComponent({
   install: null,
   props: {
     ...timePickerDefaultProps,
-    isRange: {
-      type: Boolean,
-      default: false
-    }
+    isRange: Boolean
   },
   emits: [UPDATE_MODEL_EVENT],
   setup(props2, ctx) {
@@ -46560,23 +46941,76 @@ var TimePicker = defineComponent({
 // node_modules/element-plus/es/components/time-picker/index.mjs
 var ElTimePicker = withInstall(TimePicker);
 
-// node_modules/element-plus/es/components/date-picker/src/constants.mjs
-var ROOT_PICKER_INJECTION_KEY = Symbol();
-var ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY = "ElIsDefaultFormat";
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-panel.mjs
+var import_dayjs17 = __toESM(require_dayjs_min(), 1);
+var import_customParseFormat2 = __toESM(require_customParseFormat(), 1);
+var import_advancedFormat = __toESM(require_advancedFormat(), 1);
+var import_localeData2 = __toESM(require_localeData(), 1);
+var import_weekOfYear = __toESM(require_weekOfYear(), 1);
+var import_weekYear = __toESM(require_weekYear(), 1);
+var import_dayOfYear = __toESM(require_dayOfYear(), 1);
+var import_isSameOrAfter = __toESM(require_isSameOrAfter(), 1);
+var import_isSameOrBefore = __toESM(require_isSameOrBefore(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/props/date-picker.mjs
-var datePickerProps = buildProps({
-  ...timePickerDefaultProps,
+// node_modules/element-plus/es/components/date-picker-panel/src/props/date-picker-panel.mjs
+var datePickerPanelProps = buildProps({
+  valueFormat: String,
+  dateFormat: String,
+  timeFormat: String,
+  disabled: Boolean,
+  modelValue: {
+    type: definePropType([Date, Array, String, Number]),
+    default: ""
+  },
+  defaultValue: {
+    type: definePropType([Date, Array])
+  },
+  defaultTime: {
+    type: definePropType([Date, Array])
+  },
+  isRange: Boolean,
+  ...disabledTimeListsProps,
+  disabledDate: {
+    type: Function
+  },
+  cellClassName: {
+    type: Function
+  },
+  shortcuts: {
+    type: Array,
+    default: () => []
+  },
+  arrowControl: Boolean,
+  unlinkPanels: Boolean,
+  showNow: {
+    type: Boolean,
+    default: true
+  },
+  showConfirm: Boolean,
+  showFooter: Boolean,
+  showWeekNumber: Boolean,
   type: {
     type: definePropType(String),
     default: "date"
+  },
+  clearable: {
+    type: Boolean,
+    default: true
+  },
+  border: {
+    type: Boolean,
+    default: true
   }
 });
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-date-pick.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/constants.mjs
+var ROOT_PICKER_INJECTION_KEY = Symbol("rootPickerContextKey");
+var ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY = "ElIsDefaultFormat";
+
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-date-pick.mjs
 var import_dayjs11 = __toESM(require_dayjs_min(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/props/shared.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/shared.mjs
 var selectionModes = [
   "date",
   "dates",
@@ -46588,6 +47022,9 @@ var selectionModes = [
   "range"
 ];
 var datePickerSharedProps = buildProps({
+  cellClassName: {
+    type: definePropType(Function)
+  },
   disabledDate: {
     type: definePropType(Function)
   },
@@ -46610,7 +47047,8 @@ var datePickerSharedProps = buildProps({
       endDate: null,
       selecting: false
     })
-  }
+  },
+  disabled: Boolean
 });
 var panelSharedProps = buildProps({
   type: {
@@ -46623,11 +47061,29 @@ var panelSharedProps = buildProps({
   showNow: {
     type: Boolean,
     default: true
-  }
+  },
+  showConfirm: Boolean,
+  showFooter: {
+    type: Boolean,
+    default: true
+  },
+  showWeekNumber: Boolean,
+  border: Boolean,
+  disabled: Boolean
 });
 var panelRangeSharedProps = buildProps({
   unlinkPanels: Boolean,
-  visible: Boolean,
+  visible: {
+    type: Boolean,
+    default: true
+  },
+  showConfirm: Boolean,
+  showFooter: {
+    type: Boolean,
+    default: true
+  },
+  border: Boolean,
+  disabled: Boolean,
   parsedValue: {
     type: definePropType(Array)
   }
@@ -46640,14 +47096,15 @@ var selectionModeWithDefault = (mode2) => {
   };
 };
 
-// node_modules/element-plus/es/components/date-picker/src/props/panel-date-pick.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/panel-date-pick.mjs
 var panelDatePickProps = buildProps({
   ...panelSharedProps,
   parsedValue: {
     type: definePropType([Object, Array])
   },
   visible: {
-    type: Boolean
+    type: Boolean,
+    default: true
   },
   format: {
     type: String,
@@ -46655,7 +47112,7 @@ var panelDatePickProps = buildProps({
   }
 });
 
-// node_modules/element-plus/es/components/date-picker/src/utils.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/utils.mjs
 var import_dayjs7 = __toESM(require_dayjs_min(), 1);
 var isValidRange2 = (range7) => {
   if (!isArray(range7))
@@ -46763,7 +47220,7 @@ var correctlyParseUserInput = (value, format3, lang, defaultFormat) => {
     return value.map((v3) => correctlyParseUserInput(v3, format3, lang, defaultFormat));
   }
   if (isString(value)) {
-    const dayjsValue = defaultFormat.value ? (0, import_dayjs7.default)(value) : (0, import_dayjs7.default)(value, format3);
+    const dayjsValue = (defaultFormat == null ? void 0 : defaultFormat.value) ? (0, import_dayjs7.default)(value) : (0, import_dayjs7.default)(value, format3);
     if (!dayjsValue.isValid()) {
       return dayjsValue;
     }
@@ -46771,18 +47228,15 @@ var correctlyParseUserInput = (value, format3, lang, defaultFormat) => {
   return (0, import_dayjs7.default)(value, format3).locale(lang);
 };
 
-// node_modules/element-plus/es/components/date-picker/src/props/basic-date-table.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/basic-date-table.mjs
 var basicDateTableProps = buildProps({
   ...datePickerSharedProps,
-  cellClassName: {
-    type: definePropType(Function)
-  },
   showWeekNumber: Boolean,
   selectionMode: selectionModeWithDefault("date")
 });
 var basicDateTableEmits = ["changerange", "pick", "select"];
 
-// node_modules/element-plus/es/components/date-picker/src/composables/use-basic-date-table.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/composables/use-basic-date-table.mjs
 var import_dayjs8 = __toESM(require_dayjs_min(), 1);
 var isNormalDay = (type5 = "") => {
   return ["normal", "today"].includes(type5);
@@ -46877,16 +47331,6 @@ var useBasicDateTable = (props2, emit2) => {
     const rows_ = unref(tableRows);
     const dateUnit = "day";
     let count3 = 1;
-    if (showWeekNumber) {
-      for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
-        if (!rows_[rowIndex][0]) {
-          rows_[rowIndex][0] = {
-            type: "week",
-            text: unref(startDate).add(rowIndex * 7 + 1, dateUnit).week()
-          };
-        }
-      }
-    }
     buildPickerTable({ row: 6, column: 7 }, rows_, {
       startDate: minDate,
       columnIndexOffset: showWeekNumber ? 1 : 0,
@@ -46901,6 +47345,16 @@ var useBasicDateTable = (props2, emit2) => {
       },
       setRowMetadata
     });
+    if (showWeekNumber) {
+      for (let rowIndex = 0; rowIndex < 6; rowIndex++) {
+        if (rows_[rowIndex][1].dayjs) {
+          rows_[rowIndex][0] = {
+            type: "week",
+            text: rows_[rowIndex][1].dayjs.week()
+          };
+        }
+      }
+    }
     return rows_;
   });
   watch2(() => props2.date, async () => {
@@ -46952,9 +47406,6 @@ var useBasicDateTable = (props2, emit2) => {
       });
     }
   };
-  const isSelectedCell = (cell) => {
-    return !unref(hasCurrent) && (cell == null ? void 0 : cell.text) === 1 && cell.type === "normal" || cell.isCurrent;
-  };
   const handleFocus = (event) => {
     if (focusWithClick || unref(hasCurrent) || props2.selectionMode !== "date")
       return;
@@ -47000,6 +47451,8 @@ var useBasicDateTable = (props2, emit2) => {
     emit2("pick", newValue);
   };
   const handlePickDate = (event, isKeyboardMovement = false) => {
+    if (props2.disabled)
+      return;
     const target2 = event.target.closest("td");
     if (!target2)
       return;
@@ -47054,7 +47507,6 @@ var useBasicDateTable = (props2, emit2) => {
     focus,
     isCurrent,
     isWeekActive,
-    isSelectedCell,
     handlePickDate,
     handleMouseUp,
     handleMouseDown,
@@ -47070,10 +47522,9 @@ var useBasicDateTableDOM = (props2, {
   const { t } = useLocale();
   const tableKls = computed2(() => [
     ns.b(),
-    { "is-week-mode": props2.selectionMode === "week" }
+    { "is-week-mode": props2.selectionMode === "week" && !props2.disabled }
   ]);
   const tableLabel = computed2(() => t("el.datepicker.dateTablePrompt"));
-  const weekLabel = computed2(() => t("el.datepicker.week"));
   const getCellClasses = (cell) => {
     const classes = [];
     if (isNormalDay(cell.type) && !cell.disabled) {
@@ -47096,7 +47547,7 @@ var useBasicDateTableDOM = (props2, {
         classes.push("end-date");
       }
     }
-    if (cell.disabled) {
+    if (cell.disabled || props2.disabled) {
       classes.push("disabled");
     }
     if (cell.selected) {
@@ -47114,21 +47565,21 @@ var useBasicDateTableDOM = (props2, {
   return {
     tableKls,
     tableLabel,
-    weekLabel,
+    weekHeaderClass: ns.e("week-header"),
     getCellClasses,
     getRowKls,
     t
   };
 };
 
-// node_modules/element-plus/es/components/date-picker/src/props/basic-cell.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/basic-cell.mjs
 var basicCellProps = buildProps({
   cell: {
     type: definePropType(Object)
   }
 });
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/basic-cell-render.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/basic-cell-render.mjs
 var ElDatePickerCell = defineComponent({
   name: "ElDatePickerCell",
   props: basicCellProps,
@@ -47155,8 +47606,8 @@ var ElDatePickerCell = defineComponent({
   }
 });
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/basic-date-table.mjs
-var _sfc_main61 = /* @__PURE__ */ defineComponent({
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/basic-date-table.mjs
+var _sfc_main354 = /* @__PURE__ */ defineComponent({
   __name: "basic-date-table",
   props: basicDateTableProps,
   emits: basicDateTableEmits,
@@ -47170,14 +47621,13 @@ var _sfc_main61 = /* @__PURE__ */ defineComponent({
       focus,
       isCurrent,
       isWeekActive,
-      isSelectedCell,
       handlePickDate,
       handleMouseUp,
       handleMouseDown,
       handleMouseMove,
       handleFocus
     } = useBasicDateTable(props2, emit2);
-    const { tableLabel, tableKls, weekLabel, getCellClasses, getRowKls, t } = useBasicDateTableDOM(props2, {
+    const { tableLabel, tableKls, getCellClasses, getRowKls, weekHeaderClass, t } = useBasicDateTableDOM(props2, {
       isCurrent,
       isWeekActive
     });
@@ -47197,7 +47647,7 @@ var _sfc_main61 = /* @__PURE__ */ defineComponent({
         role: "grid",
         onClick: unref(handlePickDate),
         onMousemove: unref(handleMouseMove),
-        onMousedown: withModifiers(unref(handleMouseDown), ["prevent"]),
+        onMousedown: unref(handleMouseDown),
         onMouseup: unref(handleMouseUp)
       }, [
         createBaseVNode("tbody", {
@@ -47207,8 +47657,9 @@ var _sfc_main61 = /* @__PURE__ */ defineComponent({
           createBaseVNode("tr", null, [
             _ctx.showWeekNumber ? (openBlock(), createElementBlock("th", {
               key: 0,
-              scope: "col"
-            }, toDisplayString(unref(weekLabel)), 1)) : createCommentVNode("v-if", true),
+              scope: "col",
+              class: normalizeClass(unref(weekHeaderClass))
+            }, null, 2)) : createCommentVNode("v-if", true),
             (openBlock(true), createElementBlock(Fragment, null, renderList(unref(WEEKS), (week, key) => {
               return openBlock(), createElementBlock("th", {
                 key,
@@ -47226,11 +47677,11 @@ var _sfc_main61 = /* @__PURE__ */ defineComponent({
                 return openBlock(), createElementBlock("td", {
                   key: `${rowKey2}.${columnKey}`,
                   ref_for: true,
-                  ref: (el) => !unref(isUnmounting) && unref(isSelectedCell)(cell) && (currentCellRef.value = el),
+                  ref: (el) => !unref(isUnmounting) && cell.isSelected && (currentCellRef.value = el),
                   class: normalizeClass(unref(getCellClasses)(cell)),
                   "aria-current": cell.isCurrent ? "date" : void 0,
                   "aria-selected": cell.isCurrent,
-                  tabindex: unref(isSelectedCell)(cell) ? 0 : -1,
+                  tabindex: cell.isSelected ? 0 : -1,
                   onFocus: unref(handleFocus)
                 }, [
                   createVNode(unref(ElDatePickerCell), { cell }, null, 8, ["cell"])
@@ -47243,19 +47694,19 @@ var _sfc_main61 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var DateTable2 = /* @__PURE__ */ _export_sfc(_sfc_main61, [["__file", "basic-date-table.vue"]]);
+var DateTable2 = /* @__PURE__ */ _export_sfc(_sfc_main354, [["__file", "basic-date-table.vue"]]);
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/basic-month-table.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/basic-month-table.mjs
 var import_dayjs9 = __toESM(require_dayjs_min(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/props/basic-month-table.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/basic-month-table.mjs
 var basicMonthTableProps = buildProps({
   ...datePickerSharedProps,
   selectionMode: selectionModeWithDefault("month")
 });
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/basic-month-table.mjs
-var _sfc_main62 = /* @__PURE__ */ defineComponent({
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/basic-month-table.mjs
+var _sfc_main355 = /* @__PURE__ */ defineComponent({
   __name: "basic-month-table",
   props: basicMonthTableProps,
   emits: ["changerange", "pick", "select"],
@@ -47266,15 +47717,11 @@ var _sfc_main62 = /* @__PURE__ */ defineComponent({
     const tbodyRef = ref();
     const currentCellRef = ref();
     const months = ref(props2.date.locale("en").localeData().monthsShort().map((_2) => _2.toLowerCase()));
-    const tableRows = ref([
-      [],
-      [],
-      []
-    ]);
+    const tableRows = ref([[], [], []]);
     const lastRow = ref();
     const lastColumn = ref();
     const rows = computed2(() => {
-      var _a26, _b25;
+      var _a26, _b25, _c;
       const rows2 = tableRows.value;
       const now3 = (0, import_dayjs9.default)().locale(lang.value).startOf("month");
       for (let i = 0; i < 3; i++) {
@@ -47288,7 +47735,15 @@ var _sfc_main62 = /* @__PURE__ */ defineComponent({
             start: false,
             end: false,
             text: -1,
-            disabled: false
+            disabled: false,
+            isSelected: false,
+            customClass: void 0,
+            date: void 0,
+            dayjs: void 0,
+            isCurrent: void 0,
+            selected: void 0,
+            renderText: void 0,
+            timestamp: void 0
           });
           cell.type = "normal";
           const index3 = i * 4 + j;
@@ -47306,8 +47761,14 @@ var _sfc_main62 = /* @__PURE__ */ defineComponent({
           if (isToday) {
             cell.type = "today";
           }
+          const cellDate = calTime.toDate();
           cell.text = index3;
-          cell.disabled = ((_b25 = props2.disabledDate) == null ? void 0 : _b25.call(props2, calTime.toDate())) || false;
+          cell.disabled = ((_b25 = props2.disabledDate) == null ? void 0 : _b25.call(props2, cellDate)) || false;
+          cell.date = cellDate;
+          cell.customClass = (_c = props2.cellClassName) == null ? void 0 : _c.call(props2, cellDate);
+          cell.dayjs = calTime;
+          cell.timestamp = calTime.valueOf();
+          cell.isSelected = isSelectedCell(cell);
         }
       }
       return rows2;
@@ -47321,9 +47782,12 @@ var _sfc_main62 = /* @__PURE__ */ defineComponent({
       const year = props2.date.year();
       const today = /* @__PURE__ */ new Date();
       const month = cell.text;
-      style.disabled = props2.disabledDate ? datesInMonth(props2.date, year, month, lang.value).every(props2.disabledDate) : false;
+      style.disabled = props2.disabled || (props2.disabledDate ? datesInMonth(props2.date, year, month, lang.value).every(props2.disabledDate) : false);
       style.current = castArray2(props2.parsedValue).findIndex((date5) => import_dayjs9.default.isDayjs(date5) && date5.year() === year && date5.month() === month) >= 0;
       style.today = today.getFullYear() === year && today.getMonth() === month;
+      if (cell.customClass) {
+        style[cell.customClass] = true;
+      }
       if (cell.inRange) {
         style["in-range"] = true;
         if (cell.start) {
@@ -47368,6 +47832,8 @@ var _sfc_main62 = /* @__PURE__ */ defineComponent({
     };
     const handleMonthTableClick = (event) => {
       var _a26;
+      if (props2.disabled)
+        return;
       const target2 = (_a26 = event.target) == null ? void 0 : _a26.closest("td");
       if ((target2 == null ? void 0 : target2.tagName) !== "TD")
         return;
@@ -47429,11 +47895,11 @@ var _sfc_main62 = /* @__PURE__ */ defineComponent({
                 return openBlock(), createElementBlock("td", {
                   key: key_,
                   ref_for: true,
-                  ref: (el) => isSelectedCell(cell) && (currentCellRef.value = el),
+                  ref: (el) => cell.isSelected && (currentCellRef.value = el),
                   class: normalizeClass(getCellStyle(cell)),
-                  "aria-selected": `${isSelectedCell(cell)}`,
+                  "aria-selected": !!cell.isSelected,
                   "aria-label": unref(t)(`el.datepicker.month${+cell.text + 1}`),
-                  tabindex: isSelectedCell(cell) ? 0 : -1,
+                  tabindex: cell.isSelected ? 0 : -1,
                   onKeydown: [
                     withKeys(withModifiers(handleMonthTableClick, ["prevent", "stop"]), ["space"]),
                     withKeys(withModifiers(handleMonthTableClick, ["prevent", "stop"]), ["enter"])
@@ -47454,19 +47920,19 @@ var _sfc_main62 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var MonthTable = /* @__PURE__ */ _export_sfc(_sfc_main62, [["__file", "basic-month-table.vue"]]);
+var MonthTable = /* @__PURE__ */ _export_sfc(_sfc_main355, [["__file", "basic-month-table.vue"]]);
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/basic-year-table.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/basic-year-table.mjs
 var import_dayjs10 = __toESM(require_dayjs_min(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/props/basic-year-table.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/basic-year-table.mjs
 var basicYearTableProps = buildProps({
   ...datePickerSharedProps,
   selectionMode: selectionModeWithDefault("year")
 });
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/basic-year-table.mjs
-var _sfc_main63 = /* @__PURE__ */ defineComponent({
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/basic-year-table.mjs
+var _sfc_main356 = /* @__PURE__ */ defineComponent({
   __name: "basic-year-table",
   props: basicYearTableProps,
   emits: ["changerange", "pick", "select"],
@@ -47489,7 +47955,7 @@ var _sfc_main63 = /* @__PURE__ */ defineComponent({
     const lastRow = ref();
     const lastColumn = ref();
     const rows = computed2(() => {
-      var _a26;
+      var _a26, _b25, _c;
       const rows2 = tableRows.value;
       const now3 = (0, import_dayjs10.default)().locale(lang.value).startOf("year");
       for (let i = 0; i < 3; i++) {
@@ -47508,7 +47974,15 @@ var _sfc_main63 = /* @__PURE__ */ defineComponent({
               start: false,
               end: false,
               text: -1,
-              disabled: false
+              disabled: false,
+              isSelected: false,
+              customClass: void 0,
+              date: void 0,
+              dayjs: void 0,
+              isCurrent: void 0,
+              selected: void 0,
+              renderText: void 0,
+              timestamp: void 0
             };
           }
           cell.type = "normal";
@@ -47529,7 +48003,12 @@ var _sfc_main63 = /* @__PURE__ */ defineComponent({
           }
           cell.text = index3;
           const cellDate = calTime.toDate();
-          cell.disabled = props2.disabledDate && props2.disabledDate(cellDate) || false;
+          cell.disabled = ((_b25 = props2.disabledDate) == null ? void 0 : _b25.call(props2, cellDate)) || false;
+          cell.date = cellDate;
+          cell.customClass = (_c = props2.cellClassName) == null ? void 0 : _c.call(props2, cellDate);
+          cell.dayjs = calTime;
+          cell.timestamp = calTime.valueOf();
+          cell.isSelected = isSelectedCell(cell);
           row[j] = cell;
         }
       }
@@ -47543,9 +48022,12 @@ var _sfc_main63 = /* @__PURE__ */ defineComponent({
       const kls = {};
       const today = (0, import_dayjs10.default)().locale(lang.value);
       const year = cell.text;
-      kls.disabled = props2.disabledDate ? datesInYear(year, lang.value).every(props2.disabledDate) : false;
+      kls.disabled = props2.disabled || (props2.disabledDate ? datesInYear(year, lang.value).every(props2.disabledDate) : false);
       kls.today = today.year() === year;
       kls.current = castArray2(props2.parsedValue).findIndex((d2) => d2.year() === year) >= 0;
+      if (cell.customClass) {
+        kls[cell.customClass] = true;
+      }
       if (cell.inRange) {
         kls["in-range"] = true;
         if (cell.start) {
@@ -47563,6 +48045,8 @@ var _sfc_main63 = /* @__PURE__ */ defineComponent({
     };
     const handleYearTableClick = (event) => {
       var _a26;
+      if (props2.disabled)
+        return;
       const target2 = (_a26 = event.target) == null ? void 0 : _a26.closest("td");
       if (!target2 || !target2.textContent || hasClass(target2, "disabled"))
         return;
@@ -47642,11 +48126,11 @@ var _sfc_main63 = /* @__PURE__ */ defineComponent({
                 return openBlock(), createElementBlock("td", {
                   key: `${rowKey2}_${cellKey}`,
                   ref_for: true,
-                  ref: (el) => isSelectedCell(cell) && (currentCellRef.value = el),
+                  ref: (el) => cell.isSelected && (currentCellRef.value = el),
                   class: normalizeClass(["available", getCellKls(cell)]),
-                  "aria-selected": isSelectedCell(cell),
+                  "aria-selected": cell.isSelected,
                   "aria-label": String(cell.text),
-                  tabindex: isSelectedCell(cell) ? 0 : -1,
+                  tabindex: cell.isSelected ? 0 : -1,
                   onKeydown: [
                     withKeys(withModifiers(handleYearTableClick, ["prevent", "stop"]), ["space"]),
                     withKeys(withModifiers(handleYearTableClick, ["prevent", "stop"]), ["enter"])
@@ -47662,10 +48146,10 @@ var _sfc_main63 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var YearTable = /* @__PURE__ */ _export_sfc(_sfc_main63, [["__file", "basic-year-table.vue"]]);
+var YearTable = /* @__PURE__ */ _export_sfc(_sfc_main356, [["__file", "basic-year-table.vue"]]);
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-date-pick.mjs
-var _sfc_main64 = /* @__PURE__ */ defineComponent({
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-date-pick.mjs
+var _sfc_main357 = /* @__PURE__ */ defineComponent({
   __name: "panel-date-pick",
   props: panelDatePickProps,
   emits: ["pick", "set-picker-option", "panel-change"],
@@ -47678,8 +48162,7 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
     const slots = useSlots();
     const { t, lang } = useLocale();
     const pickerBase = inject(PICKER_BASE_INJECTION_KEY);
-    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY);
-    const popper = inject(TOOLTIP_INJECTION_KEY);
+    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY, void 0);
     const { shortcuts, disabledDate, cellClassName, defaultTime } = pickerBase.props;
     const defaultValue = toRef(pickerBase.props, "defaultValue");
     const currentViewRef = ref();
@@ -47732,10 +48215,6 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
         }
         innerDate.value = newDate2;
         emit2(newDate2, showTime.value || keepOpen);
-        if (props2.type === "datetime") {
-          await nextTick();
-          handleFocusPicker();
-        }
       } else if (selectionMode.value === "week") {
         emit2(value.date);
       } else if (selectionMode.value === "dates") {
@@ -47830,6 +48309,8 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
       handlePanelChange("year");
     };
     const showPicker = async (view) => {
+      if (props2.disabled)
+        return;
       currentView.value = view;
       await nextTick();
       handleFocusPicker();
@@ -47844,6 +48325,7 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
       const isMonthView = currentView.value === "month";
       return showDateFooter && isDateView || showYearFooter && isYearView || showMonthFooter && isMonthView;
     });
+    const footerFilled = computed2(() => !isMultipleType.value && props2.showNow || props2.showConfirm);
     const disabledConfirm = computed2(() => {
       if (!disabledDate)
         return false;
@@ -47883,10 +48365,10 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
       }
     };
     const timeFormat2 = computed2(() => {
-      return props2.timeFormat || extractTimeFormat(props2.format);
+      return props2.timeFormat || extractTimeFormat(props2.format) || DEFAULT_FORMATS_TIME;
     });
     const dateFormat = computed2(() => {
-      return props2.dateFormat || extractDateFormat(props2.format);
+      return props2.dateFormat || extractDateFormat(props2.format) || DEFAULT_FORMATS_DATE;
     });
     const visibleTime = computed2(() => {
       if (userInputTime.value)
@@ -48069,9 +48551,6 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
       }
       currentView.value = "date";
     }, { immediate: true });
-    watch2(() => currentView.value, () => {
-      popper == null ? void 0 : popper.updatePopper();
-    });
     watch2(() => defaultValue.value, (val) => {
       if (val) {
         innerDate.value = getDefaultValue2();
@@ -48097,6 +48576,8 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
         class: normalizeClass([
           unref(ppNs).b(),
           unref(dpNs).b(),
+          unref(ppNs).is("border", _ctx.border),
+          unref(ppNs).is("disabled", _ctx.disabled),
           {
             "has-sidebar": _ctx.$slots.sidebar || unref(hasShortcuts),
             "has-time": unref(showTime)
@@ -48117,9 +48598,10 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
               return openBlock(), createElementBlock("button", {
                 key,
                 type: "button",
+                disabled: _ctx.disabled,
                 class: normalizeClass(unref(ppNs).e("shortcut")),
                 onClick: ($event) => handleShortcutClick(shortcut)
-              }, toDisplayString(shortcut.text), 11, ["onClick"]);
+              }, toDisplayString(shortcut.text), 11, ["disabled", "onClick"]);
             }), 128))
           ], 2)) : createCommentVNode("v-if", true),
           createBaseVNode("div", {
@@ -48137,9 +48619,10 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                   "model-value": unref(visibleDate),
                   size: "small",
                   "validate-event": false,
+                  disabled: _ctx.disabled,
                   onInput: (val) => userInputDate.value = val,
                   onChange: handleVisibleDateChange
-                }, null, 8, ["placeholder", "model-value", "onInput"])
+                }, null, 8, ["placeholder", "model-value", "disabled", "onInput"])
               ], 2),
               withDirectives((openBlock(), createElementBlock("span", {
                 class: normalizeClass(unref(dpNs).e("editor-wrap"))
@@ -48149,10 +48632,11 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                   "model-value": unref(visibleTime),
                   size: "small",
                   "validate-event": false,
+                  disabled: _ctx.disabled,
                   onFocus: onTimePickerInputFocus,
                   onInput: (val) => userInputTime.value = val,
                   onChange: handleVisibleTimeChange
-                }, null, 8, ["placeholder", "model-value", "onInput"]),
+                }, null, 8, ["placeholder", "model-value", "disabled", "onInput"]),
                 createVNode(unref(TimePickPanel), {
                   visible: timePickerVisible.value,
                   format: unref(timeFormat2),
@@ -48176,6 +48660,7 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                   type: "button",
                   "aria-label": unref(t)(`el.datepicker.prevYear`),
                   class: normalizeClass(["d-arrow-left", unref(ppNs).e("icon-btn")]),
+                  disabled: _ctx.disabled,
                   onClick: ($event) => moveByYear(false)
                 }, [
                   renderSlot(_ctx.$slots, "prev-year", {}, () => [
@@ -48186,11 +48671,12 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label", "onClick"]),
+                ], 10, ["aria-label", "disabled", "onClick"]),
                 withDirectives(createBaseVNode("button", {
                   type: "button",
                   "aria-label": unref(t)(`el.datepicker.prevMonth`),
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "arrow-left"]),
+                  disabled: _ctx.disabled,
                   onClick: ($event) => moveByMonth(false)
                 }, [
                   renderSlot(_ctx.$slots, "prev-month", {}, () => [
@@ -48201,7 +48687,7 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label", "onClick"]), [
+                ], 10, ["aria-label", "disabled", "onClick"]), [
                   [vShow, currentView.value === "date"]
                 ])
               ], 2),
@@ -48233,6 +48719,7 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                   type: "button",
                   "aria-label": unref(t)(`el.datepicker.nextMonth`),
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "arrow-right"]),
+                  disabled: _ctx.disabled,
                   onClick: ($event) => moveByMonth(true)
                 }, [
                   renderSlot(_ctx.$slots, "next-month", {}, () => [
@@ -48243,13 +48730,14 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label", "onClick"]), [
+                ], 10, ["aria-label", "disabled", "onClick"]), [
                   [vShow, currentView.value === "date"]
                 ]),
                 createBaseVNode("button", {
                   type: "button",
                   "aria-label": unref(t)(`el.datepicker.nextYear`),
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "d-arrow-right"]),
+                  disabled: _ctx.disabled,
                   onClick: ($event) => moveByYear(true)
                 }, [
                   renderSlot(_ctx.$slots, "next-year", {}, () => [
@@ -48260,7 +48748,7 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label", "onClick"])
+                ], 10, ["aria-label", "disabled", "onClick"])
               ], 2)
             ], 2), [
               [vShow, currentView.value !== "time"]
@@ -48277,9 +48765,11 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                 date: innerDate.value,
                 "parsed-value": _ctx.parsedValue,
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
                 "cell-class-name": unref(cellClassName),
+                "show-week-number": _ctx.showWeekNumber,
                 onPick: handleDatePick
-              }, null, 8, ["selection-mode", "date", "parsed-value", "disabled-date", "cell-class-name"])) : createCommentVNode("v-if", true),
+              }, null, 8, ["selection-mode", "date", "parsed-value", "disabled-date", "disabled", "cell-class-name", "show-week-number"])) : createCommentVNode("v-if", true),
               currentView.value === "year" ? (openBlock(), createBlock(YearTable, {
                 key: 1,
                 ref_key: "currentViewRef",
@@ -48287,9 +48777,11 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                 "selection-mode": unref(selectionMode),
                 date: innerDate.value,
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
                 "parsed-value": _ctx.parsedValue,
+                "cell-class-name": unref(cellClassName),
                 onPick: handleYearPick
-              }, null, 8, ["selection-mode", "date", "disabled-date", "parsed-value"])) : createCommentVNode("v-if", true),
+              }, null, 8, ["selection-mode", "date", "disabled-date", "disabled", "parsed-value", "cell-class-name"])) : createCommentVNode("v-if", true),
               currentView.value === "month" ? (openBlock(), createBlock(MonthTable, {
                 key: 2,
                 ref_key: "currentViewRef",
@@ -48298,12 +48790,15 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
                 date: innerDate.value,
                 "parsed-value": _ctx.parsedValue,
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
+                "cell-class-name": unref(cellClassName),
                 onPick: handleMonthPick
-              }, null, 8, ["selection-mode", "date", "parsed-value", "disabled-date"])) : createCommentVNode("v-if", true)
+              }, null, 8, ["selection-mode", "date", "parsed-value", "disabled-date", "disabled", "cell-class-name"])) : createCommentVNode("v-if", true)
             ], 34)
           ], 2)
         ], 2),
-        withDirectives(createBaseVNode("div", {
+        _ctx.showFooter && unref(footerVisible) && unref(footerFilled) ? (openBlock(), createElementBlock("div", {
+          key: 0,
           class: normalizeClass(unref(ppNs).e("footer"))
         }, [
           withDirectives(createVNode(unref(ElButton), {
@@ -48320,7 +48815,8 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
           }, 8, ["class", "disabled"]), [
             [vShow, !unref(isMultipleType) && _ctx.showNow]
           ]),
-          createVNode(unref(ElButton), {
+          _ctx.showConfirm ? (openBlock(), createBlock(unref(ElButton), {
+            key: 0,
             plain: "",
             size: "small",
             class: normalizeClass(unref(ppNs).e("link-btn")),
@@ -48331,29 +48827,27 @@ var _sfc_main64 = /* @__PURE__ */ defineComponent({
               createTextVNode(toDisplayString(unref(t)("el.datepicker.confirm")), 1)
             ]),
             _: 1
-          }, 8, ["class", "disabled"])
-        ], 2), [
-          [vShow, unref(footerVisible)]
-        ])
+          }, 8, ["class", "disabled"])) : createCommentVNode("v-if", true)
+        ], 2)) : createCommentVNode("v-if", true)
       ], 2);
     };
   }
 });
-var DatePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main64, [["__file", "panel-date-pick.vue"]]);
+var DatePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main357, [["__file", "panel-date-pick.vue"]]);
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-date-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-date-range.mjs
 var import_dayjs14 = __toESM(require_dayjs_min(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/props/panel-date-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/panel-date-range.mjs
 var panelDateRangeProps = buildProps({
   ...panelSharedProps,
   ...panelRangeSharedProps
 });
 
-// node_modules/element-plus/es/components/date-picker/src/composables/use-range-picker.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/composables/use-range-picker.mjs
 var import_dayjs13 = __toESM(require_dayjs_min(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/composables/use-shortcut.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/composables/use-shortcut.mjs
 var import_dayjs12 = __toESM(require_dayjs_min(), 1);
 var useShortcut = (lang) => {
   const { emit: emit2 } = getCurrentInstance();
@@ -48379,7 +48873,7 @@ var useShortcut = (lang) => {
   return handleShortcutClick;
 };
 
-// node_modules/element-plus/es/components/date-picker/src/composables/use-range-picker.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/composables/use-range-picker.mjs
 var useRangePicker = (props2, {
   defaultValue,
   defaultTime,
@@ -48463,7 +48957,18 @@ var useRangePicker = (props2, {
       restoreDefault();
     }
   }, { immediate: true });
-  watch2(() => props2.parsedValue, onReset, { immediate: true });
+  watch2(() => props2.parsedValue, (parsedValue) => {
+    if (!(parsedValue == null ? void 0 : parsedValue.length)) {
+      onReset(parsedValue);
+    }
+  }, {
+    immediate: true
+  });
+  watch2(() => props2.visible, () => {
+    if (props2.visible) {
+      onReset(props2.parsedValue);
+    }
+  }, { immediate: true });
   return {
     minDate,
     maxDate,
@@ -48480,7 +48985,7 @@ var useRangePicker = (props2, {
   };
 };
 
-// node_modules/element-plus/es/components/date-picker/src/composables/use-panel-date-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/composables/use-panel-date-range.mjs
 var usePanelDateRange = (props2, emit2, leftDate, rightDate) => {
   const leftCurrentView = ref("date");
   const leftCurrentViewRef = ref();
@@ -48513,6 +49018,8 @@ var usePanelDateRange = (props2, emit2, leftDate, rightDate) => {
     currentViewRef == null ? void 0 : currentViewRef.focus();
   }
   async function showPicker(pickerType, view) {
+    if (props2.disabled)
+      return;
     const currentView = pickerType === "left" ? leftCurrentView : rightCurrentView;
     const currentViewRef = pickerType === "left" ? leftCurrentViewRef : rightCurrentViewRef;
     currentView.value = view;
@@ -48520,6 +49027,8 @@ var usePanelDateRange = (props2, emit2, leftDate, rightDate) => {
     focusPicker(currentViewRef.value);
   }
   async function handlePick(mode2, pickerType, value) {
+    if (props2.disabled)
+      return;
     const isLeftPicker = pickerType === "left";
     const startDate = isLeftPicker ? leftDate : rightDate;
     const endDate = isLeftPicker ? rightDate : leftDate;
@@ -48569,9 +49078,9 @@ var usePanelDateRange = (props2, emit2, leftDate, rightDate) => {
   };
 };
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-date-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-date-range.mjs
 var unit = "month";
-var _sfc_main65 = /* @__PURE__ */ defineComponent({
+var _sfc_main358 = /* @__PURE__ */ defineComponent({
   __name: "panel-date-range",
   props: panelDateRangeProps,
   emits: [
@@ -48583,7 +49092,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
   setup(__props, { emit: emit2 }) {
     const props2 = __props;
     const pickerBase = inject(PICKER_BASE_INJECTION_KEY);
-    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY);
+    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY, void 0);
     const { disabledDate, cellClassName, defaultTime, clearable } = pickerBase.props;
     const format3 = toRef(pickerBase.props, "format");
     const shortcuts = toRef(pickerBase.props, "shortcuts");
@@ -48591,6 +49100,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
     const { lang } = useLocale();
     const leftDate = ref((0, import_dayjs14.default)().locale(lang.value));
     const rightDate = ref((0, import_dayjs14.default)().locale(lang.value).add(1, unit));
+    let shouldBeVisible = true;
     const {
       minDate,
       maxDate,
@@ -48675,10 +49185,10 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
       return "";
     });
     const timeFormat2 = computed2(() => {
-      return props2.timeFormat || extractTimeFormat(format3.value);
+      return props2.timeFormat || extractTimeFormat(format3.value || "") || DEFAULT_FORMATS_TIME;
     });
     const dateFormat = computed2(() => {
-      return props2.dateFormat || extractDateFormat(format3.value);
+      return props2.dateFormat || extractDateFormat(format3.value || "") || DEFAULT_FORMATS_DATE;
     });
     const isValidValue3 = (date5) => {
       return isValidRange2(date5) && (disabledDate ? !disabledDate(date5[0].toDate()) && !disabledDate(date5[1].toDate()) : true);
@@ -48763,10 +49273,17 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
       emit2("calendar-change", [min_.toDate(), max_ && max_.toDate()]);
       maxDate.value = maxDate_;
       minDate.value = minDate_;
-      if (!close2 || showTime.value)
-        return;
-      handleRangeConfirm();
+      if (!showTime.value && close2) {
+        close2 = !minDate_ || !maxDate_;
+      }
+      shouldBeVisible = close2;
     };
+    watch2([maxDate, minDate], ([max7, min6]) => {
+      if (max7 && min6) {
+        handleRangeConfirm(shouldBeVisible);
+        shouldBeVisible = true;
+      }
+    });
     const minTimePickerVisible = ref(false);
     const maxTimePickerVisible = ref(false);
     const handleMinTimeClose = () => {
@@ -48845,6 +49362,9 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
       if (!maxDate.value || maxDate.value.isBefore(minDate.value)) {
         maxDate.value = minDate.value;
         rightDate.value = value;
+        nextTick(() => {
+          onReset(props2.parsedValue);
+        });
       }
     };
     const handleMaxTimePick = (value, visible, first) => {
@@ -48876,7 +49396,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
       return isArray(value) ? value.map((_2) => _2.format(format3.value)) : value.format(format3.value);
     };
     const parseUserInput = (value) => {
-      return correctlyParseUserInput(value, format3.value, lang.value, isDefaultFormat);
+      return correctlyParseUserInput(value, format3.value || "", lang.value, isDefaultFormat);
     };
     function onParsedValueChanged(minDate2, maxDate2) {
       if (props2.unlinkPanels && maxDate2) {
@@ -48901,6 +49421,8 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
         class: normalizeClass([
           unref(ppNs).b(),
           unref(drpNs).b(),
+          unref(ppNs).is("border", _ctx.border),
+          unref(ppNs).is("disabled", _ctx.disabled),
           {
             "has-sidebar": _ctx.$slots.sidebar || unref(hasShortcuts),
             "has-time": unref(showTime)
@@ -48921,9 +49443,10 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
               return openBlock(), createElementBlock("button", {
                 key,
                 type: "button",
+                disabled: _ctx.disabled,
                 class: normalizeClass(unref(ppNs).e("shortcut")),
                 onClick: ($event) => unref(handleShortcutClick)(shortcut)
-              }, toDisplayString(shortcut.text), 11, ["onClick"]);
+              }, toDisplayString(shortcut.text), 11, ["disabled", "onClick"]);
             }), 128))
           ], 2)) : createCommentVNode("v-if", true),
           createBaseVNode("div", {
@@ -48941,7 +49464,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 }, [
                   createVNode(unref(ElInput), {
                     size: "small",
-                    disabled: unref(rangeState).selecting,
+                    disabled: unref(rangeState).selecting || _ctx.disabled,
                     placeholder: unref(t)("el.datepicker.startDate"),
                     class: normalizeClass(unref(drpNs).e("editor")),
                     "model-value": unref(minVisibleDate),
@@ -48956,7 +49479,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                   createVNode(unref(ElInput), {
                     size: "small",
                     class: normalizeClass(unref(drpNs).e("editor")),
-                    disabled: unref(rangeState).selecting,
+                    disabled: unref(rangeState).selecting || _ctx.disabled,
                     placeholder: unref(t)("el.datepicker.startTime"),
                     "model-value": unref(minVisibleTime),
                     "validate-event": false,
@@ -48992,7 +49515,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                   createVNode(unref(ElInput), {
                     size: "small",
                     class: normalizeClass(unref(drpNs).e("editor")),
-                    disabled: unref(rangeState).selecting,
+                    disabled: unref(rangeState).selecting || _ctx.disabled,
                     placeholder: unref(t)("el.datepicker.endDate"),
                     "model-value": unref(maxVisibleDate),
                     readonly: !unref(minDate),
@@ -49007,7 +49530,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                   createVNode(unref(ElInput), {
                     size: "small",
                     class: normalizeClass(unref(drpNs).e("editor")),
-                    disabled: unref(rangeState).selecting,
+                    disabled: unref(rangeState).selecting || _ctx.disabled,
                     placeholder: unref(t)("el.datepicker.endTime"),
                     "model-value": unref(maxVisibleTime),
                     readonly: !unref(minDate),
@@ -49038,6 +49561,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                   type: "button",
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "d-arrow-left"]),
                   "aria-label": unref(t)(`el.datepicker.prevYear`),
+                  disabled: _ctx.disabled,
                   onClick: leftPrevYear
                 }, [
                   renderSlot(_ctx.$slots, "prev-year", {}, () => [
@@ -49048,11 +49572,12 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label"]),
+                ], 10, ["aria-label", "disabled"]),
                 withDirectives(createBaseVNode("button", {
                   type: "button",
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "arrow-left"]),
                   "aria-label": unref(t)(`el.datepicker.prevMonth`),
+                  disabled: _ctx.disabled,
                   onClick: leftPrevMonth
                 }, [
                   renderSlot(_ctx.$slots, "prev-month", {}, () => [
@@ -49063,14 +49588,17 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label"]), [
+                ], 10, ["aria-label", "disabled"]), [
                   [vShow, unref(leftCurrentView) === "date"]
                 ]),
                 _ctx.unlinkPanels ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
-                  disabled: !unref(enableYearArrow),
-                  class: normalizeClass([[unref(ppNs).e("icon-btn"), { "is-disabled": !unref(enableYearArrow) }], "d-arrow-right"]),
+                  disabled: !unref(enableYearArrow) || _ctx.disabled,
+                  class: normalizeClass([[
+                    unref(ppNs).e("icon-btn"),
+                    unref(ppNs).is("disabled", !unref(enableYearArrow) || _ctx.disabled)
+                  ], "d-arrow-right"]),
                   "aria-label": unref(t)(`el.datepicker.nextYear`),
                   onClick: leftNextYear
                 }, [
@@ -49086,10 +49614,10 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 _ctx.unlinkPanels && unref(leftCurrentView) === "date" ? (openBlock(), createElementBlock("button", {
                   key: 1,
                   type: "button",
-                  disabled: !unref(enableMonthArrow),
+                  disabled: !unref(enableMonthArrow) || _ctx.disabled,
                   class: normalizeClass([[
                     unref(ppNs).e("icon-btn"),
-                    { "is-disabled": !unref(enableMonthArrow) }
+                    unref(ppNs).is("disabled", !unref(enableMonthArrow) || _ctx.disabled)
                   ], "arrow-right"]),
                   "aria-label": unref(t)(`el.datepicker.nextMonth`),
                   onClick: leftNextMonth
@@ -49138,10 +49666,12 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 "range-state": unref(rangeState),
                 "disabled-date": unref(disabledDate),
                 "cell-class-name": unref(cellClassName),
+                "show-week-number": _ctx.showWeekNumber,
+                disabled: _ctx.disabled,
                 onChangerange: unref(handleChangeRange),
                 onPick: handleRangePick,
                 onSelect: unref(onSelect)
-              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "cell-class-name", "onChangerange", "onSelect"])) : createCommentVNode("v-if", true),
+              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "cell-class-name", "show-week-number", "disabled", "onChangerange", "onSelect"])) : createCommentVNode("v-if", true),
               unref(leftCurrentView) === "year" ? (openBlock(), createBlock(YearTable, {
                 key: 1,
                 ref_key: "leftCurrentViewRef",
@@ -49150,8 +49680,9 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 date: leftDate.value,
                 "disabled-date": unref(disabledDate),
                 "parsed-value": _ctx.parsedValue,
+                disabled: _ctx.disabled,
                 onPick: unref(handleLeftYearPick)
-              }, null, 8, ["date", "disabled-date", "parsed-value", "onPick"])) : createCommentVNode("v-if", true),
+              }, null, 8, ["date", "disabled-date", "parsed-value", "disabled", "onPick"])) : createCommentVNode("v-if", true),
               unref(leftCurrentView) === "month" ? (openBlock(), createBlock(MonthTable, {
                 key: 2,
                 ref_key: "leftCurrentViewRef",
@@ -49160,20 +49691,24 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 date: leftDate.value,
                 "parsed-value": _ctx.parsedValue,
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
                 onPick: unref(handleLeftMonthPick)
-              }, null, 8, ["date", "parsed-value", "disabled-date", "onPick"])) : createCommentVNode("v-if", true)
+              }, null, 8, ["date", "parsed-value", "disabled-date", "disabled", "onPick"])) : createCommentVNode("v-if", true)
             ], 2),
             createBaseVNode("div", {
               class: normalizeClass([[unref(ppNs).e("content"), unref(drpNs).e("content")], "is-right"])
             }, [
               createBaseVNode("div", {
-                class: normalizeClass(unref(drpNs).e("header"))
+                class: normalizeClass([
+                  unref(drpNs).e("header"),
+                  unref(ppNs).is("disabled", !unref(enableYearArrow) || _ctx.disabled)
+                ])
               }, [
                 _ctx.unlinkPanels ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
-                  disabled: !unref(enableYearArrow),
-                  class: normalizeClass([[unref(ppNs).e("icon-btn"), { "is-disabled": !unref(enableYearArrow) }], "d-arrow-left"]),
+                  disabled: !unref(enableYearArrow) || _ctx.disabled,
+                  class: normalizeClass([unref(ppNs).e("icon-btn"), "d-arrow-left"]),
                   "aria-label": unref(t)(`el.datepicker.prevYear`),
                   onClick: rightPrevYear
                 }, [
@@ -49189,11 +49724,8 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 _ctx.unlinkPanels && unref(rightCurrentView) === "date" ? (openBlock(), createElementBlock("button", {
                   key: 1,
                   type: "button",
-                  disabled: !unref(enableMonthArrow),
-                  class: normalizeClass([[
-                    unref(ppNs).e("icon-btn"),
-                    { "is-disabled": !unref(enableMonthArrow) }
-                  ], "arrow-left"]),
+                  disabled: !unref(enableMonthArrow) || _ctx.disabled,
+                  class: normalizeClass([unref(ppNs).e("icon-btn"), "arrow-left"]),
                   "aria-label": unref(t)(`el.datepicker.prevMonth`),
                   onClick: rightPrevMonth
                 }, [
@@ -49210,6 +49742,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                   type: "button",
                   "aria-label": unref(t)(`el.datepicker.nextYear`),
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "d-arrow-right"]),
+                  disabled: _ctx.disabled,
                   onClick: rightNextYear
                 }, [
                   renderSlot(_ctx.$slots, "next-year", {}, () => [
@@ -49220,10 +49753,11 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label"]),
+                ], 10, ["aria-label", "disabled"]),
                 withDirectives(createBaseVNode("button", {
                   type: "button",
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "arrow-right"]),
+                  disabled: _ctx.disabled,
                   "aria-label": unref(t)(`el.datepicker.nextMonth`),
                   onClick: rightNextMonth
                 }, [
@@ -49235,7 +49769,7 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["aria-label"]), [
+                ], 10, ["disabled", "aria-label"]), [
                   [vShow, unref(rightCurrentView) === "date"]
                 ]),
                 createBaseVNode("div", null, [
@@ -49273,10 +49807,12 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 "range-state": unref(rangeState),
                 "disabled-date": unref(disabledDate),
                 "cell-class-name": unref(cellClassName),
+                "show-week-number": _ctx.showWeekNumber,
+                disabled: _ctx.disabled,
                 onChangerange: unref(handleChangeRange),
                 onPick: handleRangePick,
                 onSelect: unref(onSelect)
-              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "cell-class-name", "onChangerange", "onSelect"])) : createCommentVNode("v-if", true),
+              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "cell-class-name", "show-week-number", "disabled", "onChangerange", "onSelect"])) : createCommentVNode("v-if", true),
               unref(rightCurrentView) === "year" ? (openBlock(), createBlock(YearTable, {
                 key: 1,
                 ref_key: "rightCurrentViewRef",
@@ -49285,8 +49821,9 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 date: rightDate.value,
                 "disabled-date": unref(disabledDate),
                 "parsed-value": _ctx.parsedValue,
+                disabled: _ctx.disabled,
                 onPick: unref(handleRightYearPick)
-              }, null, 8, ["date", "disabled-date", "parsed-value", "onPick"])) : createCommentVNode("v-if", true),
+              }, null, 8, ["date", "disabled-date", "parsed-value", "disabled", "onPick"])) : createCommentVNode("v-if", true),
               unref(rightCurrentView) === "month" ? (openBlock(), createBlock(MonthTable, {
                 key: 2,
                 ref_key: "rightCurrentViewRef",
@@ -49295,12 +49832,13 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
                 date: rightDate.value,
                 "parsed-value": _ctx.parsedValue,
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
                 onPick: unref(handleRightMonthPick)
-              }, null, 8, ["date", "parsed-value", "disabled-date", "onPick"])) : createCommentVNode("v-if", true)
+              }, null, 8, ["date", "parsed-value", "disabled-date", "disabled", "onPick"])) : createCommentVNode("v-if", true)
             ], 2)
           ], 2)
         ], 2),
-        unref(showTime) ? (openBlock(), createElementBlock("div", {
+        _ctx.showFooter && unref(showTime) && (_ctx.showConfirm || unref(clearable)) ? (openBlock(), createElementBlock("div", {
           key: 0,
           class: normalizeClass(unref(ppNs).e("footer"))
         }, [
@@ -49316,7 +49854,8 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
             ]),
             _: 1
           }, 8, ["class"])) : createCommentVNode("v-if", true),
-          createVNode(unref(ElButton), {
+          _ctx.showConfirm ? (openBlock(), createBlock(unref(ElButton), {
+            key: 1,
             plain: "",
             size: "small",
             class: normalizeClass(unref(ppNs).e("link-btn")),
@@ -49327,18 +49866,18 @@ var _sfc_main65 = /* @__PURE__ */ defineComponent({
               createTextVNode(toDisplayString(unref(t)("el.datepicker.confirm")), 1)
             ]),
             _: 1
-          }, 8, ["class", "disabled", "onClick"])
+          }, 8, ["class", "disabled", "onClick"])) : createCommentVNode("v-if", true)
         ], 2)) : createCommentVNode("v-if", true)
       ], 2);
     };
   }
 });
-var DateRangePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main65, [["__file", "panel-date-range.vue"]]);
+var DateRangePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main358, [["__file", "panel-date-range.vue"]]);
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-month-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-month-range.mjs
 var import_dayjs15 = __toESM(require_dayjs_min(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/props/panel-month-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/panel-month-range.mjs
 var panelMonthRangeProps = buildProps({
   ...panelRangeSharedProps
 });
@@ -49348,7 +49887,7 @@ var panelMonthRangeEmits = [
   "calendar-change"
 ];
 
-// node_modules/element-plus/es/components/date-picker/src/composables/use-month-range-header.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/composables/use-month-range-header.mjs
 var useMonthRangeHeader = ({
   unlinkPanels,
   leftDate,
@@ -49397,21 +49936,21 @@ var useMonthRangeHeader = ({
   };
 };
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-month-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-month-range.mjs
 var unit2 = "year";
-var __default__48 = defineComponent({
+var __default__52 = defineComponent({
   name: "DatePickerMonthRange"
 });
-var _sfc_main66 = /* @__PURE__ */ defineComponent({
-  ...__default__48,
+var _sfc_main359 = /* @__PURE__ */ defineComponent({
+  ...__default__52,
   props: panelMonthRangeProps,
   emits: panelMonthRangeEmits,
   setup(__props, { emit: emit2 }) {
     const props2 = __props;
     const { lang } = useLocale();
     const pickerBase = inject(PICKER_BASE_INJECTION_KEY);
-    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY);
-    const { shortcuts, disabledDate } = pickerBase.props;
+    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY, void 0);
+    const { shortcuts, disabledDate, cellClassName } = pickerBase.props;
     const format3 = toRef(pickerBase.props, "format");
     const defaultValue = toRef(pickerBase.props, "defaultValue");
     const leftDate = ref((0, import_dayjs15.default)().locale(lang.value));
@@ -49504,6 +50043,8 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
         class: normalizeClass([
           unref(ppNs).b(),
           unref(drpNs).b(),
+          unref(ppNs).is("border", _ctx.border),
+          unref(ppNs).is("disabled", _ctx.disabled),
           {
             "has-sidebar": Boolean(_ctx.$slots.sidebar) || unref(hasShortcuts)
           }
@@ -49524,8 +50065,9 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                 key,
                 type: "button",
                 class: normalizeClass(unref(ppNs).e("shortcut")),
+                disabled: _ctx.disabled,
                 onClick: ($event) => unref(handleShortcutClick)(shortcut)
-              }, toDisplayString(shortcut.text), 11, ["onClick"]);
+              }, toDisplayString(shortcut.text), 11, ["disabled", "onClick"]);
             }), 128))
           ], 2)) : createCommentVNode("v-if", true),
           createBaseVNode("div", {
@@ -49540,6 +50082,7 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                 createBaseVNode("button", {
                   type: "button",
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "d-arrow-left"]),
+                  disabled: _ctx.disabled,
                   onClick: unref(leftPrevYear)
                 }, [
                   renderSlot(_ctx.$slots, "prev-year", {}, () => [
@@ -49550,11 +50093,11 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["onClick"]),
+                ], 10, ["disabled", "onClick"]),
                 _ctx.unlinkPanels ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
-                  disabled: !unref(enableYearArrow),
+                  disabled: !unref(enableYearArrow) || _ctx.disabled,
                   class: normalizeClass([[
                     unref(ppNs).e("icon-btn"),
                     { [unref(ppNs).is("disabled")]: !unref(enableYearArrow) }
@@ -49579,10 +50122,12 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                 "max-date": unref(maxDate),
                 "range-state": unref(rangeState),
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
+                "cell-class-name": unref(cellClassName),
                 onChangerange: unref(handleChangeRange),
                 onPick: handleRangePick,
                 onSelect: unref(onSelect)
-              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "onChangerange", "onSelect"])
+              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "disabled", "cell-class-name", "onChangerange", "onSelect"])
             ], 2),
             createBaseVNode("div", {
               class: normalizeClass([[unref(ppNs).e("content"), unref(drpNs).e("content")], "is-right"])
@@ -49593,7 +50138,7 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                 _ctx.unlinkPanels ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
-                  disabled: !unref(enableYearArrow),
+                  disabled: !unref(enableYearArrow) || _ctx.disabled,
                   class: normalizeClass([[unref(ppNs).e("icon-btn"), { "is-disabled": !unref(enableYearArrow) }], "d-arrow-left"]),
                   onClick: unref(rightPrevYear)
                 }, [
@@ -49609,6 +50154,7 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                 createBaseVNode("button", {
                   type: "button",
                   class: normalizeClass([unref(ppNs).e("icon-btn"), "d-arrow-right"]),
+                  disabled: _ctx.disabled,
                   onClick: unref(rightNextYear)
                 }, [
                   renderSlot(_ctx.$slots, "next-year", {}, () => [
@@ -49619,7 +50165,7 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["onClick"]),
+                ], 10, ["disabled", "onClick"]),
                 createBaseVNode("div", null, toDisplayString(unref(rightLabel)), 1)
               ], 2),
               createVNode(MonthTable, {
@@ -49629,10 +50175,12 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
                 "max-date": unref(maxDate),
                 "range-state": unref(rangeState),
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
+                "cell-class-name": unref(cellClassName),
                 onChangerange: unref(handleChangeRange),
                 onPick: handleRangePick,
                 onSelect: unref(onSelect)
-              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "onChangerange", "onSelect"])
+              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "disabled", "cell-class-name", "onChangerange", "onSelect"])
             ], 2)
           ], 2)
         ], 2)
@@ -49640,12 +50188,12 @@ var _sfc_main66 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var MonthRangePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main66, [["__file", "panel-month-range.vue"]]);
+var MonthRangePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main359, [["__file", "panel-month-range.vue"]]);
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-year-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-year-range.mjs
 var import_dayjs16 = __toESM(require_dayjs_min(), 1);
 
-// node_modules/element-plus/es/components/date-picker/src/props/panel-year-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/props/panel-year-range.mjs
 var panelYearRangeProps = buildProps({
   ...panelRangeSharedProps
 });
@@ -49655,7 +50203,7 @@ var panelYearRangeEmits = [
   "calendar-change"
 ];
 
-// node_modules/element-plus/es/components/date-picker/src/composables/use-year-range-header.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/composables/use-year-range-header.mjs
 var useYearRangeHeader = ({
   unlinkPanels,
   leftDate,
@@ -49707,14 +50255,14 @@ var useYearRangeHeader = ({
   };
 };
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker-com/panel-year-range.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-com/panel-year-range.mjs
 var step = 10;
 var unit3 = "year";
-var __default__49 = defineComponent({
+var __default__53 = defineComponent({
   name: "DatePickerYearRange"
 });
-var _sfc_main67 = /* @__PURE__ */ defineComponent({
-  ...__default__49,
+var _sfc_main360 = /* @__PURE__ */ defineComponent({
+  ...__default__53,
   props: panelYearRangeProps,
   emits: panelYearRangeEmits,
   setup(__props, { emit: emit2 }) {
@@ -49722,9 +50270,9 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
     const { lang } = useLocale();
     const leftDate = ref((0, import_dayjs16.default)().locale(lang.value));
     const rightDate = ref((0, import_dayjs16.default)().locale(lang.value).add(step, unit3));
-    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY);
+    const isDefaultFormat = inject(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY, void 0);
     const pickerBase = inject(PICKER_BASE_INJECTION_KEY);
-    const { shortcuts, disabledDate } = pickerBase.props;
+    const { shortcuts, disabledDate, cellClassName } = pickerBase.props;
     const format3 = toRef(pickerBase.props, "format");
     const defaultValue = toRef(pickerBase.props, "defaultValue");
     const {
@@ -49764,6 +50312,8 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
     const panelKls = computed2(() => [
       ppNs.b(),
       drpNs.b(),
+      ppNs.is("border", props2.border),
+      ppNs.is("disabled", props2.disabled),
       {
         "has-sidebar": Boolean(useSlots().sidebar) || hasShortcuts.value
       }
@@ -49864,8 +50414,9 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                 key,
                 type: "button",
                 class: normalizeClass(unref(ppNs).e("shortcut")),
+                disabled: _ctx.disabled,
                 onClick: ($event) => unref(handleShortcutClick)(shortcut)
-              }, toDisplayString(shortcut.text), 11, ["onClick"]);
+              }, toDisplayString(shortcut.text), 11, ["disabled", "onClick"]);
             }), 128))
           ], 2)) : createCommentVNode("v-if", true),
           createBaseVNode("div", {
@@ -49880,6 +50431,7 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                 createBaseVNode("button", {
                   type: "button",
                   class: normalizeClass(unref(leftPanelKls).arrowLeftBtn),
+                  disabled: _ctx.disabled,
                   onClick: unref(leftPrevYear)
                 }, [
                   renderSlot(_ctx.$slots, "prev-year", {}, () => [
@@ -49890,11 +50442,11 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["onClick"]),
+                ], 10, ["disabled", "onClick"]),
                 _ctx.unlinkPanels ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
-                  disabled: !unref(enableYearArrow),
+                  disabled: !unref(enableYearArrow) || _ctx.disabled,
                   class: normalizeClass(unref(leftPanelKls).arrowRightBtn),
                   onClick: unref(leftNextYear)
                 }, [
@@ -49916,10 +50468,12 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                 "max-date": unref(maxDate),
                 "range-state": unref(rangeState),
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
+                "cell-class-name": unref(cellClassName),
                 onChangerange: unref(handleChangeRange),
                 onPick: handleRangePick,
                 onSelect: unref(onSelect)
-              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "onChangerange", "onSelect"])
+              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "disabled", "cell-class-name", "onChangerange", "onSelect"])
             ], 2),
             createBaseVNode("div", {
               class: normalizeClass(unref(rightPanelKls).content)
@@ -49930,7 +50484,7 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                 _ctx.unlinkPanels ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
-                  disabled: !unref(enableYearArrow),
+                  disabled: !unref(enableYearArrow) || _ctx.disabled,
                   class: normalizeClass(unref(rightPanelKls).arrowLeftBtn),
                   onClick: unref(rightPrevYear)
                 }, [
@@ -49946,6 +50500,7 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                 createBaseVNode("button", {
                   type: "button",
                   class: normalizeClass(unref(rightPanelKls).arrowRightBtn),
+                  disabled: _ctx.disabled,
                   onClick: unref(rightNextYear)
                 }, [
                   renderSlot(_ctx.$slots, "next-year", {}, () => [
@@ -49956,7 +50511,7 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                       _: 1
                     })
                   ])
-                ], 10, ["onClick"]),
+                ], 10, ["disabled", "onClick"]),
                 createBaseVNode("div", null, toDisplayString(unref(rightLabel)), 1)
               ], 2),
               createVNode(YearTable, {
@@ -49966,10 +50521,12 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
                 "max-date": unref(maxDate),
                 "range-state": unref(rangeState),
                 "disabled-date": unref(disabledDate),
+                disabled: _ctx.disabled,
+                "cell-class-name": unref(cellClassName),
                 onChangerange: unref(handleChangeRange),
                 onPick: handleRangePick,
                 onSelect: unref(onSelect)
-              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "onChangerange", "onSelect"])
+              }, null, 8, ["date", "min-date", "max-date", "range-state", "disabled-date", "disabled", "cell-class-name", "onChangerange", "onSelect"])
             ], 2)
           ], 2)
         ], 2)
@@ -49977,9 +50534,9 @@ var _sfc_main67 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var YearRangePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main67, [["__file", "panel-year-range.vue"]]);
+var YearRangePickPanel = /* @__PURE__ */ _export_sfc(_sfc_main360, [["__file", "panel-year-range.vue"]]);
 
-// node_modules/element-plus/es/components/date-picker/src/panel-utils.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/panel-utils.mjs
 var getPanel = function(type5) {
   switch (type5) {
     case "daterange":
@@ -49998,7 +50555,10 @@ var getPanel = function(type5) {
   }
 };
 
-// node_modules/element-plus/es/components/date-picker/src/date-picker.mjs
+// node_modules/element-plus/es/components/date-picker-panel/src/date-picker-panel.mjs
+function _isSlot(s3) {
+  return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
+}
 import_dayjs17.default.extend(import_localeData2.default);
 import_dayjs17.default.extend(import_advancedFormat.default);
 import_dayjs17.default.extend(import_customParseFormat2.default);
@@ -50007,6 +50567,67 @@ import_dayjs17.default.extend(import_weekYear.default);
 import_dayjs17.default.extend(import_dayOfYear.default);
 import_dayjs17.default.extend(import_isSameOrAfter.default);
 import_dayjs17.default.extend(import_isSameOrBefore.default);
+var DatePickerPanel = defineComponent({
+  name: "ElDatePickerPanel",
+  install: null,
+  props: datePickerPanelProps,
+  emits: [UPDATE_MODEL_EVENT, "calendar-change", "panel-change", "visible-change", "pick"],
+  setup(props2, {
+    slots,
+    emit: emit2
+  }) {
+    const ns = useNamespace("picker-panel");
+    const pickerInjection = inject(PICKER_BASE_INJECTION_KEY, void 0);
+    if (isUndefined4(pickerInjection)) {
+      const _props = reactive({
+        ...toRefs(props2)
+      });
+      provide(PICKER_BASE_INJECTION_KEY, {
+        props: _props
+      });
+    }
+    provide(ROOT_PICKER_INJECTION_KEY, {
+      slots,
+      pickerNs: ns
+    });
+    const {
+      parsedValue,
+      onCalendarChange,
+      onPanelChange,
+      onSetPickerOption,
+      onPick
+    } = inject(ROOT_COMMON_PICKER_INJECTION_KEY, () => useCommonPicker(props2, emit2), true);
+    return () => {
+      const Component = getPanel(props2.type);
+      return createVNode(Component, mergeProps(props2, {
+        "parsedValue": parsedValue.value,
+        "onSet-picker-option": onSetPickerOption,
+        "onCalendar-change": onCalendarChange,
+        "onPanel-change": onPanelChange,
+        "onPick": onPick
+      }), _isSlot(slots) ? slots : {
+        default: () => [slots]
+      });
+    };
+  }
+});
+
+// node_modules/element-plus/es/components/date-picker-panel/index.mjs
+var ElDatePickerPanel = withInstall(DatePickerPanel);
+
+// node_modules/element-plus/es/components/date-picker/src/props.mjs
+var datePickerProps = buildProps({
+  ...timePickerDefaultProps,
+  type: {
+    type: definePropType(String),
+    default: "date"
+  }
+});
+
+// node_modules/element-plus/es/components/date-picker/src/date-picker.mjs
+function _isSlot2(s3) {
+  return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
+}
 var DatePicker = defineComponent({
   name: "ElDatePicker",
   install: null,
@@ -50017,16 +50638,11 @@ var DatePicker = defineComponent({
     emit: emit2,
     slots
   }) {
-    const ns = useNamespace("picker-panel");
     const isDefaultFormat = computed2(() => {
       return !props2.format;
     });
     provide(ROOT_PICKER_IS_DEFAULT_FORMAT_INJECTION_KEY, isDefaultFormat);
     provide(PICKER_POPPER_OPTIONS_INJECTION_KEY, reactive(toRef(props2, "popperOptions")));
-    provide(ROOT_PICKER_INJECTION_KEY, {
-      slots,
-      pickerNs: ns
-    });
     const commonPicker = ref();
     const refProps = {
       focus: () => {
@@ -50053,18 +50669,16 @@ var DatePicker = defineComponent({
     return () => {
       var _a26;
       const format3 = (_a26 = props2.format) != null ? _a26 : DEFAULT_FORMATS_DATEPICKER[props2.type] || DEFAULT_FORMATS_DATE;
-      const Component = getPanel(props2.type);
       return createVNode(CommonPicker, mergeProps(props2, {
         "format": format3,
         "type": props2.type,
         "ref": commonPicker,
         "onUpdate:modelValue": onModelValueUpdated
       }), {
-        default: (scopedProps) => createVNode(Component, scopedProps, {
-          "prev-month": slots["prev-month"],
-          "next-month": slots["next-month"],
-          "prev-year": slots["prev-year"],
-          "next-year": slots["next-year"]
+        default: (scopedProps) => createVNode(ElDatePickerPanel, mergeProps({
+          "border": false
+        }, scopedProps), _isSlot2(slots) ? slots : {
+          default: () => [slots]
         }),
         "range-separator": slots["range-separator"]
       });
@@ -50184,7 +50798,7 @@ var ElDescriptionsCell = defineComponent({
   }
 });
 
-// node_modules/element-plus/es/components/descriptions/src/descriptions-row2.mjs
+// node_modules/element-plus/es/components/descriptions/src/descriptions-row.mjs
 var descriptionsRowProps = buildProps({
   row: {
     type: definePropType(Array),
@@ -50192,12 +50806,12 @@ var descriptionsRowProps = buildProps({
   }
 });
 
-// node_modules/element-plus/es/components/descriptions/src/descriptions-row.mjs
-var __default__50 = defineComponent({
+// node_modules/element-plus/es/components/descriptions/src/descriptions-row2.mjs
+var __default__54 = defineComponent({
   name: "ElDescriptionsRow"
 });
-var _sfc_main68 = /* @__PURE__ */ defineComponent({
-  ...__default__50,
+var _sfc_main361 = /* @__PURE__ */ defineComponent({
+  ...__default__54,
   props: descriptionsRowProps,
   setup(__props) {
     const descriptions = inject(descriptionsKey, {});
@@ -50251,7 +50865,7 @@ var _sfc_main68 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElDescriptionsRow = /* @__PURE__ */ _export_sfc(_sfc_main68, [["__file", "descriptions-row.vue"]]);
+var ElDescriptionsRow = /* @__PURE__ */ _export_sfc(_sfc_main361, [["__file", "descriptions-row.vue"]]);
 
 // node_modules/element-plus/es/components/descriptions/src/description.mjs
 var descriptionProps = buildProps({
@@ -50284,11 +50898,11 @@ var descriptionProps = buildProps({
 var COMPONENT_NAME11 = "ElDescriptionsItem";
 
 // node_modules/element-plus/es/components/descriptions/src/description2.mjs
-var __default__51 = defineComponent({
+var __default__55 = defineComponent({
   name: "ElDescriptions"
 });
-var _sfc_main69 = /* @__PURE__ */ defineComponent({
-  ...__default__51,
+var _sfc_main362 = /* @__PURE__ */ defineComponent({
+  ...__default__55,
   props: descriptionProps,
   setup(__props) {
     const props2 = __props;
@@ -50402,7 +51016,7 @@ var _sfc_main69 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Descriptions = /* @__PURE__ */ _export_sfc(_sfc_main69, [["__file", "description.vue"]]);
+var Descriptions = /* @__PURE__ */ _export_sfc(_sfc_main362, [["__file", "description.vue"]]);
 
 // node_modules/element-plus/es/constants/column-alignment.mjs
 var columnAlignment = ["left", "center", "right"];
@@ -50545,16 +51159,26 @@ var ElOverlay = Overlay;
 
 // node_modules/element-plus/es/components/dialog/src/constants.mjs
 var dialogInjectionKey = Symbol("dialogInjectionKey");
+var DEFAULT_DIALOG_TRANSITION = "dialog-fade";
 
 // node_modules/element-plus/es/components/dialog/src/dialog-content.mjs
 var dialogContentProps = buildProps({
   center: Boolean,
-  alignCenter: Boolean,
+  alignCenter: {
+    type: Boolean,
+    default: void 0
+  },
   closeIcon: {
     type: iconPropType
   },
-  draggable: Boolean,
-  overflow: Boolean,
+  draggable: {
+    type: Boolean,
+    default: void 0
+  },
+  overflow: {
+    type: Boolean,
+    default: void 0
+  },
   fullscreen: Boolean,
   headerClass: String,
   bodyClass: String,
@@ -50582,6 +51206,7 @@ var useDraggable = (targetRef, dragRef, draggable2, overflow) => {
     offsetX: 0,
     offsetY: 0
   };
+  const isDragging2 = ref(false);
   const adjustPosition = (moveX, moveY) => {
     if (targetRef.value) {
       const { offsetX, offsetY } = transform2;
@@ -50610,11 +51235,15 @@ var useDraggable = (targetRef, dragRef, draggable2, overflow) => {
     const downY = e.clientY;
     const { offsetX, offsetY } = transform2;
     const onMousemove = (e22) => {
+      if (!isDragging2.value) {
+        isDragging2.value = true;
+      }
       const moveX = offsetX + e22.clientX - downX;
       const moveY = offsetY + e22.clientY - downY;
       adjustPosition(moveX, moveY);
     };
     const onMouseup = () => {
+      isDragging2.value = false;
       document.removeEventListener("mousemove", onMousemove);
       document.removeEventListener("mouseup", onMouseup);
     };
@@ -50657,6 +51286,7 @@ var useDraggable = (targetRef, dragRef, draggable2, overflow) => {
     offDraggable();
   });
   return {
+    isDragging: isDragging2,
     resetPosition,
     updatePosition
   };
@@ -50676,9 +51306,9 @@ var composeRefs = (...refs) => {
 };
 
 // node_modules/element-plus/es/components/dialog/src/dialog-content2.mjs
-var __default__52 = defineComponent({ name: "ElDialogContent" });
-var _sfc_main70 = /* @__PURE__ */ defineComponent({
-  ...__default__52,
+var __default__56 = defineComponent({ name: "ElDialogContent" });
+var _sfc_main363 = /* @__PURE__ */ defineComponent({
+  ...__default__56,
   props: dialogContentProps,
   emits: dialogContentEmits,
   setup(__props, { expose }) {
@@ -50687,17 +51317,18 @@ var _sfc_main70 = /* @__PURE__ */ defineComponent({
     const { Close } = CloseComponents;
     const { dialogRef, headerRef, bodyId, ns, style } = inject(dialogInjectionKey);
     const { focusTrapRef } = inject(FOCUS_TRAP_INJECTION_KEY);
+    const composedDialogRef = composeRefs(focusTrapRef, dialogRef);
+    const draggable2 = computed2(() => !!props2.draggable);
+    const overflow = computed2(() => !!props2.overflow);
+    const { resetPosition, updatePosition, isDragging: isDragging2 } = useDraggable(dialogRef, headerRef, draggable2, overflow);
     const dialogKls = computed2(() => [
       ns.b(),
       ns.is("fullscreen", props2.fullscreen),
-      ns.is("draggable", props2.draggable),
-      ns.is("align-center", props2.alignCenter),
+      ns.is("draggable", draggable2.value),
+      ns.is("dragging", isDragging2.value),
+      ns.is("align-center", !!props2.alignCenter),
       { [ns.m("center")]: props2.center }
     ]);
-    const composedDialogRef = composeRefs(focusTrapRef, dialogRef);
-    const draggable2 = computed2(() => props2.draggable);
-    const overflow = computed2(() => props2.overflow);
-    const { resetPosition, updatePosition } = useDraggable(dialogRef, headerRef, draggable2, overflow);
     expose({
       resetPosition,
       updatePosition
@@ -50754,7 +51385,7 @@ var _sfc_main70 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElDialogContent = /* @__PURE__ */ _export_sfc(_sfc_main70, [["__file", "dialog-content.vue"]]);
+var ElDialogContent = /* @__PURE__ */ _export_sfc(_sfc_main363, [["__file", "dialog-content.vue"]]);
 
 // node_modules/element-plus/es/components/dialog/src/dialog.mjs
 var dialogProps = buildProps({
@@ -50784,6 +51415,7 @@ var dialogProps = buildProps({
     type: Boolean,
     default: true
   },
+  modalPenetrable: Boolean,
   openDelay: {
     type: Number,
     default: 0
@@ -50810,6 +51442,10 @@ var dialogProps = buildProps({
   headerAriaLevel: {
     type: String,
     default: "2"
+  },
+  transition: {
+    type: definePropType([String, Object]),
+    default: void 0
   }
 });
 var dialogEmits = {
@@ -50821,6 +51457,7 @@ var dialogEmits = {
   openAutoFocus: () => true,
   closeAutoFocus: () => true
 };
+var dialogContextKey = Symbol("dialogContextKey");
 
 // node_modules/element-plus/es/hooks/use-lockscreen/index.mjs
 var useLockscreen = (trigger2, options = {}) => {
@@ -50880,7 +51517,15 @@ var useDialog = (props2, targetRef) => {
   const zIndex2 = ref((_a26 = props2.zIndex) != null ? _a26 : nextZIndex());
   let openTimer = void 0;
   let closeTimer = void 0;
-  const namespace = useGlobalConfig("namespace", defaultNamespace);
+  const config = useGlobalConfig();
+  const namespace = computed2(() => {
+    var _a27, _b25;
+    return (_b25 = (_a27 = config.value) == null ? void 0 : _a27.namespace) != null ? _b25 : defaultNamespace;
+  });
+  const globalConfig2 = computed2(() => {
+    var _a27;
+    return (_a27 = config.value) == null ? void 0 : _a27.dialog;
+  });
   const style = computed2(() => {
     const style2 = {};
     const varPrefix = `--${namespace.value}-dialog`;
@@ -50894,11 +51539,57 @@ var useDialog = (props2, targetRef) => {
     }
     return style2;
   });
+  const _draggable = computed2(() => {
+    var _a27, _b25, _c;
+    return ((_c = (_b25 = props2.draggable) != null ? _b25 : (_a27 = globalConfig2.value) == null ? void 0 : _a27.draggable) != null ? _c : false) && !props2.fullscreen;
+  });
+  const _alignCenter = computed2(() => {
+    var _a27, _b25, _c;
+    return (_c = (_b25 = props2.alignCenter) != null ? _b25 : (_a27 = globalConfig2.value) == null ? void 0 : _a27.alignCenter) != null ? _c : false;
+  });
+  const _overflow = computed2(() => {
+    var _a27, _b25, _c;
+    return (_c = (_b25 = props2.overflow) != null ? _b25 : (_a27 = globalConfig2.value) == null ? void 0 : _a27.overflow) != null ? _c : false;
+  });
   const overlayDialogStyle = computed2(() => {
-    if (props2.alignCenter) {
+    if (_alignCenter.value) {
       return { display: "flex" };
     }
     return {};
+  });
+  const transitionConfig = computed2(() => {
+    var _a27, _b25, _c;
+    const transition2 = (_c = (_b25 = props2.transition) != null ? _b25 : (_a27 = globalConfig2.value) == null ? void 0 : _a27.transition) != null ? _c : DEFAULT_DIALOG_TRANSITION;
+    const baseConfig = {
+      name: transition2,
+      onAfterEnter: afterEnter,
+      onBeforeLeave: beforeLeave,
+      onAfterLeave: afterLeave
+    };
+    if (isObject(transition2)) {
+      const config2 = { ...transition2 };
+      const _mergeHook = (userHook, defaultHook) => {
+        return (el) => {
+          if (isArray(userHook)) {
+            userHook.forEach((fn2) => {
+              if (isFunction(fn2))
+                fn2(el);
+            });
+          } else if (isFunction(userHook)) {
+            userHook(el);
+          }
+          defaultHook();
+        };
+      };
+      config2.onAfterEnter = _mergeHook(config2.onAfterEnter, afterEnter);
+      config2.onBeforeLeave = _mergeHook(config2.onBeforeLeave, beforeLeave);
+      config2.onAfterLeave = _mergeHook(config2.onAfterLeave, afterLeave);
+      if (!config2.name) {
+        config2.name = DEFAULT_DIALOG_TRANSITION;
+      }
+      return config2;
+    }
+    return baseConfig;
   });
   function afterEnter() {
     emit2("opened");
@@ -51038,17 +51729,21 @@ var useDialog = (props2, targetRef) => {
     overlayDialogStyle,
     rendered,
     visible,
-    zIndex: zIndex2
+    zIndex: zIndex2,
+    transitionConfig,
+    _draggable,
+    _alignCenter,
+    _overflow
   };
 };
 
 // node_modules/element-plus/es/components/dialog/src/dialog2.mjs
-var __default__53 = defineComponent({
+var __default__57 = defineComponent({
   name: "ElDialog",
   inheritAttrs: false
 });
-var _sfc_main71 = /* @__PURE__ */ defineComponent({
-  ...__default__53,
+var _sfc_main364 = /* @__PURE__ */ defineComponent({
+  ...__default__57,
   props: dialogProps,
   emits: dialogEmits,
   setup(__props, { expose }) {
@@ -51072,10 +51767,11 @@ var _sfc_main71 = /* @__PURE__ */ defineComponent({
       style,
       overlayDialogStyle,
       rendered,
+      transitionConfig,
       zIndex: zIndex2,
-      afterEnter,
-      afterLeave,
-      beforeLeave,
+      _draggable,
+      _alignCenter,
+      _overflow,
       handleClose,
       onModalClick,
       onOpenAutoFocus,
@@ -51092,7 +51788,7 @@ var _sfc_main71 = /* @__PURE__ */ defineComponent({
       style
     });
     const overlayEvent = useSameTarget(onModalClick);
-    const draggable2 = computed2(() => props2.draggable && !props2.fullscreen);
+    const penetrable = computed2(() => props2.modalPenetrable && !props2.modal && !props2.fullscreen);
     const resetPosition = () => {
       var _a26;
       (_a26 = dialogContentRef.value) == null ? void 0 : _a26.resetPosition();
@@ -51109,101 +51805,102 @@ var _sfc_main71 = /* @__PURE__ */ defineComponent({
         disabled: _ctx.appendTo !== "body" ? false : !_ctx.appendToBody
       }, {
         default: withCtx(() => [
-          createVNode(Transition, {
-            name: "dialog-fade",
-            onAfterEnter: unref(afterEnter),
-            onAfterLeave: unref(afterLeave),
-            onBeforeLeave: unref(beforeLeave),
-            persisted: ""
-          }, {
-            default: withCtx(() => [
-              withDirectives(createVNode(unref(ElOverlay), {
-                "custom-mask-event": "",
-                mask: _ctx.modal,
-                "overlay-class": _ctx.modalClass,
-                "z-index": unref(zIndex2)
-              }, {
-                default: withCtx(() => [
-                  createBaseVNode("div", {
-                    role: "dialog",
-                    "aria-modal": "true",
-                    "aria-label": _ctx.title || void 0,
-                    "aria-labelledby": !_ctx.title ? unref(titleId) : void 0,
-                    "aria-describedby": unref(bodyId),
-                    class: normalizeClass(`${unref(ns).namespace.value}-overlay-dialog`),
-                    style: normalizeStyle(unref(overlayDialogStyle)),
-                    onClick: unref(overlayEvent).onClick,
-                    onMousedown: unref(overlayEvent).onMousedown,
-                    onMouseup: unref(overlayEvent).onMouseup
-                  }, [
-                    createVNode(unref(ElFocusTrap), {
-                      loop: "",
-                      trapped: unref(visible),
-                      "focus-start-el": "container",
-                      onFocusAfterTrapped: unref(onOpenAutoFocus),
-                      onFocusAfterReleased: unref(onCloseAutoFocus),
-                      onFocusoutPrevented: unref(onFocusoutPrevented),
-                      onReleaseRequested: unref(onCloseRequested)
-                    }, {
-                      default: withCtx(() => [
-                        unref(rendered) ? (openBlock(), createBlock(ElDialogContent, mergeProps({
-                          key: 0,
-                          ref_key: "dialogContentRef",
-                          ref: dialogContentRef
-                        }, _ctx.$attrs, {
-                          center: _ctx.center,
-                          "align-center": _ctx.alignCenter,
-                          "close-icon": _ctx.closeIcon,
-                          draggable: unref(draggable2),
-                          overflow: _ctx.overflow,
-                          fullscreen: _ctx.fullscreen,
-                          "header-class": _ctx.headerClass,
-                          "body-class": _ctx.bodyClass,
-                          "footer-class": _ctx.footerClass,
-                          "show-close": _ctx.showClose,
-                          title: _ctx.title,
-                          "aria-level": _ctx.headerAriaLevel,
-                          onClose: unref(handleClose)
-                        }), createSlots({
-                          header: withCtx(() => [
-                            !_ctx.$slots.title ? renderSlot(_ctx.$slots, "header", {
-                              key: 0,
-                              close: unref(handleClose),
-                              titleId: unref(titleId),
-                              titleClass: unref(ns).e("title")
-                            }) : renderSlot(_ctx.$slots, "title", { key: 1 })
-                          ]),
-                          default: withCtx(() => [
-                            renderSlot(_ctx.$slots, "default")
-                          ]),
-                          _: 2
-                        }, [
-                          _ctx.$slots.footer ? {
-                            name: "footer",
-                            fn: withCtx(() => [
-                              renderSlot(_ctx.$slots, "footer")
-                            ])
-                          } : void 0
-                        ]), 1040, ["center", "align-center", "close-icon", "draggable", "overflow", "fullscreen", "header-class", "body-class", "footer-class", "show-close", "title", "aria-level", "onClose"])) : createCommentVNode("v-if", true)
-                      ]),
-                      _: 3
-                    }, 8, ["trapped", "onFocusAfterTrapped", "onFocusAfterReleased", "onFocusoutPrevented", "onReleaseRequested"])
-                  ], 46, ["aria-label", "aria-labelledby", "aria-describedby", "onClick", "onMousedown", "onMouseup"])
-                ]),
-                _: 3
-              }, 8, ["mask", "overlay-class", "z-index"]), [
-                [vShow, unref(visible)]
-              ])
-            ]),
+          createVNode(Transition, mergeProps(unref(transitionConfig), { persisted: "" }), {
+            default: withCtx(() => {
+              var _a26;
+              return [
+                withDirectives(createVNode(unref(ElOverlay), {
+                  "custom-mask-event": "",
+                  mask: _ctx.modal,
+                  "overlay-class": [
+                    (_a26 = _ctx.modalClass) != null ? _a26 : "",
+                    `${unref(ns).namespace.value}-modal-dialog`,
+                    unref(ns).is("penetrable", unref(penetrable))
+                  ],
+                  "z-index": unref(zIndex2)
+                }, {
+                  default: withCtx(() => [
+                    createBaseVNode("div", {
+                      role: "dialog",
+                      "aria-modal": "true",
+                      "aria-label": _ctx.title || void 0,
+                      "aria-labelledby": !_ctx.title ? unref(titleId) : void 0,
+                      "aria-describedby": unref(bodyId),
+                      class: normalizeClass(`${unref(ns).namespace.value}-overlay-dialog`),
+                      style: normalizeStyle(unref(overlayDialogStyle)),
+                      onClick: unref(overlayEvent).onClick,
+                      onMousedown: unref(overlayEvent).onMousedown,
+                      onMouseup: unref(overlayEvent).onMouseup
+                    }, [
+                      createVNode(unref(ElFocusTrap), {
+                        loop: "",
+                        trapped: unref(visible),
+                        "focus-start-el": "container",
+                        onFocusAfterTrapped: unref(onOpenAutoFocus),
+                        onFocusAfterReleased: unref(onCloseAutoFocus),
+                        onFocusoutPrevented: unref(onFocusoutPrevented),
+                        onReleaseRequested: unref(onCloseRequested)
+                      }, {
+                        default: withCtx(() => [
+                          unref(rendered) ? (openBlock(), createBlock(ElDialogContent, mergeProps({
+                            key: 0,
+                            ref_key: "dialogContentRef",
+                            ref: dialogContentRef
+                          }, _ctx.$attrs, {
+                            center: _ctx.center,
+                            "align-center": unref(_alignCenter),
+                            "close-icon": _ctx.closeIcon,
+                            draggable: unref(_draggable),
+                            overflow: unref(_overflow),
+                            fullscreen: _ctx.fullscreen,
+                            "header-class": _ctx.headerClass,
+                            "body-class": _ctx.bodyClass,
+                            "footer-class": _ctx.footerClass,
+                            "show-close": _ctx.showClose,
+                            title: _ctx.title,
+                            "aria-level": _ctx.headerAriaLevel,
+                            onClose: unref(handleClose)
+                          }), createSlots({
+                            header: withCtx(() => [
+                              !_ctx.$slots.title ? renderSlot(_ctx.$slots, "header", {
+                                key: 0,
+                                close: unref(handleClose),
+                                titleId: unref(titleId),
+                                titleClass: unref(ns).e("title")
+                              }) : renderSlot(_ctx.$slots, "title", { key: 1 })
+                            ]),
+                            default: withCtx(() => [
+                              renderSlot(_ctx.$slots, "default")
+                            ]),
+                            _: 2
+                          }, [
+                            _ctx.$slots.footer ? {
+                              name: "footer",
+                              fn: withCtx(() => [
+                                renderSlot(_ctx.$slots, "footer")
+                              ])
+                            } : void 0
+                          ]), 1040, ["center", "align-center", "close-icon", "draggable", "overflow", "fullscreen", "header-class", "body-class", "footer-class", "show-close", "title", "aria-level", "onClose"])) : createCommentVNode("v-if", true)
+                        ]),
+                        _: 3
+                      }, 8, ["trapped", "onFocusAfterTrapped", "onFocusAfterReleased", "onFocusoutPrevented", "onReleaseRequested"])
+                    ], 46, ["aria-label", "aria-labelledby", "aria-describedby", "onClick", "onMousedown", "onMouseup"])
+                  ]),
+                  _: 3
+                }, 8, ["mask", "overlay-class", "z-index"]), [
+                  [vShow, unref(visible)]
+                ])
+              ];
+            }),
             _: 3
-          }, 8, ["onAfterEnter", "onAfterLeave", "onBeforeLeave"])
+          }, 16)
         ]),
         _: 3
       }, 8, ["to", "disabled"]);
     };
   }
 });
-var Dialog = /* @__PURE__ */ _export_sfc(_sfc_main71, [["__file", "dialog.vue"]]);
+var Dialog = /* @__PURE__ */ _export_sfc(_sfc_main364, [["__file", "dialog.vue"]]);
 
 // node_modules/element-plus/es/components/dialog/index.mjs
 var ElDialog = withInstall(Dialog);
@@ -51227,11 +51924,11 @@ var dividerProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/divider/src/divider2.mjs
-var __default__54 = defineComponent({
+var __default__58 = defineComponent({
   name: "ElDivider"
 });
-var _sfc_main72 = /* @__PURE__ */ defineComponent({
-  ...__default__54,
+var _sfc_main365 = /* @__PURE__ */ defineComponent({
+  ...__default__58,
   props: dividerProps,
   setup(__props) {
     const props2 = __props;
@@ -51257,10 +51954,628 @@ var _sfc_main72 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Divider = /* @__PURE__ */ _export_sfc(_sfc_main72, [["__file", "divider.vue"]]);
+var Divider = /* @__PURE__ */ _export_sfc(_sfc_main365, [["__file", "divider.vue"]]);
 
 // node_modules/element-plus/es/components/divider/index.mjs
 var ElDivider = withInstall(Divider);
+
+// node_modules/element-plus/es/components/splitter/src/splitter.mjs
+var splitterProps = buildProps({
+  layout: {
+    type: String,
+    default: "horizontal",
+    values: ["horizontal", "vertical"]
+  },
+  lazy: Boolean
+});
+
+// node_modules/element-plus/es/components/splitter/src/type.mjs
+var splitterRootContextKey = Symbol("splitterRootContextKey");
+
+// node_modules/element-plus/es/components/splitter/src/hooks/useContainer.mjs
+function useContainer(layout2) {
+  const containerEl = ref();
+  const { width, height } = useElementSize(containerEl);
+  const containerSize = computed2(() => {
+    return layout2.value === "horizontal" ? width.value : height.value;
+  });
+  return { containerEl, containerSize };
+}
+
+// node_modules/element-plus/es/components/splitter/src/hooks/useSize.mjs
+function getPct(str2) {
+  return Number(str2.slice(0, -1)) / 100;
+}
+function getPx(str2) {
+  return Number(str2.slice(0, -2));
+}
+function isPct(itemSize3) {
+  return isString(itemSize3) && itemSize3.endsWith("%");
+}
+function isPx(itemSize3) {
+  return isString(itemSize3) && itemSize3.endsWith("px");
+}
+function useSize(panels, containerSize) {
+  const propSizes = computed2(() => panels.value.map((i) => i.size));
+  const panelCounts = computed2(() => panels.value.length);
+  const percentSizes = ref([]);
+  watch2([propSizes, panelCounts, containerSize], () => {
+    var _a26;
+    let ptgList = [];
+    let emptyCount = 0;
+    for (let i = 0; i < panelCounts.value; i += 1) {
+      const itemSize3 = (_a26 = panels.value[i]) == null ? void 0 : _a26.size;
+      if (isPct(itemSize3)) {
+        ptgList[i] = getPct(itemSize3);
+      } else if (isPx(itemSize3)) {
+        ptgList[i] = getPx(itemSize3) / containerSize.value;
+      } else if (itemSize3 || itemSize3 === 0) {
+        const num = Number(itemSize3);
+        if (!Number.isNaN(num)) {
+          ptgList[i] = num / containerSize.value;
+        }
+      } else {
+        emptyCount += 1;
+        ptgList[i] = void 0;
+      }
+    }
+    const totalPtg = ptgList.reduce((acc, ptg) => acc + (ptg || 0), 0);
+    if (totalPtg > 1 || !emptyCount) {
+      const scale2 = 1 / totalPtg;
+      ptgList = ptgList.map((ptg) => ptg === void 0 ? 0 : ptg * scale2);
+    } else {
+      const avgRest = (1 - totalPtg) / emptyCount;
+      ptgList = ptgList.map((ptg) => ptg === void 0 ? avgRest : ptg);
+    }
+    percentSizes.value = ptgList;
+  });
+  const ptg2px = (ptg) => ptg * containerSize.value;
+  const pxSizes = computed2(() => percentSizes.value.map(ptg2px));
+  return { percentSizes, pxSizes };
+}
+
+// node_modules/element-plus/es/components/splitter/src/hooks/useResize.mjs
+function useResize(panels, containerSize, pxSizes, lazy) {
+  const ptg2px = (ptg) => ptg * containerSize.value || 0;
+  function getLimitSize(str2, defaultLimit) {
+    if (isPct(str2)) {
+      return ptg2px(getPct(str2));
+    } else if (isPx(str2)) {
+      return getPx(str2);
+    }
+    return str2 != null ? str2 : defaultLimit;
+  }
+  const lazyOffset = ref(0);
+  const movingIndex = ref(null);
+  let cachePxSizes = [];
+  let updatePanelSizes = NOOP;
+  const limitSizes = computed2(() => panels.value.map((item) => [item.min, item.max]));
+  watch2(lazy, () => {
+    if (lazyOffset.value) {
+      const mouseup = new MouseEvent("mouseup", { bubbles: true });
+      window.dispatchEvent(mouseup);
+    }
+  });
+  const onMoveStart = (index3) => {
+    lazyOffset.value = 0;
+    movingIndex.value = { index: index3, confirmed: false };
+    cachePxSizes = pxSizes.value;
+  };
+  const onMoving = (index3, offset3) => {
+    var _a26, _b25;
+    let confirmedIndex = null;
+    if ((!movingIndex.value || !movingIndex.value.confirmed) && offset3 !== 0) {
+      if (offset3 > 0) {
+        confirmedIndex = index3;
+        movingIndex.value = { index: index3, confirmed: true };
+      } else {
+        for (let i = index3; i >= 0; i -= 1) {
+          if (cachePxSizes[i] > 0) {
+            confirmedIndex = i;
+            movingIndex.value = { index: i, confirmed: true };
+            break;
+          }
+        }
+      }
+    }
+    const mergedIndex = (_b25 = confirmedIndex != null ? confirmedIndex : (_a26 = movingIndex.value) == null ? void 0 : _a26.index) != null ? _b25 : index3;
+    const numSizes = [...cachePxSizes];
+    const nextIndex = mergedIndex + 1;
+    const startMinSize = getLimitSize(limitSizes.value[mergedIndex][0], 0);
+    const endMinSize = getLimitSize(limitSizes.value[nextIndex][0], 0);
+    const startMaxSize = getLimitSize(limitSizes.value[mergedIndex][1], containerSize.value || 0);
+    const endMaxSize = getLimitSize(limitSizes.value[nextIndex][1], containerSize.value || 0);
+    let mergedOffset = offset3;
+    if (numSizes[mergedIndex] + mergedOffset < startMinSize) {
+      mergedOffset = startMinSize - numSizes[mergedIndex];
+    }
+    if (numSizes[nextIndex] - mergedOffset < endMinSize) {
+      mergedOffset = numSizes[nextIndex] - endMinSize;
+    }
+    if (numSizes[mergedIndex] + mergedOffset > startMaxSize) {
+      mergedOffset = startMaxSize - numSizes[mergedIndex];
+    }
+    if (numSizes[nextIndex] - mergedOffset > endMaxSize) {
+      mergedOffset = numSizes[nextIndex] - endMaxSize;
+    }
+    numSizes[mergedIndex] += mergedOffset;
+    numSizes[nextIndex] -= mergedOffset;
+    lazyOffset.value = mergedOffset;
+    updatePanelSizes = () => {
+      panels.value.forEach((panel, index22) => {
+        panel.size = numSizes[index22];
+      });
+      updatePanelSizes = NOOP;
+    };
+    if (!lazy.value) {
+      updatePanelSizes();
+    }
+  };
+  const onMoveEnd = () => {
+    if (lazy.value) {
+      updatePanelSizes();
+    }
+    lazyOffset.value = 0;
+    movingIndex.value = null;
+    cachePxSizes = [];
+  };
+  const cacheCollapsedSize = [];
+  const onCollapse = (index3, type5) => {
+    if (!cacheCollapsedSize.length) {
+      cacheCollapsedSize.push(...pxSizes.value);
+    }
+    const currentSizes = pxSizes.value;
+    const currentIndex = type5 === "start" ? index3 : index3 + 1;
+    const targetIndex = type5 === "start" ? index3 + 1 : index3;
+    const currentSize = currentSizes[currentIndex];
+    const targetSize = currentSizes[targetIndex];
+    if (currentSize !== 0 && targetSize !== 0) {
+      currentSizes[currentIndex] = 0;
+      currentSizes[targetIndex] += currentSize;
+      cacheCollapsedSize[index3] = currentSize;
+    } else {
+      const totalSize = currentSize + targetSize;
+      const targetCacheCollapsedSize = cacheCollapsedSize[index3];
+      const currentCacheCollapsedSize = totalSize - targetCacheCollapsedSize;
+      currentSizes[targetIndex] = targetCacheCollapsedSize;
+      currentSizes[currentIndex] = currentCacheCollapsedSize;
+    }
+    panels.value.forEach((panel, index22) => {
+      panel.size = currentSizes[index22];
+    });
+  };
+  return {
+    lazyOffset,
+    onMoveStart,
+    onMoving,
+    onMoveEnd,
+    movingIndex,
+    onCollapse
+  };
+}
+
+// node_modules/element-plus/es/components/splitter/src/splitter2.mjs
+var __default__59 = defineComponent({
+  name: "ElSplitter"
+});
+var _sfc_main366 = /* @__PURE__ */ defineComponent({
+  ...__default__59,
+  props: splitterProps,
+  emits: ["resizeStart", "resize", "resizeEnd", "collapse"],
+  setup(__props, { emit: emits }) {
+    const props2 = __props;
+    const ns = useNamespace("splitter");
+    const layout2 = toRef(props2, "layout");
+    const lazy = toRef(props2, "lazy");
+    const { containerEl, containerSize } = useContainer(layout2);
+    const {
+      removeChild: unregisterPanel,
+      children: panels,
+      addChild: registerPanel,
+      ChildrenSorter: PanelsSorter
+    } = useOrderedChildren(getCurrentInstance(), "ElSplitterPanel");
+    watch2(panels, () => {
+      panels.value.forEach((instance, index3) => {
+        instance.setIndex(index3);
+      });
+    });
+    const { percentSizes, pxSizes } = useSize(panels, containerSize);
+    const {
+      lazyOffset,
+      movingIndex,
+      onMoveStart,
+      onMoving,
+      onMoveEnd,
+      onCollapse
+    } = useResize(panels, containerSize, pxSizes, lazy);
+    const splitterStyles = computed2(() => {
+      return {
+        [`--${ns.b()}-bar-offset`]: lazy.value ? `${lazyOffset.value}px` : void 0
+      };
+    });
+    const onResizeStart = (index3) => {
+      onMoveStart(index3);
+      emits("resizeStart", index3, pxSizes.value);
+    };
+    const onResize = (index3, offset3) => {
+      onMoving(index3, offset3);
+      if (!lazy.value) {
+        emits("resize", index3, pxSizes.value);
+      }
+    };
+    const onResizeEnd = (index3) => {
+      onMoveEnd();
+      emits("resizeEnd", index3, pxSizes.value);
+    };
+    const onCollapsible = (index3, type5) => {
+      onCollapse(index3, type5);
+      emits("collapse", index3, type5, pxSizes.value);
+    };
+    provide(splitterRootContextKey, reactive({
+      panels,
+      percentSizes,
+      pxSizes,
+      layout: layout2,
+      lazy,
+      movingIndex,
+      containerSize,
+      onMoveStart: onResizeStart,
+      onMoving: onResize,
+      onMoveEnd: onResizeEnd,
+      onCollapse: onCollapsible,
+      registerPanel,
+      unregisterPanel
+    }));
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        ref_key: "containerEl",
+        ref: containerEl,
+        class: normalizeClass([unref(ns).b(), unref(ns).e(unref(layout2))]),
+        style: normalizeStyle(unref(splitterStyles))
+      }, [
+        renderSlot(_ctx.$slots, "default"),
+        createVNode(unref(PanelsSorter)),
+        createCommentVNode(" Prevent iframe touch events from breaking "),
+        unref(movingIndex) ? (openBlock(), createElementBlock("div", {
+          key: 0,
+          class: normalizeClass([unref(ns).e("mask"), unref(ns).e(`mask-${unref(layout2)}`)])
+        }, null, 2)) : createCommentVNode("v-if", true)
+      ], 6);
+    };
+  }
+});
+var Splitter = /* @__PURE__ */ _export_sfc(_sfc_main366, [["__file", "splitter.vue"]]);
+
+// node_modules/element-plus/es/components/splitter/src/hooks/usePanel.mjs
+function getCollapsible(collapsible) {
+  if (collapsible && isObject(collapsible)) {
+    return collapsible;
+  }
+  return {
+    start: !!collapsible,
+    end: !!collapsible
+  };
+}
+function isCollapsible(panel, size2, nextPanel, nextSize) {
+  if ((panel == null ? void 0 : panel.collapsible.end) && size2 > 0) {
+    return true;
+  }
+  if ((nextPanel == null ? void 0 : nextPanel.collapsible.start) && nextSize === 0 && size2 > 0) {
+    return true;
+  }
+  return false;
+}
+
+// node_modules/element-plus/es/components/splitter/src/split-bar.mjs
+var __default__60 = defineComponent({
+  name: "ElSplitterBar"
+});
+var _sfc_main367 = /* @__PURE__ */ defineComponent({
+  ...__default__60,
+  props: {
+    index: {
+      type: Number,
+      required: true
+    },
+    layout: {
+      type: String,
+      values: ["horizontal", "vertical"],
+      default: "horizontal"
+    },
+    resizable: {
+      type: Boolean,
+      default: true
+    },
+    lazy: Boolean,
+    startCollapsible: Boolean,
+    endCollapsible: Boolean
+  },
+  emits: ["moveStart", "moving", "moveEnd", "collapse"],
+  setup(__props, { emit: emit2 }) {
+    const props2 = __props;
+    const ns = useNamespace("splitter-bar");
+    const isHorizontal2 = computed2(() => props2.layout === "horizontal");
+    const barWrapStyles = computed2(() => {
+      if (isHorizontal2.value) {
+        return { width: 0 };
+      }
+      return { height: 0 };
+    });
+    const draggerStyles = computed2(() => {
+      return {
+        width: isHorizontal2.value ? "16px" : "100%",
+        height: isHorizontal2.value ? "100%" : "16px",
+        cursor: isHorizontal2.value ? "col-resize" : "row-resize",
+        touchAction: "none"
+      };
+    });
+    const draggerPseudoClass = computed2(() => {
+      const prefix = ns.e("dragger");
+      return {
+        [`${prefix}-horizontal`]: isHorizontal2.value,
+        [`${prefix}-vertical`]: !isHorizontal2.value,
+        [`${prefix}-active`]: !!startPos.value
+      };
+    });
+    const startPos = ref(null);
+    const onMousedown = (e) => {
+      if (!props2.resizable)
+        return;
+      startPos.value = [e.pageX, e.pageY];
+      emit2("moveStart", props2.index);
+      window.addEventListener("mouseup", onMouseUp);
+      window.addEventListener("mousemove", onMouseMove);
+    };
+    const onTouchStart = (e) => {
+      if (props2.resizable && e.touches.length === 1) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        startPos.value = [touch.pageX, touch.pageY];
+        emit2("moveStart", props2.index);
+        window.addEventListener("touchend", onTouchEnd);
+        window.addEventListener("touchmove", onTouchMove);
+      }
+    };
+    const onMouseMove = (e) => {
+      const { pageX, pageY } = e;
+      const offsetX = pageX - startPos.value[0];
+      const offsetY = pageY - startPos.value[1];
+      const offset3 = isHorizontal2.value ? offsetX : offsetY;
+      emit2("moving", props2.index, offset3);
+    };
+    const onTouchMove = (e) => {
+      if (e.touches.length === 1) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const offsetX = touch.pageX - startPos.value[0];
+        const offsetY = touch.pageY - startPos.value[1];
+        const offset3 = isHorizontal2.value ? offsetX : offsetY;
+        emit2("moving", props2.index, offset3);
+      }
+    };
+    const onMouseUp = () => {
+      startPos.value = null;
+      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("mousemove", onMouseMove);
+      emit2("moveEnd", props2.index);
+    };
+    const onTouchEnd = () => {
+      startPos.value = null;
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchmove", onTouchMove);
+      emit2("moveEnd", props2.index);
+    };
+    const StartIcon = computed2(() => isHorizontal2.value ? arrow_left_default : arrow_up_default);
+    const EndIcon = computed2(() => isHorizontal2.value ? arrow_right_default : arrow_down_default);
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock("div", {
+        class: normalizeClass([unref(ns).b()]),
+        style: normalizeStyle(unref(barWrapStyles))
+      }, [
+        __props.startCollapsible ? (openBlock(), createElementBlock("div", {
+          key: 0,
+          class: normalizeClass([unref(ns).e("collapse-icon"), unref(ns).e(`${__props.layout}-collapse-icon-start`)]),
+          onClick: ($event) => emit2("collapse", __props.index, "start")
+        }, [
+          renderSlot(_ctx.$slots, "start-collapsible", {}, () => [
+            (openBlock(), createBlock(resolveDynamicComponent(unref(StartIcon)), { style: { "width": "12px", "height": "12px" } }))
+          ])
+        ], 10, ["onClick"])) : createCommentVNode("v-if", true),
+        createBaseVNode("div", {
+          class: normalizeClass([
+            unref(ns).e("dragger"),
+            unref(draggerPseudoClass),
+            __props.resizable ? "" : unref(ns).e("disable"),
+            unref(ns).is("lazy", __props.resizable && __props.lazy)
+          ]),
+          style: normalizeStyle(unref(draggerStyles)),
+          onMousedown,
+          onTouchstart: onTouchStart
+        }, null, 38),
+        __props.endCollapsible ? (openBlock(), createElementBlock("div", {
+          key: 1,
+          class: normalizeClass([unref(ns).e("collapse-icon"), unref(ns).e(`${__props.layout}-collapse-icon-end`)]),
+          onClick: ($event) => emit2("collapse", __props.index, "end")
+        }, [
+          renderSlot(_ctx.$slots, "end-collapsible", {}, () => [
+            (openBlock(), createBlock(resolveDynamicComponent(unref(EndIcon)), { style: { "width": "12px", "height": "12px" } }))
+          ])
+        ], 10, ["onClick"])) : createCommentVNode("v-if", true)
+      ], 6);
+    };
+  }
+});
+var SplitBar = /* @__PURE__ */ _export_sfc(_sfc_main367, [["__file", "split-bar.vue"]]);
+
+// node_modules/element-plus/es/components/splitter/src/split-panel.mjs
+var splitterPanelProps = buildProps({
+  min: {
+    type: [String, Number]
+  },
+  max: {
+    type: [String, Number]
+  },
+  size: {
+    type: [String, Number]
+  },
+  resizable: {
+    type: Boolean,
+    default: true
+  },
+  collapsible: Boolean
+});
+
+// node_modules/element-plus/es/components/splitter/src/split-panel2.mjs
+var COMPONENT_NAME12 = "ElSplitterPanel";
+var __default__61 = defineComponent({
+  name: COMPONENT_NAME12
+});
+var _sfc_main368 = /* @__PURE__ */ defineComponent({
+  ...__default__61,
+  props: splitterPanelProps,
+  emits: ["update:size"],
+  setup(__props, { emit: emits }) {
+    const props2 = __props;
+    const ns = useNamespace("splitter-panel");
+    const splitterContext = inject(splitterRootContextKey);
+    if (!splitterContext)
+      throwError(COMPONENT_NAME12, "usage: <el-splitter><el-splitter-panel /></el-splitter/>");
+    const { panels, layout: layout2, lazy, containerSize, pxSizes } = toRefs(splitterContext);
+    const {
+      registerPanel,
+      unregisterPanel,
+      onCollapse,
+      onMoveEnd,
+      onMoveStart,
+      onMoving
+    } = splitterContext;
+    const panelEl = ref();
+    const instance = getCurrentInstance();
+    const uid3 = instance.uid;
+    const index3 = ref(0);
+    const panel = computed2(() => panels.value[index3.value]);
+    const setIndex = (val) => {
+      index3.value = val;
+    };
+    const panelSize = computed2(() => {
+      var _a26;
+      if (!panel.value)
+        return 0;
+      return (_a26 = pxSizes.value[index3.value]) != null ? _a26 : 0;
+    });
+    const nextSize = computed2(() => {
+      var _a26;
+      if (!panel.value)
+        return 0;
+      return (_a26 = pxSizes.value[index3.value + 1]) != null ? _a26 : 0;
+    });
+    const nextPanel = computed2(() => {
+      if (panel.value) {
+        return panels.value[index3.value + 1];
+      }
+      return null;
+    });
+    const isResizable = computed2(() => {
+      var _a26;
+      if (!nextPanel.value)
+        return false;
+      return props2.resizable && ((_a26 = nextPanel.value) == null ? void 0 : _a26.resizable) && (panelSize.value !== 0 || !props2.min) && (nextSize.value !== 0 || !nextPanel.value.min);
+    });
+    const isShowBar = computed2(() => {
+      if (!panel.value)
+        return false;
+      return index3.value !== panels.value.length - 1;
+    });
+    const startCollapsible = computed2(() => isCollapsible(panel.value, panelSize.value, nextPanel.value, nextSize.value));
+    const endCollapsible = computed2(() => isCollapsible(nextPanel.value, nextSize.value, panel.value, panelSize.value));
+    function sizeToPx(str2) {
+      if (isPct(str2)) {
+        return getPct(str2) * containerSize.value || 0;
+      } else if (isPx(str2)) {
+        return getPx(str2);
+      }
+      return str2 != null ? str2 : 0;
+    }
+    let isSizeUpdating = false;
+    watch2(() => props2.size, () => {
+      if (!isSizeUpdating && panel.value) {
+        const size2 = sizeToPx(props2.size);
+        const maxSize = sizeToPx(props2.max);
+        const minSize = sizeToPx(props2.min);
+        const finalSize = Math.min(Math.max(size2, minSize || 0), maxSize || size2);
+        if (finalSize !== size2) {
+          emits("update:size", finalSize);
+        }
+        panel.value.size = finalSize;
+      }
+    });
+    watch2(() => {
+      var _a26;
+      return (_a26 = panel.value) == null ? void 0 : _a26.size;
+    }, (val) => {
+      if (val !== props2.size) {
+        isSizeUpdating = true;
+        emits("update:size", val);
+        nextTick(() => isSizeUpdating = false);
+      }
+    });
+    watch2(() => props2.resizable, (val) => {
+      if (panel.value) {
+        panel.value.resizable = val;
+      }
+    });
+    const _panel = reactive({
+      el: panelEl.value,
+      uid: uid3,
+      getVnode: () => instance.vnode,
+      setIndex,
+      ...props2,
+      collapsible: computed2(() => getCollapsible(props2.collapsible))
+    });
+    registerPanel(_panel);
+    onBeforeUnmount(() => unregisterPanel(_panel));
+    return (_ctx, _cache) => {
+      return openBlock(), createElementBlock(Fragment, null, [
+        createBaseVNode("div", mergeProps({
+          ref_key: "panelEl",
+          ref: panelEl,
+          class: [unref(ns).b()],
+          style: { flexBasis: `${unref(panelSize)}px` }
+        }, _ctx.$attrs), [
+          renderSlot(_ctx.$slots, "default")
+        ], 16),
+        unref(isShowBar) ? (openBlock(), createBlock(SplitBar, {
+          key: 0,
+          index: index3.value,
+          layout: unref(layout2),
+          lazy: unref(lazy),
+          resizable: unref(isResizable),
+          "start-collapsible": unref(startCollapsible),
+          "end-collapsible": unref(endCollapsible),
+          onMoveStart: unref(onMoveStart),
+          onMoving: unref(onMoving),
+          onMoveEnd: unref(onMoveEnd),
+          onCollapse: unref(onCollapse)
+        }, {
+          "start-collapsible": withCtx(() => [
+            renderSlot(_ctx.$slots, "start-collapsible")
+          ]),
+          "end-collapsible": withCtx(() => [
+            renderSlot(_ctx.$slots, "end-collapsible")
+          ]),
+          _: 3
+        }, 8, ["index", "layout", "lazy", "resizable", "start-collapsible", "end-collapsible", "onMoveStart", "onMoving", "onMoveEnd", "onCollapse"])) : createCommentVNode("v-if", true)
+      ], 64);
+    };
+  }
+});
+var SplitPanel = /* @__PURE__ */ _export_sfc(_sfc_main368, [["__file", "split-panel.vue"]]);
+
+// node_modules/element-plus/es/components/splitter/index.mjs
+var ElSplitter = withInstall(Splitter, {
+  SplitPanel
+});
+var ElSplitterPanel = withNoopInstall(SplitPanel);
 
 // node_modules/element-plus/es/components/drawer/src/drawer.mjs
 var drawerProps = buildProps({
@@ -51270,6 +52585,7 @@ var drawerProps = buildProps({
     default: "rtl",
     values: ["ltr", "rtl", "ttb", "btt"]
   },
+  resizable: Boolean,
   size: {
     type: [String, Number],
     default: "30%"
@@ -51290,12 +52606,12 @@ var drawerProps = buildProps({
 var drawerEmits = dialogEmits;
 
 // node_modules/element-plus/es/components/drawer/src/drawer2.mjs
-var __default__55 = defineComponent({
+var __default__62 = defineComponent({
   name: "ElDrawer",
   inheritAttrs: false
 });
-var _sfc_main73 = /* @__PURE__ */ defineComponent({
-  ...__default__55,
+var _sfc_main369 = /* @__PURE__ */ defineComponent({
+  ...__default__62,
   props: drawerProps,
   emits: drawerEmits,
   setup(__props, { expose }) {
@@ -51367,77 +52683,100 @@ var _sfc_main73 = /* @__PURE__ */ defineComponent({
                     onReleaseRequested: unref(onCloseRequested)
                   }, {
                     default: withCtx(() => [
-                      createBaseVNode("div", mergeProps({
-                        ref_key: "drawerRef",
-                        ref: drawerRef,
-                        "aria-modal": "true",
-                        "aria-label": _ctx.title || void 0,
-                        "aria-labelledby": !_ctx.title ? unref(titleId) : void 0,
-                        "aria-describedby": unref(bodyId)
-                      }, _ctx.$attrs, {
-                        class: [unref(ns).b(), _ctx.direction, unref(visible) && "open"],
-                        style: unref(isHorizontal2) ? "width: " + unref(drawerSize) : "height: " + unref(drawerSize),
-                        role: "dialog",
-                        onClick: withModifiers(() => {
-                        }, ["stop"])
-                      }), [
-                        createBaseVNode("span", {
-                          ref_key: "focusStartRef",
-                          ref: focusStartRef,
-                          class: normalizeClass(unref(ns).e("sr-focus")),
-                          tabindex: "-1"
-                        }, null, 2),
-                        _ctx.withHeader ? (openBlock(), createElementBlock("header", {
-                          key: 0,
-                          class: normalizeClass([unref(ns).e("header"), _ctx.headerClass])
-                        }, [
-                          !_ctx.$slots.title ? renderSlot(_ctx.$slots, "header", {
+                      createVNode(unref(ElSplitter), {
+                        class: normalizeClass(unref(ns).b("splitter")),
+                        layout: unref(isHorizontal2) ? "horizontal" : "vertical"
+                      }, {
+                        default: withCtx(() => [
+                          ["rtl", "btt"].includes(_ctx.direction) ? (openBlock(), createBlock(unref(ElSplitterPanel), {
                             key: 0,
-                            close: unref(handleClose),
-                            titleId: unref(titleId),
-                            titleClass: unref(ns).e("title")
-                          }, () => [
-                            !_ctx.$slots.title ? (openBlock(), createElementBlock("span", {
-                              key: 0,
-                              id: unref(titleId),
-                              role: "heading",
-                              "aria-level": _ctx.headerAriaLevel,
-                              class: normalizeClass(unref(ns).e("title"))
-                            }, toDisplayString(_ctx.title), 11, ["id", "aria-level"])) : createCommentVNode("v-if", true)
-                          ]) : renderSlot(_ctx.$slots, "title", { key: 1 }, () => [
-                            createCommentVNode(" DEPRECATED SLOT ")
-                          ]),
-                          _ctx.showClose ? (openBlock(), createElementBlock("button", {
-                            key: 2,
-                            "aria-label": unref(t)("el.drawer.close"),
-                            class: normalizeClass(unref(ns).e("close-btn")),
-                            type: "button",
-                            onClick: unref(handleClose)
-                          }, [
-                            createVNode(unref(ElIcon), {
-                              class: normalizeClass(unref(ns).e("close"))
-                            }, {
-                              default: withCtx(() => [
-                                createVNode(unref(close_default))
-                              ]),
-                              _: 1
-                            }, 8, ["class"])
-                          ], 10, ["aria-label", "onClick"])) : createCommentVNode("v-if", true)
-                        ], 2)) : createCommentVNode("v-if", true),
-                        unref(rendered) ? (openBlock(), createElementBlock("div", {
-                          key: 1,
-                          id: unref(bodyId),
-                          class: normalizeClass([unref(ns).e("body"), _ctx.bodyClass])
-                        }, [
-                          renderSlot(_ctx.$slots, "default")
-                        ], 10, ["id"])) : createCommentVNode("v-if", true),
-                        _ctx.$slots.footer ? (openBlock(), createElementBlock("div", {
-                          key: 2,
-                          class: normalizeClass([unref(ns).e("footer"), _ctx.footerClass])
-                        }, [
-                          renderSlot(_ctx.$slots, "footer")
-                        ], 2)) : createCommentVNode("v-if", true)
-                      ], 16, ["aria-label", "aria-labelledby", "aria-describedby", "onClick"])
+                            onClick: unref(onModalClick)
+                          }, null, 8, ["onClick"])) : createCommentVNode("v-if", true),
+                          createVNode(unref(ElSplitterPanel), {
+                            resizable: _ctx.resizable,
+                            size: unref(drawerSize)
+                          }, {
+                            default: withCtx(() => [
+                              createBaseVNode("div", mergeProps({
+                                ref_key: "drawerRef",
+                                ref: drawerRef,
+                                "aria-modal": "true",
+                                "aria-label": _ctx.title || void 0,
+                                "aria-labelledby": !_ctx.title ? unref(titleId) : void 0,
+                                "aria-describedby": unref(bodyId)
+                              }, _ctx.$attrs, {
+                                class: [unref(ns).b(), _ctx.direction, unref(visible) && "open"],
+                                role: "dialog",
+                                onClick: withModifiers(() => {
+                                }, ["stop"])
+                              }), [
+                                createBaseVNode("span", {
+                                  ref_key: "focusStartRef",
+                                  ref: focusStartRef,
+                                  class: normalizeClass(unref(ns).e("sr-focus")),
+                                  tabindex: "-1"
+                                }, null, 2),
+                                _ctx.withHeader ? (openBlock(), createElementBlock("header", {
+                                  key: 0,
+                                  class: normalizeClass([unref(ns).e("header"), _ctx.headerClass])
+                                }, [
+                                  !_ctx.$slots.title ? renderSlot(_ctx.$slots, "header", {
+                                    key: 0,
+                                    close: unref(handleClose),
+                                    titleId: unref(titleId),
+                                    titleClass: unref(ns).e("title")
+                                  }, () => [
+                                    !_ctx.$slots.title ? (openBlock(), createElementBlock("span", {
+                                      key: 0,
+                                      id: unref(titleId),
+                                      role: "heading",
+                                      "aria-level": _ctx.headerAriaLevel,
+                                      class: normalizeClass(unref(ns).e("title"))
+                                    }, toDisplayString(_ctx.title), 11, ["id", "aria-level"])) : createCommentVNode("v-if", true)
+                                  ]) : renderSlot(_ctx.$slots, "title", { key: 1 }, () => [
+                                    createCommentVNode(" DEPRECATED SLOT ")
+                                  ]),
+                                  _ctx.showClose ? (openBlock(), createElementBlock("button", {
+                                    key: 2,
+                                    "aria-label": unref(t)("el.drawer.close"),
+                                    class: normalizeClass(unref(ns).e("close-btn")),
+                                    type: "button",
+                                    onClick: unref(handleClose)
+                                  }, [
+                                    createVNode(unref(ElIcon), {
+                                      class: normalizeClass(unref(ns).e("close"))
+                                    }, {
+                                      default: withCtx(() => [
+                                        createVNode(unref(close_default))
+                                      ]),
+                                      _: 1
+                                    }, 8, ["class"])
+                                  ], 10, ["aria-label", "onClick"])) : createCommentVNode("v-if", true)
+                                ], 2)) : createCommentVNode("v-if", true),
+                                unref(rendered) ? (openBlock(), createElementBlock("div", {
+                                  key: 1,
+                                  id: unref(bodyId),
+                                  class: normalizeClass([unref(ns).e("body"), _ctx.bodyClass])
+                                }, [
+                                  renderSlot(_ctx.$slots, "default")
+                                ], 10, ["id"])) : createCommentVNode("v-if", true),
+                                _ctx.$slots.footer ? (openBlock(), createElementBlock("div", {
+                                  key: 2,
+                                  class: normalizeClass([unref(ns).e("footer"), _ctx.footerClass])
+                                }, [
+                                  renderSlot(_ctx.$slots, "footer")
+                                ], 2)) : createCommentVNode("v-if", true)
+                              ], 16, ["aria-label", "aria-labelledby", "aria-describedby", "onClick"])
+                            ]),
+                            _: 3
+                          }, 8, ["resizable", "size"]),
+                          ["ltr", "ttb"].includes(_ctx.direction) ? (openBlock(), createBlock(unref(ElSplitterPanel), {
+                            key: 1,
+                            onClick: unref(onModalClick)
+                          }, null, 8, ["onClick"])) : createCommentVNode("v-if", true)
+                        ]),
+                        _: 3
+                      }, 8, ["class", "layout"])
                     ]),
                     _: 3
                   }, 8, ["trapped", "focus-trap-el", "focus-start-el", "onFocusAfterTrapped", "onFocusAfterReleased", "onFocusoutPrevented", "onReleaseRequested"])
@@ -51455,29 +52794,29 @@ var _sfc_main73 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Drawer = /* @__PURE__ */ _export_sfc(_sfc_main73, [["__file", "drawer.vue"]]);
+var Drawer = /* @__PURE__ */ _export_sfc(_sfc_main369, [["__file", "drawer.vue"]]);
 
 // node_modules/element-plus/es/components/drawer/index.mjs
 var ElDrawer = withInstall(Drawer);
 
 // node_modules/element-plus/es/components/collection/src/collection2.mjs
-var _sfc_main74 = /* @__PURE__ */ defineComponent({
+var _sfc_main370 = /* @__PURE__ */ defineComponent({
   inheritAttrs: false
 });
-function _sfc_render8(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render5(_ctx, _cache, $props, $setup, $data, $options) {
   return renderSlot(_ctx.$slots, "default");
 }
-var Collection = /* @__PURE__ */ _export_sfc(_sfc_main74, [["render", _sfc_render8], ["__file", "collection.vue"]]);
+var Collection = /* @__PURE__ */ _export_sfc(_sfc_main370, [["render", _sfc_render5], ["__file", "collection.vue"]]);
 
 // node_modules/element-plus/es/components/collection/src/collection-item.mjs
-var _sfc_main75 = /* @__PURE__ */ defineComponent({
+var _sfc_main371 = /* @__PURE__ */ defineComponent({
   name: "ElCollectionItem",
   inheritAttrs: false
 });
-function _sfc_render9(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render6(_ctx, _cache, $props, $setup, $data, $options) {
   return renderSlot(_ctx.$slots, "default");
 }
-var CollectionItem = /* @__PURE__ */ _export_sfc(_sfc_main75, [["render", _sfc_render9], ["__file", "collection-item.vue"]]);
+var CollectionItem = /* @__PURE__ */ _export_sfc(_sfc_main371, [["render", _sfc_render6], ["__file", "collection-item.vue"]]);
 
 // node_modules/element-plus/es/components/collection/src/collection.mjs
 var COLLECTION_ITEM_SIGN = `data-el-collection-item`;
@@ -51619,7 +52958,7 @@ var focusFirst = (elements) => {
 var CURRENT_TAB_ID_CHANGE_EVT = "currentTabIdChange";
 var ENTRY_FOCUS_EVT = "rovingFocusGroup.entryFocus";
 var EVT_OPTS = { bubbles: false, cancelable: true };
-var _sfc_main76 = defineComponent({
+var _sfc_main372 = defineComponent({
   name: "ElRovingFocusGroupImpl",
   inheritAttrs: false,
   props: rovingFocusGroupProps,
@@ -51702,20 +53041,20 @@ var _sfc_main76 = defineComponent({
     useEventListener(rovingFocusGroupRef, ENTRY_FOCUS_EVT, handleEntryFocus);
   }
 });
-function _sfc_render10(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render7(_ctx, _cache, $props, $setup, $data, $options) {
   return renderSlot(_ctx.$slots, "default");
 }
-var ElRovingFocusGroupImpl = /* @__PURE__ */ _export_sfc(_sfc_main76, [["render", _sfc_render10], ["__file", "roving-focus-group-impl.vue"]]);
+var ElRovingFocusGroupImpl = /* @__PURE__ */ _export_sfc(_sfc_main372, [["render", _sfc_render7], ["__file", "roving-focus-group-impl.vue"]]);
 
 // node_modules/element-plus/es/components/roving-focus-group/src/roving-focus-group2.mjs
-var _sfc_main77 = defineComponent({
+var _sfc_main373 = defineComponent({
   name: "ElRovingFocusGroup",
   components: {
     ElFocusGroupCollection: ElCollection,
     ElRovingFocusGroupImpl
   }
 });
-function _sfc_render11(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render8(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_roving_focus_group_impl = resolveComponent("el-roving-focus-group-impl");
   const _component_el_focus_group_collection = resolveComponent("el-focus-group-collection");
   return openBlock(), createBlock(_component_el_focus_group_collection, null, {
@@ -51730,7 +53069,7 @@ function _sfc_render11(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   });
 }
-var ElRovingFocusGroup = /* @__PURE__ */ _export_sfc(_sfc_main77, [["render", _sfc_render11], ["__file", "roving-focus-group.vue"]]);
+var ElRovingFocusGroup = /* @__PURE__ */ _export_sfc(_sfc_main373, [["render", _sfc_render8], ["__file", "roving-focus-group.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown.mjs
 var dropdownProps = buildProps({
@@ -51843,7 +53182,7 @@ var DROPDOWN_INSTANCE_INJECTION_KEY = "elDropdown";
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown2.mjs
 var { ButtonGroup: ElButtonGroup2 } = ElButton;
-var _sfc_main78 = defineComponent({
+var _sfc_main374 = defineComponent({
   name: "ElDropdown",
   components: {
     ElButton,
@@ -51911,13 +53250,17 @@ var _sfc_main78 = defineComponent({
     }
     function onAutofocusTriggerEnter() {
       var _a26, _b25;
-      (_b25 = (_a26 = triggeringElementRef.value) == null ? void 0 : _a26.$el) == null ? void 0 : _b25.focus();
+      (_b25 = (_a26 = triggeringElementRef.value) == null ? void 0 : _a26.$el) == null ? void 0 : _b25.focus({
+        preventScroll: true
+      });
     }
     function onItemEnter() {
     }
     function onItemLeave() {
       const contentEl = unref(contentRef);
-      trigger2.value.includes("hover") && (contentEl == null ? void 0 : contentEl.focus());
+      trigger2.value.includes("hover") && (contentEl == null ? void 0 : contentEl.focus({
+        preventScroll: true
+      }));
       currentTabId.value = null;
     }
     function handleCurrentTabIdChange(id2) {
@@ -51992,7 +53335,7 @@ var _sfc_main78 = defineComponent({
     };
   }
 });
-function _sfc_render12(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render9(_ctx, _cache, $props, $setup, $data, $options) {
   var _a26;
   const _component_el_dropdown_collection = resolveComponent("el-dropdown-collection");
   const _component_el_roving_focus_group = resolveComponent("el-roving-focus-group");
@@ -52125,10 +53468,10 @@ function _sfc_render12(_ctx, _cache, $props, $setup, $data, $options) {
     })) : createCommentVNode("v-if", true)
   ], 2);
 }
-var Dropdown = /* @__PURE__ */ _export_sfc(_sfc_main78, [["render", _sfc_render12], ["__file", "dropdown.vue"]]);
+var Dropdown = /* @__PURE__ */ _export_sfc(_sfc_main374, [["render", _sfc_render9], ["__file", "dropdown.vue"]]);
 
 // node_modules/element-plus/es/components/roving-focus-group/src/roving-focus-item.mjs
-var _sfc_main79 = defineComponent({
+var _sfc_main375 = defineComponent({
   components: {
     ElRovingFocusCollectionItem: ElCollectionItem
   },
@@ -52137,10 +53480,7 @@ var _sfc_main79 = defineComponent({
       type: Boolean,
       default: true
     },
-    active: {
-      type: Boolean,
-      default: false
-    }
+    active: Boolean
   },
   emits: ["mousedown", "focus", "keydown"],
   setup(props2, { emit: emit2 }) {
@@ -52213,7 +53553,7 @@ var _sfc_main79 = defineComponent({
     };
   }
 });
-function _sfc_render13(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render10(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_roving_focus_collection_item = resolveComponent("el-roving-focus-collection-item");
   return openBlock(), createBlock(_component_el_roving_focus_collection_item, {
     id: _ctx.id,
@@ -52226,10 +53566,10 @@ function _sfc_render13(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   }, 8, ["id", "focusable", "active"]);
 }
-var ElRovingFocusItem = /* @__PURE__ */ _export_sfc(_sfc_main79, [["render", _sfc_render13], ["__file", "roving-focus-item.vue"]]);
+var ElRovingFocusItem = /* @__PURE__ */ _export_sfc(_sfc_main375, [["render", _sfc_render10], ["__file", "roving-focus-item.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown-item-impl.mjs
-var _sfc_main80 = defineComponent({
+var _sfc_main376 = defineComponent({
   name: "DropdownItemImpl",
   components: {
     ElIcon
@@ -52279,7 +53619,7 @@ var _sfc_main80 = defineComponent({
     };
   }
 });
-function _sfc_render14(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render11(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_icon = resolveComponent("el-icon");
   return openBlock(), createElementBlock(Fragment, null, [
     _ctx.divided ? (openBlock(), createElementBlock("li", {
@@ -52309,7 +53649,7 @@ function _sfc_render14(_ctx, _cache, $props, $setup, $data, $options) {
     ], 16, ["aria-disabled", "tabindex", "role", "onClick", "onFocus", "onKeydown", "onMousedown", "onPointermove", "onPointerleave"])
   ], 64);
 }
-var ElDropdownItemImpl = /* @__PURE__ */ _export_sfc(_sfc_main80, [["render", _sfc_render14], ["__file", "dropdown-item-impl.vue"]]);
+var ElDropdownItemImpl = /* @__PURE__ */ _export_sfc(_sfc_main376, [["render", _sfc_render11], ["__file", "dropdown-item-impl.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/useDropdown.mjs
 var useDropdown = () => {
@@ -52322,7 +53662,7 @@ var useDropdown = () => {
 };
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown-item.mjs
-var _sfc_main81 = defineComponent({
+var _sfc_main377 = defineComponent({
   name: "ElDropdownItem",
   components: {
     ElDropdownCollectionItem: ElCollectionItem2,
@@ -52355,7 +53695,9 @@ var _sfc_main81 = defineComponent({
       }
       onItemEnter(e);
       if (!e.defaultPrevented) {
-        target2 == null ? void 0 : target2.focus();
+        target2 == null ? void 0 : target2.focus({
+          preventScroll: true
+        });
       }
     }));
     const handlePointerLeave = composeEventHandlers((e) => {
@@ -52389,7 +53731,7 @@ var _sfc_main81 = defineComponent({
     };
   }
 });
-function _sfc_render15(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render12(_ctx, _cache, $props, $setup, $data, $options) {
   var _a26;
   const _component_el_dropdown_item_impl = resolveComponent("el-dropdown-item-impl");
   const _component_el_roving_focus_item = resolveComponent("el-roving-focus-item");
@@ -52420,10 +53762,10 @@ function _sfc_render15(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   }, 8, ["disabled", "text-value"]);
 }
-var DropdownItem = /* @__PURE__ */ _export_sfc(_sfc_main81, [["render", _sfc_render15], ["__file", "dropdown-item.vue"]]);
+var DropdownItem = /* @__PURE__ */ _export_sfc(_sfc_main377, [["render", _sfc_render12], ["__file", "dropdown-item.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/src/dropdown-menu.mjs
-var _sfc_main82 = defineComponent({
+var _sfc_main378 = defineComponent({
   name: "ElDropdownMenu",
   props: dropdownMenuProps,
   setup(props2) {
@@ -52484,7 +53826,7 @@ var _sfc_main82 = defineComponent({
     };
   }
 });
-function _sfc_render16(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render13(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("ul", {
     ref: _ctx.dropdownListWrapperRef,
     class: normalizeClass(_ctx.dropdownKls),
@@ -52500,7 +53842,7 @@ function _sfc_render16(_ctx, _cache, $props, $setup, $data, $options) {
     renderSlot(_ctx.$slots, "default")
   ], 46, ["role", "aria-labelledby", "onBlur", "onFocus", "onKeydown", "onMousedown"]);
 }
-var DropdownMenu = /* @__PURE__ */ _export_sfc(_sfc_main82, [["render", _sfc_render16], ["__file", "dropdown-menu.vue"]]);
+var DropdownMenu = /* @__PURE__ */ _export_sfc(_sfc_main378, [["render", _sfc_render13], ["__file", "dropdown-menu.vue"]]);
 
 // node_modules/element-plus/es/components/dropdown/index.mjs
 var ElDropdown = withInstall(Dropdown, {
@@ -52511,11 +53853,11 @@ var ElDropdownItem = withNoopInstall(DropdownItem);
 var ElDropdownMenu = withNoopInstall(DropdownMenu);
 
 // node_modules/element-plus/es/components/empty/src/img-empty.mjs
-var __default__56 = defineComponent({
+var __default__63 = defineComponent({
   name: "ImgEmpty"
 });
-var _sfc_main83 = /* @__PURE__ */ defineComponent({
-  ...__default__56,
+var _sfc_main379 = /* @__PURE__ */ defineComponent({
+  ...__default__63,
   setup(__props) {
     const ns = useNamespace("empty");
     const id2 = useId();
@@ -52640,7 +53982,7 @@ var _sfc_main83 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ImgEmpty = /* @__PURE__ */ _export_sfc(_sfc_main83, [["__file", "img-empty.vue"]]);
+var ImgEmpty = /* @__PURE__ */ _export_sfc(_sfc_main379, [["__file", "img-empty.vue"]]);
 
 // node_modules/element-plus/es/components/empty/src/empty2.mjs
 var emptyProps = buildProps({
@@ -52656,11 +53998,11 @@ var emptyProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/empty/src/empty.mjs
-var __default__57 = defineComponent({
+var __default__64 = defineComponent({
   name: "ElEmpty"
 });
-var _sfc_main84 = /* @__PURE__ */ defineComponent({
-  ...__default__57,
+var _sfc_main380 = /* @__PURE__ */ defineComponent({
+  ...__default__64,
   props: emptyProps,
   setup(__props) {
     const props2 = __props;
@@ -52701,12 +54043,12 @@ var _sfc_main84 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Empty = /* @__PURE__ */ _export_sfc(_sfc_main84, [["__file", "empty.vue"]]);
+var Empty = /* @__PURE__ */ _export_sfc(_sfc_main380, [["__file", "empty.vue"]]);
 
 // node_modules/element-plus/es/components/empty/index.mjs
 var ElEmpty = withInstall(Empty);
 
-// node_modules/element-plus/es/components/form/src/form2.mjs
+// node_modules/element-plus/es/components/form/src/form.mjs
 var formMetaProps = buildProps({
   size: {
     type: String,
@@ -52752,7 +54094,7 @@ var formProps = buildProps({
   hideRequiredAsterisk: Boolean,
   scrollToError: Boolean,
   scrollIntoViewOptions: {
-    type: [Object, Boolean],
+    type: definePropType([Object, Boolean]),
     default: true
   }
 });
@@ -52761,7 +54103,6 @@ var formEmits = {
 };
 
 // node_modules/element-plus/es/components/form/src/utils.mjs
-var SCOPE5 = "ElForm";
 function useFormLabelWidth() {
   const potentialLabelWidthArr = ref([]);
   const autoLabelWidth = computed2(() => {
@@ -52772,9 +54113,8 @@ function useFormLabelWidth() {
   });
   function getLabelWidthIndex(width) {
     const index3 = potentialLabelWidthArr.value.indexOf(width);
-    if (index3 === -1 && autoLabelWidth.value === "0") {
-      debugWarn(SCOPE5, `unexpected width ${width}`);
-    }
+    if (index3 === -1 && autoLabelWidth.value === "0")
+      ;
     return index3;
   }
   function registerLabelWidth(val, oldVal) {
@@ -52802,13 +54142,13 @@ var filterFields = (fields, props2) => {
   return normalized.length > 0 ? fields.filter((field) => field.propString && normalized.includes(field.propString)) : fields;
 };
 
-// node_modules/element-plus/es/components/form/src/form.mjs
-var COMPONENT_NAME12 = "ElForm";
-var __default__58 = defineComponent({
-  name: COMPONENT_NAME12
+// node_modules/element-plus/es/components/form/src/form2.mjs
+var COMPONENT_NAME13 = "ElForm";
+var __default__65 = defineComponent({
+  name: COMPONENT_NAME13
 });
-var _sfc_main85 = /* @__PURE__ */ defineComponent({
-  ...__default__58,
+var _sfc_main381 = /* @__PURE__ */ defineComponent({
+  ...__default__65,
   props: formProps,
   emits: formEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -52841,7 +54181,6 @@ var _sfc_main85 = /* @__PURE__ */ defineComponent({
     };
     const resetFields = (properties = []) => {
       if (!props2.model) {
-        debugWarn(COMPONENT_NAME12, "model is required for resetFields to work.");
         return;
       }
       filterFields(fields, properties).forEach((field) => field.resetField());
@@ -52851,9 +54190,6 @@ var _sfc_main85 = /* @__PURE__ */ defineComponent({
     };
     const isValidatable = computed2(() => {
       const hasModel = !!props2.model;
-      if (!hasModel) {
-        debugWarn(COMPONENT_NAME12, "model is required for validate to work.");
-      }
       return hasModel;
     });
     const obtainValidateFields = (props22) => {
@@ -52861,7 +54197,6 @@ var _sfc_main85 = /* @__PURE__ */ defineComponent({
         return [];
       const filteredFields = filterFields(fields, props22);
       if (!filteredFields.length) {
-        debugWarn(COMPONENT_NAME12, "please pass correct props!");
         return [];
       }
       return filteredFields;
@@ -52877,7 +54212,7 @@ var _sfc_main85 = /* @__PURE__ */ defineComponent({
       for (const field of fields2) {
         try {
           await field.validate("");
-          if (field.validateState === "error")
+          if (field.validateState === "error" && !field.error)
             field.resetField();
         } catch (fields3) {
           validationErrors = {
@@ -52922,7 +54257,7 @@ var _sfc_main85 = /* @__PURE__ */ defineComponent({
     };
     watch2(() => props2.rules, () => {
       if (props2.validateOnRuleChange) {
-        validate().catch((err) => debugWarn(err));
+        validate().catch((err) => debugWarn());
       }
     }, { deep: true, flush: "post" });
     provide(formContextKey, reactive({
@@ -52956,7 +54291,7 @@ var _sfc_main85 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Form = /* @__PURE__ */ _export_sfc(_sfc_main85, [["__file", "form.vue"]]);
+var Form = /* @__PURE__ */ _export_sfc(_sfc_main381, [["__file", "form.vue"]]);
 
 // node_modules/async-validator/dist-web/index.js
 function _extends() {
@@ -54062,9 +55397,9 @@ var formItemProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/form/src/form-label-wrap.mjs
-var COMPONENT_NAME13 = "ElLabelWrap";
+var COMPONENT_NAME14 = "ElLabelWrap";
 var FormLabelWrap = defineComponent({
-  name: COMPONENT_NAME13,
+  name: COMPONENT_NAME14,
   props: {
     isAutoWidth: Boolean,
     updateAll: Boolean
@@ -54075,7 +55410,7 @@ var FormLabelWrap = defineComponent({
     const formContext = inject(formContextKey, void 0);
     const formItemContext = inject(formItemContextKey);
     if (!formItemContext)
-      throwError(COMPONENT_NAME13, "usage: <el-form-item><label-wrap /></el-form-item>");
+      throwError(COMPONENT_NAME14, "usage: <el-form-item><label-wrap /></el-form-item>");
     const ns = useNamespace("form");
     const el = ref();
     const computedWidth = ref(0);
@@ -54150,11 +55485,11 @@ var FormLabelWrap = defineComponent({
 });
 
 // node_modules/element-plus/es/components/form/src/form-item2.mjs
-var __default__59 = defineComponent({
+var __default__66 = defineComponent({
   name: "ElFormItem"
 });
-var _sfc_main86 = /* @__PURE__ */ defineComponent({
-  ...__default__59,
+var _sfc_main382 = /* @__PURE__ */ defineComponent({
+  ...__default__66,
   props: formItemProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -54457,7 +55792,7 @@ var _sfc_main86 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var FormItem = /* @__PURE__ */ _export_sfc(_sfc_main86, [["__file", "form-item.vue"]]);
+var FormItem = /* @__PURE__ */ _export_sfc(_sfc_main382, [["__file", "form-item.vue"]]);
 
 // node_modules/element-plus/es/components/form/index.mjs
 var ElForm = withInstall(Form, {
@@ -54500,10 +55835,7 @@ var imageViewerProps = buildProps({
     type: Number,
     default: 7
   },
-  showProgress: {
-    type: Boolean,
-    default: false
-  },
+  showProgress: Boolean,
   crossorigin: {
     type: definePropType(String)
   }
@@ -54515,11 +55847,11 @@ var imageViewerEmits = {
 };
 
 // node_modules/element-plus/es/components/image-viewer/src/image-viewer2.mjs
-var __default__60 = defineComponent({
+var __default__67 = defineComponent({
   name: "ElImageViewer"
 });
-var _sfc_main87 = /* @__PURE__ */ defineComponent({
-  ...__default__60,
+var _sfc_main383 = /* @__PURE__ */ defineComponent({
+  ...__default__67,
   props: imageViewerProps,
   emits: imageViewerEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -54948,12 +56280,12 @@ var _sfc_main87 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ImageViewer = /* @__PURE__ */ _export_sfc(_sfc_main87, [["__file", "image-viewer.vue"]]);
+var ImageViewer = /* @__PURE__ */ _export_sfc(_sfc_main383, [["__file", "image-viewer.vue"]]);
 
 // node_modules/element-plus/es/components/image-viewer/index.mjs
 var ElImageViewer = withInstall(ImageViewer);
 
-// node_modules/element-plus/es/components/image/src/image2.mjs
+// node_modules/element-plus/es/components/image/src/image.mjs
 var imageProps = buildProps({
   hideOnClickModal: Boolean,
   src: {
@@ -55005,10 +56337,7 @@ var imageProps = buildProps({
     type: Number,
     default: 7
   },
-  showProgress: {
-    type: Boolean,
-    default: false
-  },
+  showProgress: Boolean,
   crossorigin: {
     type: definePropType(String)
   }
@@ -55021,13 +56350,13 @@ var imageEmits = {
   show: () => true
 };
 
-// node_modules/element-plus/es/components/image/src/image.mjs
-var __default__61 = defineComponent({
+// node_modules/element-plus/es/components/image/src/image2.mjs
+var __default__68 = defineComponent({
   name: "ElImage",
   inheritAttrs: false
 });
-var _sfc_main88 = /* @__PURE__ */ defineComponent({
-  ...__default__61,
+var _sfc_main384 = /* @__PURE__ */ defineComponent({
+  ...__default__68,
   props: imageProps,
   emits: imageEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -55098,8 +56427,8 @@ var _sfc_main88 = /* @__PURE__ */ defineComponent({
       hasLoadError.value = true;
       emit2("error", event);
     }
-    function handleLazyLoad() {
-      if (isInContainer(container.value, _scrollContainer.value)) {
+    function handleLazyLoad(isIntersecting) {
+      if (isIntersecting) {
         loadImage();
         removeLazyLoadListener();
       }
@@ -55116,18 +56445,20 @@ var _sfc_main88 = /* @__PURE__ */ defineComponent({
       } else if (isString(scrollContainer) && scrollContainer !== "") {
         _scrollContainer.value = (_a26 = document.querySelector(scrollContainer)) != null ? _a26 : void 0;
       } else if (container.value) {
-        _scrollContainer.value = getScrollContainer(container.value);
+        const scrollContainer2 = getScrollContainer(container.value);
+        _scrollContainer.value = isWindow(scrollContainer2) ? void 0 : scrollContainer2;
       }
-      if (_scrollContainer.value) {
-        stopScrollListener = useEventListener(_scrollContainer, "scroll", lazyLoadHandler);
-        setTimeout(() => handleLazyLoad(), 100);
-      }
+      const { stop: stop2 } = useIntersectionObserver(container, ([entry]) => {
+        lazyLoadHandler(entry.isIntersecting);
+      }, { root: _scrollContainer });
+      stopScrollListener = stop2;
     }
     function removeLazyLoadListener() {
-      if (!isClient || !_scrollContainer.value || !lazyLoadHandler)
+      if (!isClient || !lazyLoadHandler)
         return;
       stopScrollListener == null ? void 0 : stopScrollListener();
       _scrollContainer.value = void 0;
+      stopScrollListener = void 0;
     }
     function clickHandler() {
       if (!preview.value)
@@ -55235,7 +56566,7 @@ var _sfc_main88 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Image2 = /* @__PURE__ */ _export_sfc(_sfc_main88, [["__file", "image.vue"]]);
+var Image2 = /* @__PURE__ */ _export_sfc(_sfc_main384, [["__file", "image.vue"]]);
 
 // node_modules/element-plus/es/components/image/index.mjs
 var ElImage = withInstall(Image2);
@@ -55253,11 +56584,11 @@ var inputNumberProps = buildProps({
   stepStrictly: Boolean,
   max: {
     type: Number,
-    default: Number.POSITIVE_INFINITY
+    default: Number.MAX_SAFE_INTEGER
   },
   min: {
     type: Number,
-    default: Number.NEGATIVE_INFINITY
+    default: Number.MIN_SAFE_INTEGER
   },
   modelValue: {
     type: [Number, null]
@@ -55289,7 +56620,16 @@ var inputNumberProps = buildProps({
     type: Boolean,
     default: true
   },
-  ...useAriaProps(["ariaLabel"])
+  ...useAriaProps(["ariaLabel"]),
+  inputmode: {
+    type: definePropType(String),
+    default: void 0
+  },
+  align: {
+    type: definePropType(String),
+    default: "center"
+  },
+  disabledScientific: Boolean
 });
 var inputNumberEmits = {
   [CHANGE_EVENT]: (cur, prev) => prev !== cur,
@@ -55300,11 +56640,11 @@ var inputNumberEmits = {
 };
 
 // node_modules/element-plus/es/components/input-number/src/input-number2.mjs
-var __default__62 = defineComponent({
+var __default__69 = defineComponent({
   name: "ElInputNumber"
 });
-var _sfc_main89 = /* @__PURE__ */ defineComponent({
-  ...__default__62,
+var _sfc_main385 = /* @__PURE__ */ defineComponent({
+  ...__default__69,
   props: inputNumberProps,
   emits: inputNumberEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -55322,9 +56662,8 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
     const numPrecision = computed2(() => {
       const stepPrecision = getPrecision(props2.step);
       if (!isUndefined4(props2.precision)) {
-        if (stepPrecision > props2.precision) {
-          debugWarn("InputNumber", "precision should not be less than the decimal places of step");
-        }
+        if (stepPrecision > props2.precision)
+          ;
         return props2.precision;
       } else {
         return Math.max(getPrecision(props2.modelValue), stepPrecision);
@@ -55384,7 +56723,31 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
     const ensurePrecision = (val, coefficient = 1) => {
       if (!isNumber2(val))
         return data.currentValue;
+      if (val >= Number.MAX_SAFE_INTEGER && coefficient === 1) {
+        return val;
+      } else if (val <= Number.MIN_SAFE_INTEGER && coefficient === -1) {
+        return val;
+      }
       return toPrecision(val + props2.step * coefficient);
+    };
+    const handleKeydown = (event) => {
+      var _a26;
+      const e = event;
+      if (props2.disabledScientific && ["e", "E"].includes(e.key)) {
+        e.preventDefault();
+        return;
+      }
+      const keyHandlers = {
+        [EVENT_CODE.up]: () => {
+          e.preventDefault();
+          increase();
+        },
+        [EVENT_CODE.down]: () => {
+          e.preventDefault();
+          decrease();
+        }
+      };
+      (_a26 = keyHandlers[e.key]) == null ? void 0 : _a26.call(keyHandlers);
     };
     const increase = () => {
       if (props2.readonly || inputNumberDisabled.value || maxDisabled.value)
@@ -55450,7 +56813,7 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
         emit2(CHANGE_EVENT, newVal, oldVal);
       }
       if (props2.validateEvent) {
-        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn(err));
+        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn());
       }
       data.currentValue = newVal;
     };
@@ -55487,7 +56850,7 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
       }
       emit2("blur", event);
       if (props2.validateEvent) {
-        (_b25 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _b25.call(formItem, "blur").catch((err) => debugWarn(err));
+        (_b25 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _b25.call(formItem, "blur").catch((err) => debugWarn());
       }
     };
     const setCurrentValueToModelValue = () => {
@@ -55505,6 +56868,9 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
         data.currentValue = newValue;
       }
     }, { immediate: true });
+    watch2(() => props2.precision, () => {
+      data.currentValue = verifyValue(props2.modelValue);
+    });
     onMounted(() => {
       var _a26;
       const { min: min6, max: max7, modelValue } = props2;
@@ -55547,7 +56913,8 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
           unref(ns).m(unref(inputNumberSize)),
           unref(ns).is("disabled", unref(inputNumberDisabled)),
           unref(ns).is("without-controls", !_ctx.controls),
-          unref(ns).is("controls-right", unref(controlsAtRight))
+          unref(ns).is("controls-right", unref(controlsAtRight)),
+          unref(ns).is(_ctx.align, !!_ctx.align)
         ]),
         onDragstart: withModifiers(() => {
         }, ["prevent"])
@@ -55604,10 +56971,8 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
           name: _ctx.name,
           "aria-label": _ctx.ariaLabel,
           "validate-event": false,
-          onKeydown: [
-            withKeys(withModifiers(increase, ["prevent"]), ["up"]),
-            withKeys(withModifiers(decrease, ["prevent"]), ["down"])
-          ],
+          inputmode: _ctx.inputmode,
+          onKeydown: handleKeydown,
           onBlur: handleBlur,
           onFocus: handleFocus,
           onInput: handleInput,
@@ -55627,12 +56992,12 @@ var _sfc_main89 = /* @__PURE__ */ defineComponent({
               renderSlot(_ctx.$slots, "suffix")
             ])
           } : void 0
-        ]), 1032, ["id", "step", "model-value", "placeholder", "readonly", "disabled", "size", "max", "min", "name", "aria-label", "onKeydown"])
+        ]), 1032, ["id", "step", "model-value", "placeholder", "readonly", "disabled", "size", "max", "min", "name", "aria-label", "inputmode"])
       ], 42, ["onDragstart"]);
     };
   }
 });
-var InputNumber = /* @__PURE__ */ _export_sfc(_sfc_main89, [["__file", "input-number.vue"]]);
+var InputNumber = /* @__PURE__ */ _export_sfc(_sfc_main385, [["__file", "input-number.vue"]]);
 
 // node_modules/element-plus/es/components/input-number/index.mjs
 var ElInputNumber = withInstall(InputNumber);
@@ -55649,16 +57014,17 @@ var inputTagProps = buildProps({
     type: definePropType(String),
     default: EVENT_CODE.enter
   },
-  draggable: {
-    type: Boolean,
-    default: false
-  },
+  draggable: Boolean,
   delimiter: {
     type: [String, RegExp],
     default: ""
   },
   size: useSizeProp,
   clearable: Boolean,
+  clearIcon: {
+    type: iconPropType,
+    default: circle_close_default
+  },
   disabled: {
     type: Boolean,
     default: void 0
@@ -55692,13 +57058,19 @@ var inputTagProps = buildProps({
     type: Boolean,
     default: true
   },
+  collapseTags: Boolean,
+  collapseTagsTooltip: Boolean,
+  maxCollapseTags: {
+    type: Number,
+    default: 1
+  },
   ariaLabel: String
 });
 var inputTagEmits = {
   [UPDATE_MODEL_EVENT]: (value) => isArray(value) || isUndefined4(value),
   [CHANGE_EVENT]: (value) => isArray(value) || isUndefined4(value),
   [INPUT_EVENT]: (value) => isString(value),
-  "add-tag": (value) => isString(value),
+  "add-tag": (value) => isString(value) || isArray(value),
   "remove-tag": (value) => isString(value),
   focus: (evt) => evt instanceof FocusEvent,
   blur: (evt) => evt instanceof FocusEvent,
@@ -55711,6 +57083,7 @@ function useInputTag({ props: props2, emit: emit2, formItem }) {
   const size2 = useFormSize();
   const inputRef = shallowRef();
   const inputValue = ref();
+  const tagTooltipRef = ref();
   const tagSize = computed2(() => {
     return ["small"].includes(size2.value) ? "small" : "default";
   });
@@ -55723,19 +57096,42 @@ function useInputTag({ props: props2, emit: emit2, formItem }) {
     var _a26, _b25;
     return isUndefined4(props2.max) ? false : ((_b25 = (_a26 = props2.modelValue) == null ? void 0 : _a26.length) != null ? _b25 : 0) >= props2.max;
   });
-  const handleInput = (event) => {
+  const showTagList = computed2(() => {
+    var _a26;
+    return props2.collapseTags ? (_a26 = props2.modelValue) == null ? void 0 : _a26.slice(0, props2.maxCollapseTags) : props2.modelValue;
+  });
+  const collapseTagList = computed2(() => {
+    var _a26;
+    return props2.collapseTags ? (_a26 = props2.modelValue) == null ? void 0 : _a26.slice(props2.maxCollapseTags) : [];
+  });
+  const addTagsEmit = (value) => {
+    var _a26;
+    const list = [...(_a26 = props2.modelValue) != null ? _a26 : [], ...castArray_default(value)];
+    emit2(UPDATE_MODEL_EVENT, list);
+    emit2(CHANGE_EVENT, list);
+    emit2("add-tag", value);
+    inputValue.value = void 0;
+  };
+  const getDelimitedTags = (input) => {
     var _a26, _b25;
+    const tags = input.split(props2.delimiter).filter((val) => val && val !== input);
+    if (props2.max) {
+      const maxInsert = props2.max - ((_b25 = (_a26 = props2.modelValue) == null ? void 0 : _a26.length) != null ? _b25 : 0);
+      tags.splice(maxInsert);
+    }
+    return tags.length === 1 ? tags[0] : tags;
+  };
+  const handleInput = (event) => {
     if (inputLimit.value) {
       inputValue.value = void 0;
       return;
     }
     if (isComposing.value)
       return;
-    if (props2.delimiter) {
-      const replacement = (_a26 = inputValue.value) == null ? void 0 : _a26.replace(props2.delimiter, "");
-      if ((replacement == null ? void 0 : replacement.length) !== ((_b25 = inputValue.value) == null ? void 0 : _b25.length)) {
-        inputValue.value = replacement;
-        handleAddTag();
+    if (props2.delimiter && inputValue.value) {
+      const tags = getDelimitedTags(inputValue.value);
+      if (tags.length) {
+        addTagsEmit(tags);
       }
     }
     emit2(INPUT_EVENT, event.target.value);
@@ -55767,15 +57163,11 @@ function useInputTag({ props: props2, emit: emit2, formItem }) {
     }
   };
   const handleAddTag = () => {
-    var _a26, _b25;
+    var _a26;
     const value = (_a26 = inputValue.value) == null ? void 0 : _a26.trim();
     if (!value || inputLimit.value)
       return;
-    const list = [...(_b25 = props2.modelValue) != null ? _b25 : [], value];
-    emit2(UPDATE_MODEL_EVENT, list);
-    emit2(CHANGE_EVENT, list);
-    emit2("add-tag", value);
-    inputValue.value = void 0;
+    addTagsEmit(value);
   };
   const handleRemoveTag = (index3) => {
     var _a26;
@@ -55809,8 +57201,10 @@ function useInputTag({ props: props2, emit: emit2, formItem }) {
     (_a26 = inputRef.value) == null ? void 0 : _a26.blur();
   };
   const { wrapperRef, isFocused } = useFocusController(inputRef, {
-    beforeFocus() {
-      return disabled.value;
+    disabled,
+    beforeBlur(event) {
+      var _a26;
+      return (_a26 = tagTooltipRef.value) == null ? void 0 : _a26.isFocusInsideContent(event);
     },
     afterBlur() {
       var _a26;
@@ -55820,7 +57214,7 @@ function useInputTag({ props: props2, emit: emit2, formItem }) {
         inputValue.value = void 0;
       }
       if (props2.validateEvent) {
-        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "blur").catch((err) => debugWarn(err));
+        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "blur").catch((err) => debugWarn());
       }
     }
   });
@@ -55833,12 +57227,13 @@ function useInputTag({ props: props2, emit: emit2, formItem }) {
   watch2(() => props2.modelValue, () => {
     var _a26;
     if (props2.validateEvent) {
-      (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, CHANGE_EVENT).catch((err) => debugWarn(err));
+      (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, CHANGE_EVENT).catch((err) => debugWarn());
     }
   });
   return {
     inputRef,
     wrapperRef,
+    tagTooltipRef,
     isFocused,
     isComposing,
     inputValue,
@@ -55848,6 +57243,8 @@ function useInputTag({ props: props2, emit: emit2, formItem }) {
     closable,
     disabled,
     inputLimit,
+    showTagList,
+    collapseTagList,
     handleDragged,
     handleInput,
     handleKeydown,
@@ -55878,11 +57275,13 @@ function useHovering() {
   };
 }
 
+// node_modules/element-plus/es/constants/form.mjs
+var MINIMUM_INPUT_WIDTH = 11;
+
 // node_modules/element-plus/es/hooks/use-calc-input-width/index.mjs
 function useCalcInputWidth() {
   const calculatorRef = shallowRef();
   const calculatorWidth = ref(0);
-  const MINIMUM_INPUT_WIDTH = 11;
   const inputStyle = computed2(() => ({
     minWidth: `${Math.max(calculatorWidth.value, MINIMUM_INPUT_WIDTH)}px`
   }));
@@ -56038,12 +57437,12 @@ function useInputTagDom({
 }
 
 // node_modules/element-plus/es/components/input-tag/src/input-tag2.mjs
-var __default__63 = defineComponent({
+var __default__70 = defineComponent({
   name: "ElInputTag",
   inheritAttrs: false
 });
-var _sfc_main90 = /* @__PURE__ */ defineComponent({
-  ...__default__63,
+var _sfc_main386 = /* @__PURE__ */ defineComponent({
+  ...__default__70,
   props: inputTagProps,
   emits: inputTagEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -56063,6 +57462,7 @@ var _sfc_main90 = /* @__PURE__ */ defineComponent({
     const {
       inputRef,
       wrapperRef,
+      tagTooltipRef,
       isFocused,
       inputValue,
       size: size2,
@@ -56070,6 +57470,8 @@ var _sfc_main90 = /* @__PURE__ */ defineComponent({
       placeholder,
       closable,
       disabled,
+      showTagList,
+      collapseTagList,
       handleDragged,
       handleInput,
       handleKeydown,
@@ -56131,7 +57533,7 @@ var _sfc_main90 = /* @__PURE__ */ defineComponent({
         createBaseVNode("div", {
           class: normalizeClass(unref(innerKls))
         }, [
-          (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.modelValue, (item, index3) => {
+          (openBlock(true), createElementBlock(Fragment, null, renderList(unref(showTagList), (item, index3) => {
             return openBlock(), createBlock(unref(ElTag), {
               key: index3,
               size: unref(tagSize),
@@ -56158,6 +57560,58 @@ var _sfc_main90 = /* @__PURE__ */ defineComponent({
               _: 2
             }, 1032, ["size", "closable", "type", "effect", "draggable", "onClose", "onDragstart", "onDragover", "onDragend", "onDrop"]);
           }), 128)),
+          _ctx.collapseTags && _ctx.modelValue && _ctx.modelValue.length > _ctx.maxCollapseTags ? (openBlock(), createBlock(unref(ElTooltip), {
+            key: 0,
+            ref_key: "tagTooltipRef",
+            ref: tagTooltipRef,
+            disabled: !_ctx.collapseTagsTooltip,
+            "fallback-placements": ["bottom", "top", "right", "left"],
+            effect: _ctx.tagEffect,
+            placement: "bottom"
+          }, {
+            default: withCtx(() => [
+              createVNode(unref(ElTag), {
+                closable: false,
+                size: unref(tagSize),
+                type: _ctx.tagType,
+                effect: _ctx.tagEffect,
+                "disable-transitions": ""
+              }, {
+                default: withCtx(() => [
+                  createTextVNode(" + " + toDisplayString(_ctx.modelValue.length - _ctx.maxCollapseTags), 1)
+                ]),
+                _: 1
+              }, 8, ["size", "type", "effect"])
+            ]),
+            content: withCtx(() => [
+              createBaseVNode("div", {
+                class: normalizeClass(unref(ns).e("input-tag-list"))
+              }, [
+                (openBlock(true), createElementBlock(Fragment, null, renderList(unref(collapseTagList), (item, index3) => {
+                  return openBlock(), createBlock(unref(ElTag), {
+                    key: index3,
+                    size: unref(tagSize),
+                    closable: unref(closable),
+                    type: _ctx.tagType,
+                    effect: _ctx.tagEffect,
+                    "disable-transitions": "",
+                    onClose: ($event) => unref(handleRemoveTag)(index3 + _ctx.maxCollapseTags)
+                  }, {
+                    default: withCtx(() => [
+                      renderSlot(_ctx.$slots, "tag", {
+                        value: item,
+                        index: index3 + _ctx.maxCollapseTags
+                      }, () => [
+                        createTextVNode(toDisplayString(item), 1)
+                      ])
+                    ]),
+                    _: 2
+                  }, 1032, ["size", "closable", "type", "effect", "onClose"]);
+                }), 128))
+              ], 2)
+            ]),
+            _: 3
+          }, 8, ["disabled", "effect"])) : createCommentVNode("v-if", true),
           createBaseVNode("div", {
             class: normalizeClass(unref(ns).e("input-wrapper"))
           }, [
@@ -56215,7 +57669,7 @@ var _sfc_main90 = /* @__PURE__ */ defineComponent({
             onClick: unref(handleClear)
           }, {
             default: withCtx(() => [
-              createVNode(unref(circle_close_default))
+              (openBlock(), createBlock(resolveDynamicComponent(_ctx.clearIcon)))
             ]),
             _: 1
           }, 8, ["class", "onMousedown", "onClick"])) : createCommentVNode("v-if", true),
@@ -56237,7 +57691,7 @@ var _sfc_main90 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var InputTag = /* @__PURE__ */ _export_sfc(_sfc_main90, [["__file", "input-tag.vue"]]);
+var InputTag = /* @__PURE__ */ _export_sfc(_sfc_main386, [["__file", "input-tag.vue"]]);
 
 // node_modules/element-plus/es/components/input-tag/index.mjs
 var ElInputTag = withInstall(InputTag);
@@ -56269,11 +57723,11 @@ var linkEmits = {
 };
 
 // node_modules/element-plus/es/components/link/src/link2.mjs
-var __default__64 = defineComponent({
+var __default__71 = defineComponent({
   name: "ElLink"
 });
-var _sfc_main91 = /* @__PURE__ */ defineComponent({
-  ...__default__64,
+var _sfc_main387 = /* @__PURE__ */ defineComponent({
+  ...__default__71,
   props: linkProps,
   emits: linkEmits,
   setup(__props, { emit: emit2 }) {
@@ -56332,7 +57786,7 @@ var _sfc_main91 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Link2 = /* @__PURE__ */ _export_sfc(_sfc_main91, [["__file", "link.vue"]]);
+var Link2 = /* @__PURE__ */ _export_sfc(_sfc_main387, [["__file", "link.vue"]]);
 
 // node_modules/element-plus/es/components/link/index.mjs
 var ElLink = withInstall(Link2);
@@ -56465,11 +57919,11 @@ var Menu = class {
 };
 
 // node_modules/element-plus/es/components/menu/src/menu-collapse-transition.mjs
-var __default__65 = defineComponent({
+var __default__72 = defineComponent({
   name: "ElMenuCollapseTransition"
 });
-var _sfc_main92 = /* @__PURE__ */ defineComponent({
-  ...__default__65,
+var _sfc_main388 = /* @__PURE__ */ defineComponent({
+  ...__default__72,
   setup(__props) {
     const ns = useNamespace("menu");
     const listeners = {
@@ -56515,7 +57969,7 @@ var _sfc_main92 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElMenuCollapseTransition = /* @__PURE__ */ _export_sfc(_sfc_main92, [["__file", "menu-collapse-transition.vue"]]);
+var ElMenuCollapseTransition = /* @__PURE__ */ _export_sfc(_sfc_main388, [["__file", "menu-collapse-transition.vue"]]);
 
 // node_modules/element-plus/es/components/menu/src/use-menu.mjs
 function useMenu(instance, currentIndex) {
@@ -56597,9 +58051,9 @@ var subMenuProps = buildProps({
     type: iconPropType
   }
 });
-var COMPONENT_NAME14 = "ElSubMenu";
+var COMPONENT_NAME15 = "ElSubMenu";
 var SubMenu2 = defineComponent({
-  name: COMPONENT_NAME14,
+  name: COMPONENT_NAME15,
   props: subMenuProps,
   setup(props2, { slots, expose }) {
     const instance = getCurrentInstance();
@@ -56608,10 +58062,10 @@ var SubMenu2 = defineComponent({
     const nsSubMenu = useNamespace("sub-menu");
     const rootMenu = inject(MENU_INJECTION_KEY);
     if (!rootMenu)
-      throwError(COMPONENT_NAME14, "can not inject root menu");
+      throwError(COMPONENT_NAME15, "can not inject root menu");
     const subMenu = inject(`${SUB_MENU_INJECTION_KEY}${parentMenu.value.uid}`);
     if (!subMenu)
-      throwError(COMPONENT_NAME14, "can not inject sub menu");
+      throwError(COMPONENT_NAME15, "can not inject sub menu");
     const items = ref({});
     const subMenus = ref({});
     let timeout2;
@@ -56910,8 +58364,10 @@ var Menu2 = defineComponent({
     const instance = getCurrentInstance();
     const router = instance.appContext.config.globalProperties.$router;
     const menu = ref();
+    const subMenu = ref();
     const nsMenu = useNamespace("menu");
     const nsSubMenu = useNamespace("sub-menu");
+    let moreItemWidth = 64;
     const sliceIndex = ref(-1);
     const openedMenus = ref(props2.defaultOpeneds && !props2.collapse ? props2.defaultOpeneds.slice(0) : []);
     const activeIndex = ref(props2.defaultActive);
@@ -56924,8 +58380,8 @@ var Menu2 = defineComponent({
         return;
       const indexPath = activeItem.indexPath;
       indexPath.forEach((index3) => {
-        const subMenu = subMenus.value[index3];
-        subMenu && openMenu(index3, subMenu.indexPath);
+        const subMenu2 = subMenus.value[index3];
+        subMenu2 && openMenu(index3, subMenu2.indexPath);
       });
     };
     const openMenu = (index3, indexPath) => {
@@ -56990,8 +58446,7 @@ var Menu2 = defineComponent({
       var _a26, _b25;
       if (!menu.value)
         return -1;
-      const items2 = Array.from((_b25 = (_a26 = menu.value) == null ? void 0 : _a26.childNodes) != null ? _b25 : []).filter((item) => item.nodeName !== "#text" || item.nodeValue);
-      const moreItemWidth = 64;
+      const items2 = Array.from((_b25 = (_a26 = menu.value) == null ? void 0 : _a26.childNodes) != null ? _b25 : []).filter((item) => item.nodeName !== "#comment" && (item.nodeName !== "#text" || item.nodeValue));
       const computedMenuStyle = getComputedStyle(menu.value);
       const paddingLeft = Number.parseInt(computedMenuStyle.paddingLeft, 10);
       const paddingRight = Number.parseInt(computedMenuStyle.paddingRight, 10);
@@ -56999,8 +58454,6 @@ var Menu2 = defineComponent({
       let calcWidth = 0;
       let sliceIndex2 = 0;
       items2.forEach((item, index3) => {
-        if (item.nodeName === "#comment")
-          return;
         calcWidth += calcMenuItemWidth(item);
         if (calcWidth <= menuWidth - moreItemWidth) {
           sliceIndex2 = index3 + 1;
@@ -57010,16 +58463,19 @@ var Menu2 = defineComponent({
     };
     const getIndexPath = (index3) => subMenus.value[index3].indexPath;
     const debounce3 = (fn2, wait = 33.34) => {
-      let timmer;
+      let timer2;
       return () => {
-        timmer && clearTimeout(timmer);
-        timmer = setTimeout(() => {
+        timer2 && clearTimeout(timer2);
+        timer2 = setTimeout(() => {
           fn2();
         }, wait);
       };
     };
     let isFirstTimeRender = true;
     const handleResize = () => {
+      const el = unrefElement(subMenu);
+      if (el)
+        moreItemWidth = calcMenuItemWidth(el) || 64;
       if (sliceIndex.value === calcSliceIndex())
         return;
       const callback = () => {
@@ -57109,12 +58565,15 @@ var Menu2 = defineComponent({
       let slot = (_b25 = (_a26 = slots.default) == null ? void 0 : _a26.call(slots)) != null ? _b25 : [];
       const vShowMore = [];
       if (props2.mode === "horizontal" && menu.value) {
-        const originalSlot = flattedChildren(slot);
+        const originalSlot = flattedChildren(slot).filter((vnode) => {
+          return (vnode == null ? void 0 : vnode.shapeFlag) !== 8;
+        });
         const slotDefault = sliceIndex.value === -1 ? originalSlot : originalSlot.slice(0, sliceIndex.value);
         const slotMore = sliceIndex.value === -1 ? [] : originalSlot.slice(sliceIndex.value);
         if ((slotMore == null ? void 0 : slotMore.length) && props2.ellipsis) {
           slot = slotDefault;
           vShowMore.push(h(SubMenu2, {
+            ref: subMenu,
             index: "sub-menu-more",
             class: nsSubMenu.e("hide-arrow"),
             popperOffset: props2.popperOffset
@@ -57176,27 +58635,27 @@ var menuItemEmits = {
 };
 
 // node_modules/element-plus/es/components/menu/src/menu-item2.mjs
-var COMPONENT_NAME15 = "ElMenuItem";
-var __default__66 = defineComponent({
-  name: COMPONENT_NAME15
+var COMPONENT_NAME16 = "ElMenuItem";
+var __default__73 = defineComponent({
+  name: COMPONENT_NAME16
 });
-var _sfc_main93 = /* @__PURE__ */ defineComponent({
-  ...__default__66,
+var _sfc_main389 = /* @__PURE__ */ defineComponent({
+  ...__default__73,
   props: menuItemProps,
   emits: menuItemEmits,
   setup(__props, { expose, emit: emit2 }) {
     const props2 = __props;
-    isPropAbsent(props2.index) && debugWarn(COMPONENT_NAME15, 'Missing required prop: "index"');
+    isPropAbsent(props2.index) && debugWarn();
     const instance = getCurrentInstance();
     const rootMenu = inject(MENU_INJECTION_KEY);
     const nsMenu = useNamespace("menu");
     const nsMenuItem = useNamespace("menu-item");
     if (!rootMenu)
-      throwError(COMPONENT_NAME15, "can not inject root menu");
+      throwError(COMPONENT_NAME16, "can not inject root menu");
     const { parentMenu, indexPath } = useMenu(instance, toRef(props2, "index"));
     const subMenu = inject(`${SUB_MENU_INJECTION_KEY}${parentMenu.value.uid}`);
     if (!subMenu)
-      throwError(COMPONENT_NAME15, "can not inject sub menu");
+      throwError(COMPONENT_NAME16, "can not inject sub menu");
     const active = computed2(() => props2.index === rootMenu.activeIndex);
     const item = reactive({
       index: props2.index,
@@ -57266,7 +58725,7 @@ var _sfc_main93 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var MenuItem2 = /* @__PURE__ */ _export_sfc(_sfc_main93, [["__file", "menu-item.vue"]]);
+var MenuItem2 = /* @__PURE__ */ _export_sfc(_sfc_main389, [["__file", "menu-item.vue"]]);
 
 // node_modules/element-plus/es/components/menu/src/menu-item-group.mjs
 var menuItemGroupProps = {
@@ -57274,11 +58733,11 @@ var menuItemGroupProps = {
 };
 
 // node_modules/element-plus/es/components/menu/src/menu-item-group2.mjs
-var __default__67 = defineComponent({
+var __default__74 = defineComponent({
   name: "ElMenuItemGroup"
 });
-var _sfc_main94 = /* @__PURE__ */ defineComponent({
-  ...__default__67,
+var _sfc_main390 = /* @__PURE__ */ defineComponent({
+  ...__default__74,
   props: menuItemGroupProps,
   setup(__props) {
     const ns = useNamespace("menu-item-group");
@@ -57300,7 +58759,7 @@ var _sfc_main94 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var MenuItemGroup = /* @__PURE__ */ _export_sfc(_sfc_main94, [["__file", "menu-item-group.vue"]]);
+var MenuItemGroup = /* @__PURE__ */ _export_sfc(_sfc_main390, [["__file", "menu-item-group.vue"]]);
 
 // node_modules/element-plus/es/components/menu/index.mjs
 var ElMenu = withInstall(Menu2, {
@@ -57329,11 +58788,11 @@ var pageHeaderEmits = {
 };
 
 // node_modules/element-plus/es/components/page-header/src/page-header2.mjs
-var __default__68 = defineComponent({
+var __default__75 = defineComponent({
   name: "ElPageHeader"
 });
-var _sfc_main95 = /* @__PURE__ */ defineComponent({
-  ...__default__68,
+var _sfc_main391 = /* @__PURE__ */ defineComponent({
+  ...__default__75,
   props: pageHeaderProps,
   emits: pageHeaderEmits,
   setup(__props, { emit: emit2 }) {
@@ -57419,7 +58878,7 @@ var _sfc_main95 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var PageHeader = /* @__PURE__ */ _export_sfc(_sfc_main95, [["__file", "page-header.vue"]]);
+var PageHeader = /* @__PURE__ */ _export_sfc(_sfc_main391, [["__file", "page-header.vue"]]);
 
 // node_modules/element-plus/es/components/page-header/index.mjs
 var ElPageHeader = withInstall(PageHeader);
@@ -57446,11 +58905,11 @@ var paginationPrevEmits = {
 };
 
 // node_modules/element-plus/es/components/pagination/src/components/prev2.mjs
-var __default__69 = defineComponent({
+var __default__76 = defineComponent({
   name: "ElPaginationPrev"
 });
-var _sfc_main96 = /* @__PURE__ */ defineComponent({
-  ...__default__69,
+var _sfc_main392 = /* @__PURE__ */ defineComponent({
+  ...__default__76,
   props: paginationPrevProps,
   emits: paginationPrevEmits,
   setup(__props) {
@@ -57476,7 +58935,7 @@ var _sfc_main96 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Prev = /* @__PURE__ */ _export_sfc(_sfc_main96, [["__file", "prev.vue"]]);
+var Prev = /* @__PURE__ */ _export_sfc(_sfc_main392, [["__file", "prev.vue"]]);
 
 // node_modules/element-plus/es/components/pagination/src/components/next.mjs
 var paginationNextProps = buildProps({
@@ -57498,11 +58957,11 @@ var paginationNextProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/pagination/src/components/next2.mjs
-var __default__70 = defineComponent({
+var __default__77 = defineComponent({
   name: "ElPaginationNext"
 });
-var _sfc_main97 = /* @__PURE__ */ defineComponent({
-  ...__default__70,
+var _sfc_main393 = /* @__PURE__ */ defineComponent({
+  ...__default__77,
   props: paginationNextProps,
   emits: ["click"],
   setup(__props) {
@@ -57528,14 +58987,36 @@ var _sfc_main97 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Next = /* @__PURE__ */ _export_sfc(_sfc_main97, [["__file", "next.vue"]]);
+var Next = /* @__PURE__ */ _export_sfc(_sfc_main393, [["__file", "next.vue"]]);
+
+// node_modules/element-plus/es/components/select-v2/src/useProps.mjs
+var defaultProps = {
+  label: "label",
+  value: "value",
+  disabled: "disabled",
+  options: "options"
+};
+function useProps(props2) {
+  const aliasProps = computed2(() => ({ ...defaultProps, ...props2.props }));
+  const getLabel = (option) => get_default(option, aliasProps.value.label);
+  const getValue4 = (option) => get_default(option, aliasProps.value.value);
+  const getDisabled = (option) => get_default(option, aliasProps.value.disabled);
+  const getOptions = (option) => get_default(option, aliasProps.value.options);
+  return {
+    aliasProps,
+    getLabel,
+    getValue: getValue4,
+    getDisabled,
+    getOptions
+  };
+}
 
 // node_modules/element-plus/es/components/select/src/token.mjs
 var selectGroupKey = Symbol("ElSelectGroup");
 var selectKey = Symbol("ElSelect");
 
 // node_modules/element-plus/es/components/select/src/option.mjs
-var COMPONENT_NAME16 = "ElOption";
+var COMPONENT_NAME17 = "ElOption";
 var optionProps = buildProps({
   value: {
     type: [String, Number, Boolean, Object],
@@ -57548,11 +59029,15 @@ var optionProps = buildProps({
   disabled: Boolean
 });
 
+// node_modules/element-plus/es/utils/strings.mjs
+var escapeStringRegexp = (string3 = "") => string3.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
+var capitalize2 = (str2) => capitalize(str2);
+
 // node_modules/element-plus/es/components/select/src/useOption.mjs
 function useOption(props2, states) {
   const select = inject(selectKey);
   if (!select) {
-    throwError(COMPONENT_NAME16, "usage: <el-select><el-option /></el-select/>");
+    throwError(COMPONENT_NAME17, "usage: <el-select><el-option /></el-select/>");
   }
   const selectGroup = inject(selectGroupKey, { disabled: false });
   const itemSelected = computed2(() => {
@@ -57630,9 +59115,9 @@ function useOption(props2, states) {
 }
 
 // node_modules/element-plus/es/components/select/src/option2.mjs
-var _sfc_main98 = defineComponent({
-  name: COMPONENT_NAME16,
-  componentName: COMPONENT_NAME16,
+var _sfc_main394 = defineComponent({
+  name: COMPONENT_NAME17,
+  componentName: COMPONENT_NAME17,
   props: optionProps,
   setup(props2) {
     const ns = useNamespace("select");
@@ -57662,11 +59147,11 @@ var _sfc_main98 = defineComponent({
     select.onOptionCreate(vm);
     onBeforeUnmount(() => {
       const key = vm.value;
-      const { selected: selectedOptions } = select.states;
-      const doesSelected = selectedOptions.some((item) => {
-        return item.value === vm.value;
-      });
       nextTick(() => {
+        const { selected: selectedOptions } = select.states;
+        const doesSelected = selectedOptions.some((item) => {
+          return item.value === vm.value;
+        });
         if (select.states.cachedOptions.get(key) === vm && !doesSelected) {
           select.states.cachedOptions.delete(key);
         }
@@ -57695,7 +59180,7 @@ var _sfc_main98 = defineComponent({
     };
   }
 });
-function _sfc_render17(_ctx, _cache) {
+function _sfc_render14(_ctx, _cache) {
   return withDirectives((openBlock(), createElementBlock("li", {
     id: _ctx.id,
     class: normalizeClass(_ctx.containerKls),
@@ -57712,10 +59197,10 @@ function _sfc_render17(_ctx, _cache) {
     [vShow, _ctx.visible]
   ]);
 }
-var Option = /* @__PURE__ */ _export_sfc(_sfc_main98, [["render", _sfc_render17], ["__file", "option.vue"]]);
+var Option = /* @__PURE__ */ _export_sfc(_sfc_main394, [["render", _sfc_render14], ["__file", "option.vue"]]);
 
 // node_modules/element-plus/es/components/select/src/select-dropdown.mjs
-var _sfc_main99 = defineComponent({
+var _sfc_main395 = defineComponent({
   name: "ElSelectDropdown",
   componentName: "ElSelectDropdown",
   setup() {
@@ -57742,7 +59227,7 @@ var _sfc_main99 = defineComponent({
     };
   }
 });
-function _sfc_render18(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render15(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass([_ctx.ns.b("dropdown"), _ctx.ns.is("multiple", _ctx.isMultiple), _ctx.popperClass]),
     style: normalizeStyle({ [_ctx.isFitInputWidth ? "width" : "minWidth"]: _ctx.minWidth })
@@ -57762,7 +59247,7 @@ function _sfc_render18(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2)) : createCommentVNode("v-if", true)
   ], 6);
 }
-var ElSelectMenu = /* @__PURE__ */ _export_sfc(_sfc_main99, [["render", _sfc_render18], ["__file", "select-dropdown.vue"]]);
+var ElSelectMenu = /* @__PURE__ */ _export_sfc(_sfc_main395, [["render", _sfc_render15], ["__file", "select-dropdown.vue"]]);
 
 // node_modules/element-plus/es/components/select/src/useSelect.mjs
 var useSelect = (props2, emit2) => {
@@ -57796,6 +59281,13 @@ var useSelect = (props2, emit2) => {
   const tagMenuRef = ref();
   const collapseItemRef = ref();
   const scrollbarRef = ref();
+  const expanded = ref(false);
+  const hoverOption = ref();
+  const { form, formItem } = useFormItem();
+  const { inputId } = useFormItemInputId(props2, {
+    formItemContext: formItem
+  });
+  const { valueOnClear, isEmptyValue: isEmptyValue2 } = useEmptyValues(props2);
   const {
     isComposing,
     handleCompositionStart,
@@ -57804,10 +59296,9 @@ var useSelect = (props2, emit2) => {
   } = useComposition({
     afterComposition: (e) => onInput(e)
   });
+  const selectDisabled = computed2(() => props2.disabled || !!(form == null ? void 0 : form.disabled));
   const { wrapperRef, isFocused, handleBlur } = useFocusController(inputRef, {
-    beforeFocus() {
-      return selectDisabled.value;
-    },
+    disabled: selectDisabled,
     afterFocus() {
       if (props2.automaticDropdown && !expanded.value) {
         expanded.value = true;
@@ -57823,18 +59314,10 @@ var useSelect = (props2, emit2) => {
       expanded.value = false;
       states.menuVisibleOnFocus = false;
       if (props2.validateEvent) {
-        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "blur").catch((err) => debugWarn(err));
+        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "blur").catch((err) => debugWarn());
       }
     }
   });
-  const expanded = ref(false);
-  const hoverOption = ref();
-  const { form, formItem } = useFormItem();
-  const { inputId } = useFormItemInputId(props2, {
-    formItemContext: formItem
-  });
-  const { valueOnClear, isEmptyValue: isEmptyValue2 } = useEmptyValues(props2);
-  const selectDisabled = computed2(() => props2.disabled || (form == null ? void 0 : form.disabled));
   const hasModelValue = computed2(() => {
     return isArray(props2.modelValue) ? props2.modelValue.length > 0 : !isEmptyValue2(props2.modelValue);
   });
@@ -57842,8 +59325,8 @@ var useSelect = (props2, emit2) => {
     var _a26;
     return (_a26 = form == null ? void 0 : form.statusIcon) != null ? _a26 : false;
   });
-  const showClose = computed2(() => {
-    return props2.clearable && !selectDisabled.value && states.inputHovering && hasModelValue.value;
+  const showClearBtn = computed2(() => {
+    return props2.clearable && !selectDisabled.value && hasModelValue.value && (isFocused.value || states.inputHovering);
   });
   const iconComponent = computed2(() => props2.remote && props2.filterable && !props2.remoteShowSuffix ? "" : props2.suffixIcon);
   const iconReverse = computed2(() => nsSelect.is("reverse", !!(iconComponent.value && expanded.value)));
@@ -57927,7 +59410,7 @@ var useSelect = (props2, emit2) => {
     }
     setSelected2();
     if (!isEqual_default(val, oldVal) && props2.validateEvent) {
-      formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn(err));
+      formItem == null ? void 0 : formItem.validate("change").catch((err) => debugWarn());
     }
   }, {
     flush: "post",
@@ -58223,7 +59706,7 @@ var useSelect = (props2, emit2) => {
   const handleClickOutside = (event) => {
     expanded.value = false;
     if (isFocused.value) {
-      const _event2 = new FocusEvent("focus", event);
+      const _event2 = new FocusEvent("blur", event);
       nextTick(() => handleBlur(_event2));
     }
   };
@@ -58305,7 +59788,8 @@ var useSelect = (props2, emit2) => {
   };
   const tagStyle = computed2(() => {
     const gapWidth = getGapWidth();
-    const maxWidth = collapseItemRef.value && props2.maxCollapseTags === 1 ? states.selectionWidth - states.collapseItemWidth - gapWidth : states.selectionWidth;
+    const inputSlotWidth = props2.filterable ? gapWidth + MINIMUM_INPUT_WIDTH : 0;
+    const maxWidth = collapseItemRef.value && props2.maxCollapseTags === 1 ? states.selectionWidth - states.collapseItemWidth - gapWidth - inputSlotWidth : states.selectionWidth - inputSlotWidth;
     return { maxWidth: `${maxWidth}px` };
   });
   const collapseTagStyle = computed2(() => {
@@ -58315,10 +59799,18 @@ var useSelect = (props2, emit2) => {
     emit2("popup-scroll", data);
   };
   useResizeObserver(selectionRef, resetSelectionWidth);
-  useResizeObserver(menuRef, updateTooltip);
   useResizeObserver(wrapperRef, updateTooltip);
   useResizeObserver(tagMenuRef, updateTagTooltip);
   useResizeObserver(collapseItemRef, resetCollapseItemWidth);
+  let stop2;
+  watch2(() => dropdownMenuVisible.value, (newVal) => {
+    if (newVal) {
+      stop2 = useResizeObserver(menuRef, updateTooltip).stop;
+    } else {
+      stop2 == null ? void 0 : stop2();
+      stop2 = void 0;
+    }
+  });
   onMounted(() => {
     setSelected2();
   });
@@ -58348,7 +59840,7 @@ var useSelect = (props2, emit2) => {
     currentPlaceholder,
     mouseEnterEventName,
     needStatusIcon,
-    showClose,
+    showClearBtn,
     iconComponent,
     iconReverse,
     validateState,
@@ -58468,6 +59960,9 @@ var selectProps = buildProps({
     type: String,
     default: ""
   },
+  popperStyle: {
+    type: definePropType([String, Object])
+  },
   popperOptions: {
     type: definePropType(Object),
     default: () => ({})
@@ -58476,8 +59971,12 @@ var selectProps = buildProps({
   loadingText: String,
   noMatchText: String,
   noDataText: String,
-  remoteMethod: Function,
-  filterMethod: Function,
+  remoteMethod: {
+    type: definePropType(Function)
+  },
+  filterMethod: {
+    type: definePropType(Function)
+  },
   multiple: Boolean,
   multipleLimit: {
     type: Number,
@@ -58544,6 +60043,13 @@ var selectProps = buildProps({
     default: 0
   },
   appendTo: useTooltipContentProps.appendTo,
+  options: {
+    type: definePropType(Array)
+  },
+  props: {
+    type: definePropType(Object),
+    default: () => defaultProps
+  },
   ...useEmptyValuesProps,
   ...useAriaProps(["ariaLabel"])
 });
@@ -58558,15 +60064,93 @@ var selectEmits = {
   clear: () => true
 };
 
+// node_modules/element-plus/es/components/select/src/option-group.mjs
+var _sfc_main396 = defineComponent({
+  name: "ElOptionGroup",
+  componentName: "ElOptionGroup",
+  props: {
+    label: String,
+    disabled: Boolean
+  },
+  setup(props2) {
+    const ns = useNamespace("select");
+    const groupRef = ref();
+    const instance = getCurrentInstance();
+    const children2 = ref([]);
+    provide(selectGroupKey, reactive({
+      ...toRefs(props2)
+    }));
+    const visible = computed2(() => children2.value.some((option) => option.visible === true));
+    const isOption = (node) => {
+      var _a26;
+      return node.type.name === "ElOption" && !!((_a26 = node.component) == null ? void 0 : _a26.proxy);
+    };
+    const flattedChildren2 = (node) => {
+      const nodes = castArray_default(node);
+      const children22 = [];
+      nodes.forEach((child) => {
+        var _a26;
+        if (!isVNode(child))
+          return;
+        if (isOption(child)) {
+          children22.push(child.component.proxy);
+        } else if (isArray(child.children) && child.children.length) {
+          children22.push(...flattedChildren2(child.children));
+        } else if ((_a26 = child.component) == null ? void 0 : _a26.subTree) {
+          children22.push(...flattedChildren2(child.component.subTree));
+        }
+      });
+      return children22;
+    };
+    const updateChildren = () => {
+      children2.value = flattedChildren2(instance.subTree);
+    };
+    onMounted(() => {
+      updateChildren();
+    });
+    useMutationObserver(groupRef, updateChildren, {
+      attributes: true,
+      subtree: true,
+      childList: true
+    });
+    return {
+      groupRef,
+      visible,
+      ns
+    };
+  }
+});
+function _sfc_render16(_ctx, _cache, $props, $setup, $data, $options) {
+  return withDirectives((openBlock(), createElementBlock("ul", {
+    ref: "groupRef",
+    class: normalizeClass(_ctx.ns.be("group", "wrap"))
+  }, [
+    createBaseVNode("li", {
+      class: normalizeClass(_ctx.ns.be("group", "title"))
+    }, toDisplayString(_ctx.label), 3),
+    createBaseVNode("li", null, [
+      createBaseVNode("ul", {
+        class: normalizeClass(_ctx.ns.b("group"))
+      }, [
+        renderSlot(_ctx.$slots, "default")
+      ], 2)
+    ])
+  ], 2)), [
+    [vShow, _ctx.visible]
+  ]);
+}
+var OptionGroup = /* @__PURE__ */ _export_sfc(_sfc_main396, [["render", _sfc_render16], ["__file", "option-group.vue"]]);
+
 // node_modules/element-plus/es/components/select/src/select2.mjs
-var COMPONENT_NAME17 = "ElSelect";
-var _sfc_main100 = defineComponent({
-  name: COMPONENT_NAME17,
-  componentName: COMPONENT_NAME17,
+var COMPONENT_NAME18 = "ElSelect";
+var _sfc_main397 = defineComponent({
+  name: COMPONENT_NAME18,
+  componentName: COMPONENT_NAME18,
   components: {
     ElSelectMenu,
     ElOption: Option,
     ElOptions,
+    ElOptionGroup: OptionGroup,
     ElTag,
     ElScrollbar,
     ElTooltip,
@@ -58606,6 +60190,12 @@ var _sfc_main100 = defineComponent({
     });
     const API = useSelect(_props, emit2);
     const { calculatorRef, inputStyle } = useCalcInputWidth();
+    const { getLabel, getValue: getValue4, getOptions, getDisabled } = useProps(props2);
+    const getOptionProps = (option) => ({
+      label: getLabel(option),
+      value: getValue4(option),
+      disabled: getDisabled(option)
+    });
     const flatTreeSelectData = (data) => {
       return data.reduce((acc, item) => {
         acc.push(item);
@@ -58664,20 +60254,29 @@ var _sfc_main100 = defineComponent({
       }
       return API.states.selected.map((i) => i.currentLabel);
     });
+    onBeforeUnmount(() => {
+      instance.appContext.config.warnHandler = void 0;
+    });
     return {
       ...API,
       modelValue,
       selectedLabel,
       calculatorRef,
-      inputStyle
+      inputStyle,
+      getLabel,
+      getValue: getValue4,
+      getOptions,
+      getDisabled,
+      getOptionProps
     };
   }
 });
-function _sfc_render19(_ctx, _cache) {
+function _sfc_render17(_ctx, _cache) {
   const _component_el_tag = resolveComponent("el-tag");
   const _component_el_tooltip = resolveComponent("el-tooltip");
   const _component_el_icon = resolveComponent("el-icon");
   const _component_el_option = resolveComponent("el-option");
+  const _component_el_option_group = resolveComponent("el-option-group");
   const _component_el_options = resolveComponent("el-options");
   const _component_el_scrollbar = resolveComponent("el-scrollbar");
   const _component_el_select_menu = resolveComponent("el-select-menu");
@@ -58694,6 +60293,7 @@ function _sfc_render19(_ctx, _cache) {
       placement: _ctx.placement,
       teleported: _ctx.teleported,
       "popper-class": [_ctx.nsSelect.e("popper"), _ctx.popperClass],
+      "popper-style": _ctx.popperStyle,
       "popper-options": _ctx.popperOptions,
       "fallback-placements": _ctx.fallbackPlacements,
       effect: _ctx.effect,
@@ -58737,7 +60337,12 @@ function _sfc_render19(_ctx, _cache) {
                 _ctx.nsSelect.is("near", _ctx.multiple && !_ctx.$slots.prefix && !!_ctx.states.selected.length)
               ])
             }, [
-              _ctx.multiple ? renderSlot(_ctx.$slots, "tag", { key: 0 }, () => [
+              _ctx.multiple ? renderSlot(_ctx.$slots, "tag", {
+                key: 0,
+                data: _ctx.states.selected,
+                deleteTag: _ctx.deleteTag,
+                selectDisabled: _ctx.selectDisabled
+              }, () => [
                 (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.showTagList, (item) => {
                   return openBlock(), createElementBlock("div", {
                     key: _ctx.getValueKey(item),
@@ -58775,6 +60380,8 @@ function _sfc_render19(_ctx, _cache) {
                   "fallback-placements": ["bottom", "top", "right", "left"],
                   effect: _ctx.effect,
                   placement: "bottom",
+                  "popper-class": _ctx.popperClass,
+                  "popper-style": _ctx.popperStyle,
                   teleported: _ctx.teleported
                 }, {
                   default: withCtx(() => [
@@ -58837,7 +60444,7 @@ function _sfc_render19(_ctx, _cache) {
                     ], 2)
                   ]),
                   _: 3
-                }, 8, ["disabled", "effect", "teleported"])) : createCommentVNode("v-if", true)
+                }, 8, ["disabled", "effect", "popper-class", "popper-style", "teleported"])) : createCommentVNode("v-if", true)
               ]) : createCommentVNode("v-if", true),
               createBaseVNode("div", {
                 class: normalizeClass([
@@ -58910,7 +60517,7 @@ function _sfc_render19(_ctx, _cache) {
               ref: "suffixRef",
               class: normalizeClass(_ctx.nsSelect.e("suffix"))
             }, [
-              _ctx.iconComponent && !_ctx.showClose ? (openBlock(), createBlock(_component_el_icon, {
+              _ctx.iconComponent && !_ctx.showClearBtn ? (openBlock(), createBlock(_component_el_icon, {
                 key: 0,
                 class: normalizeClass([_ctx.nsSelect.e("caret"), _ctx.nsSelect.e("icon"), _ctx.iconReverse])
               }, {
@@ -58919,7 +60526,7 @@ function _sfc_render19(_ctx, _cache) {
                 ]),
                 _: 1
               }, 8, ["class"])) : createCommentVNode("v-if", true),
-              _ctx.showClose && _ctx.clearIcon ? (openBlock(), createBlock(_component_el_icon, {
+              _ctx.showClearBtn && _ctx.clearIcon ? (openBlock(), createBlock(_component_el_icon, {
                 key: 1,
                 class: normalizeClass([
                   _ctx.nsSelect.e("caret"),
@@ -58981,7 +60588,27 @@ function _sfc_render19(_ctx, _cache) {
                 }, null, 8, ["value"])) : createCommentVNode("v-if", true),
                 createVNode(_component_el_options, null, {
                   default: withCtx(() => [
-                    renderSlot(_ctx.$slots, "default")
+                    renderSlot(_ctx.$slots, "default", {}, () => [
+                      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.options, (option, index3) => {
+                        var _a26;
+                        return openBlock(), createElementBlock(Fragment, { key: index3 }, [
+                          ((_a26 = _ctx.getOptions(option)) == null ? void 0 : _a26.length) ? (openBlock(), createBlock(_component_el_option_group, {
+                            key: 0,
+                            label: _ctx.getLabel(option),
+                            disabled: _ctx.getDisabled(option)
+                          }, {
+                            default: withCtx(() => [
+                              (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.getOptions(option), (item) => {
+                                return openBlock(), createBlock(_component_el_option, mergeProps({
+                                  key: _ctx.getValue(item)
+                                }, _ctx.getOptionProps(item)), null, 16);
+                              }), 128))
+                            ]),
+                            _: 2
+                          }, 1032, ["label", "disabled"])) : (openBlock(), createBlock(_component_el_option, normalizeProps(mergeProps({ key: 1 }, _ctx.getOptionProps(option))), null, 16))
+                        ], 64);
+                      }), 128))
+                    ])
                   ]),
                   _: 3
                 })
@@ -59016,89 +60643,12 @@ function _sfc_render19(_ctx, _cache) {
         }, 512)
       ]),
       _: 3
-    }, 8, ["visible", "placement", "teleported", "popper-class", "popper-options", "fallback-placements", "effect", "transition", "persistent", "append-to", "show-arrow", "offset", "onBeforeShow", "onHide"])
+    }, 8, ["visible", "placement", "teleported", "popper-class", "popper-style", "popper-options", "fallback-placements", "effect", "transition", "persistent", "append-to", "show-arrow", "offset", "onBeforeShow", "onHide"])
   ], 16, ["onMouseleave"])), [
     [_directive_click_outside, _ctx.handleClickOutside, _ctx.popperRef]
   ]);
 }
-var Select = /* @__PURE__ */ _export_sfc(_sfc_main100, [["render", _sfc_render19], ["__file", "select.vue"]]);
-
-// node_modules/element-plus/es/components/select/src/option-group.mjs
-var _sfc_main101 = defineComponent({
-  name: "ElOptionGroup",
-  componentName: "ElOptionGroup",
-  props: {
-    label: String,
-    disabled: Boolean
-  },
-  setup(props2) {
-    const ns = useNamespace("select");
-    const groupRef = ref();
-    const instance = getCurrentInstance();
-    const children2 = ref([]);
-    provide(selectGroupKey, reactive({
-      ...toRefs(props2)
-    }));
-    const visible = computed2(() => children2.value.some((option) => option.visible === true));
-    const isOption = (node) => {
-      var _a26;
-      return node.type.name === "ElOption" && !!((_a26 = node.component) == null ? void 0 : _a26.proxy);
-    };
-    const flattedChildren2 = (node) => {
-      const nodes = castArray_default(node);
-      const children22 = [];
-      nodes.forEach((child) => {
-        var _a26;
-        if (!isVNode(child))
-          return;
-        if (isOption(child)) {
-          children22.push(child.component.proxy);
-        } else if (isArray(child.children) && child.children.length) {
-          children22.push(...flattedChildren2(child.children));
-        } else if ((_a26 = child.component) == null ? void 0 : _a26.subTree) {
-          children22.push(...flattedChildren2(child.component.subTree));
-        }
-      });
-      return children22;
-    };
-    const updateChildren = () => {
-      children2.value = flattedChildren2(instance.subTree);
-    };
-    onMounted(() => {
-      updateChildren();
-    });
-    useMutationObserver(groupRef, updateChildren, {
-      attributes: true,
-      subtree: true,
-      childList: true
-    });
-    return {
-      groupRef,
-      visible,
-      ns
-    };
-  }
-});
-function _sfc_render20(_ctx, _cache, $props, $setup, $data, $options) {
-  return withDirectives((openBlock(), createElementBlock("ul", {
-    ref: "groupRef",
-    class: normalizeClass(_ctx.ns.be("group", "wrap"))
-  }, [
-    createBaseVNode("li", {
-      class: normalizeClass(_ctx.ns.be("group", "title"))
-    }, toDisplayString(_ctx.label), 3),
-    createBaseVNode("li", null, [
-      createBaseVNode("ul", {
-        class: normalizeClass(_ctx.ns.b("group"))
-      }, [
-        renderSlot(_ctx.$slots, "default")
-      ], 2)
-    ])
-  ], 2)), [
-    [vShow, _ctx.visible]
-  ]);
-}
-var OptionGroup = /* @__PURE__ */ _export_sfc(_sfc_main101, [["render", _sfc_render20], ["__file", "option-group.vue"]]);
+var Select = /* @__PURE__ */ _export_sfc(_sfc_main397, [["render", _sfc_render17], ["__file", "select.vue"]]);
 
 // node_modules/element-plus/es/components/select/index.mjs
 var ElSelect = withInstall(Select, {
@@ -59134,11 +60684,11 @@ var paginationSizesProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/pagination/src/components/sizes2.mjs
-var __default__71 = defineComponent({
+var __default__78 = defineComponent({
   name: "ElPaginationSizes"
 });
-var _sfc_main102 = /* @__PURE__ */ defineComponent({
-  ...__default__71,
+var _sfc_main398 = /* @__PURE__ */ defineComponent({
+  ...__default__78,
   props: paginationSizesProps,
   emits: ["page-size-change"],
   setup(__props, { emit: emit2 }) {
@@ -59195,7 +60745,7 @@ var _sfc_main102 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Sizes = /* @__PURE__ */ _export_sfc(_sfc_main102, [["__file", "sizes.vue"]]);
+var Sizes = /* @__PURE__ */ _export_sfc(_sfc_main398, [["__file", "sizes.vue"]]);
 
 // node_modules/element-plus/es/components/pagination/src/components/jumper.mjs
 var paginationJumperProps = buildProps({
@@ -59206,11 +60756,11 @@ var paginationJumperProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/pagination/src/components/jumper2.mjs
-var __default__72 = defineComponent({
+var __default__79 = defineComponent({
   name: "ElPaginationJumper"
 });
-var _sfc_main103 = /* @__PURE__ */ defineComponent({
-  ...__default__72,
+var _sfc_main399 = /* @__PURE__ */ defineComponent({
+  ...__default__79,
   props: paginationJumperProps,
   setup(__props) {
     const { t } = useLocale();
@@ -59257,7 +60807,7 @@ var _sfc_main103 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Jumper = /* @__PURE__ */ _export_sfc(_sfc_main103, [["__file", "jumper.vue"]]);
+var Jumper = /* @__PURE__ */ _export_sfc(_sfc_main399, [["__file", "jumper.vue"]]);
 
 // node_modules/element-plus/es/components/pagination/src/components/total.mjs
 var paginationTotalProps = buildProps({
@@ -59268,11 +60818,11 @@ var paginationTotalProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/pagination/src/components/total2.mjs
-var __default__73 = defineComponent({
+var __default__80 = defineComponent({
   name: "ElPaginationTotal"
 });
-var _sfc_main104 = /* @__PURE__ */ defineComponent({
-  ...__default__73,
+var _sfc_main400 = /* @__PURE__ */ defineComponent({
+  ...__default__80,
   props: paginationTotalProps,
   setup(__props) {
     const { t } = useLocale();
@@ -59288,7 +60838,7 @@ var _sfc_main104 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Total = /* @__PURE__ */ _export_sfc(_sfc_main104, [["__file", "total.vue"]]);
+var Total = /* @__PURE__ */ _export_sfc(_sfc_main400, [["__file", "total.vue"]]);
 
 // node_modules/element-plus/es/components/pagination/src/components/pager.mjs
 var paginationPagerProps = buildProps({
@@ -59308,11 +60858,11 @@ var paginationPagerProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/pagination/src/components/pager2.mjs
-var __default__74 = defineComponent({
+var __default__81 = defineComponent({
   name: "ElPaginationPager"
 });
-var _sfc_main105 = /* @__PURE__ */ defineComponent({
-  ...__default__74,
+var _sfc_main401 = /* @__PURE__ */ defineComponent({
+  ...__default__81,
   props: paginationPagerProps,
   emits: [CHANGE_EVENT],
   setup(__props, { emit: emit2 }) {
@@ -59376,19 +60926,19 @@ var _sfc_main105 = /* @__PURE__ */ defineComponent({
       nsPager.is("disabled", props2.disabled)
     ]);
     const tabindex = computed2(() => props2.disabled ? -1 : 0);
-    watchEffect(() => {
-      const halfPagerCount = (props2.pagerCount - 1) / 2;
-      showPrevMore.value = false;
-      showNextMore.value = false;
-      if (props2.pageCount > props2.pagerCount) {
-        if (props2.currentPage > props2.pagerCount - halfPagerCount) {
-          showPrevMore.value = true;
-        }
-        if (props2.currentPage < props2.pageCount - halfPagerCount) {
-          showNextMore.value = true;
-        }
+    watch2(() => [props2.pageCount, props2.pagerCount, props2.currentPage], ([pageCount, pagerCount, currentPage]) => {
+      const halfPagerCount = (pagerCount - 1) / 2;
+      let showPrev = false;
+      let showNext = false;
+      if (pageCount > pagerCount) {
+        showPrev = currentPage > pagerCount - halfPagerCount;
+        showNext = currentPage < pageCount - halfPagerCount;
       }
-    });
+      quickPrevHover.value && (quickPrevHover.value = showPrev);
+      quickNextHover.value && (quickNextHover.value = showNext);
+      showPrevMore.value = showPrev;
+      showNextMore.value = showNext;
+    }, { immediate: true });
     function onMouseEnter(forward = false) {
       if (props2.disabled)
         return;
@@ -59510,7 +61060,7 @@ var _sfc_main105 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Pager = /* @__PURE__ */ _export_sfc(_sfc_main105, [["__file", "pager.vue"]]);
+var Pager = /* @__PURE__ */ _export_sfc(_sfc_main401, [["__file", "pager.vue"]]);
 
 // node_modules/element-plus/es/components/pagination/src/pagination.mjs
 var isAbsent = (v3) => typeof v3 !== "number";
@@ -59792,7 +61342,7 @@ var Pagination = defineComponent({
 // node_modules/element-plus/es/components/pagination/index.mjs
 var ElPagination = withInstall(Pagination);
 
-// node_modules/element-plus/es/components/popconfirm/src/popconfirm2.mjs
+// node_modules/element-plus/es/components/popconfirm/src/popconfirm.mjs
 var popconfirmProps = buildProps({
   title: String,
   confirmButtonText: String,
@@ -59815,10 +61365,7 @@ var popconfirmProps = buildProps({
     type: String,
     default: "#f90"
   },
-  hideIcon: {
-    type: Boolean,
-    default: false
-  },
+  hideIcon: Boolean,
   hideAfter: {
     type: Number,
     default: 200
@@ -59835,19 +61382,23 @@ var popconfirmEmits = {
   cancel: (e) => e instanceof MouseEvent
 };
 
-// node_modules/element-plus/es/components/popconfirm/src/popconfirm.mjs
-var __default__75 = defineComponent({
+// node_modules/element-plus/es/components/popconfirm/src/popconfirm2.mjs
+var __default__82 = defineComponent({
   name: "ElPopconfirm"
 });
-var _sfc_main106 = /* @__PURE__ */ defineComponent({
-  ...__default__75,
+var _sfc_main402 = /* @__PURE__ */ defineComponent({
+  ...__default__82,
   props: popconfirmProps,
   emits: popconfirmEmits,
-  setup(__props, { emit: emit2 }) {
+  setup(__props, { expose, emit: emit2 }) {
     const props2 = __props;
     const { t } = useLocale();
     const ns = useNamespace("popconfirm");
     const tooltipRef = ref();
+    const popperRef = computed2(() => {
+      var _a26;
+      return (_a26 = unref(tooltipRef)) == null ? void 0 : _a26.popperRef;
+    });
     const hidePopper = () => {
       var _a26, _b25;
       (_b25 = (_a26 = tooltipRef.value) == null ? void 0 : _a26.onClose) == null ? void 0 : _b25.call(_a26);
@@ -59867,6 +61418,10 @@ var _sfc_main106 = /* @__PURE__ */ defineComponent({
     };
     const finalConfirmButtonText = computed2(() => props2.confirmButtonText || t("el.popconfirm.confirmButtonText"));
     const finalCancelButtonText = computed2(() => props2.cancelButtonText || t("el.popconfirm.cancelButtonText"));
+    expose({
+      popperRef,
+      hide: hidePopper
+    });
     return (_ctx, _cache) => {
       return openBlock(), createBlock(unref(ElTooltip), mergeProps({
         ref_key: "tooltipRef",
@@ -59941,7 +61496,7 @@ var _sfc_main106 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Popconfirm = /* @__PURE__ */ _export_sfc(_sfc_main106, [["__file", "popconfirm.vue"]]);
+var Popconfirm = /* @__PURE__ */ _export_sfc(_sfc_main402, [["__file", "popconfirm.vue"]]);
 
 // node_modules/element-plus/es/components/popconfirm/index.mjs
 var ElPopconfirm = withInstall(Popconfirm);
@@ -60012,11 +61567,11 @@ var popoverEmits = {
 
 // node_modules/element-plus/es/components/popover/src/popover2.mjs
 var updateEventKeyRaw = `onUpdate:visible`;
-var __default__76 = defineComponent({
+var __default__83 = defineComponent({
   name: "ElPopover"
 });
-var _sfc_main107 = /* @__PURE__ */ defineComponent({
-  ...__default__76,
+var _sfc_main403 = /* @__PURE__ */ defineComponent({
+  ...__default__83,
   props: popoverProps,
   emits: popoverEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -60117,7 +61672,7 @@ var _sfc_main107 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Popover = /* @__PURE__ */ _export_sfc(_sfc_main107, [["__file", "popover.vue"]]);
+var Popover = /* @__PURE__ */ _export_sfc(_sfc_main403, [["__file", "popover.vue"]]);
 
 // node_modules/element-plus/es/components/popover/src/directive.mjs
 var attachEvents = (el, binding) => {
@@ -60199,11 +61754,11 @@ var progressProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/progress/src/progress2.mjs
-var __default__77 = defineComponent({
+var __default__84 = defineComponent({
   name: "ElProgress"
 });
-var _sfc_main108 = /* @__PURE__ */ defineComponent({
-  ...__default__77,
+var _sfc_main404 = /* @__PURE__ */ defineComponent({
+  ...__default__84,
   props: progressProps,
   setup(__props) {
     const props2 = __props;
@@ -60399,12 +61954,12 @@ var _sfc_main108 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Progress = /* @__PURE__ */ _export_sfc(_sfc_main108, [["__file", "progress.vue"]]);
+var Progress = /* @__PURE__ */ _export_sfc(_sfc_main404, [["__file", "progress.vue"]]);
 
 // node_modules/element-plus/es/components/progress/index.mjs
 var ElProgress = withInstall(Progress);
 
-// node_modules/element-plus/es/components/rate/src/rate.mjs
+// node_modules/element-plus/es/components/rate/src/rate2.mjs
 var rateProps = buildProps({
   modelValue: {
     type: Number,
@@ -60481,12 +62036,12 @@ var rateEmits = {
   [UPDATE_MODEL_EVENT]: (value) => isNumber2(value)
 };
 
-// node_modules/element-plus/es/components/rate/src/rate2.mjs
-var __default__78 = defineComponent({
+// node_modules/element-plus/es/components/rate/src/rate.mjs
+var __default__85 = defineComponent({
   name: "ElRate"
 });
-var _sfc_main109 = /* @__PURE__ */ defineComponent({
-  ...__default__78,
+var _sfc_main405 = /* @__PURE__ */ defineComponent({
+  ...__default__85,
   props: rateProps,
   emits: rateEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -60727,12 +62282,12 @@ var _sfc_main109 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Rate = /* @__PURE__ */ _export_sfc(_sfc_main109, [["__file", "rate.vue"]]);
+var Rate = /* @__PURE__ */ _export_sfc(_sfc_main405, [["__file", "rate.vue"]]);
 
 // node_modules/element-plus/es/components/rate/index.mjs
 var ElRate = withInstall(Rate);
 
-// node_modules/element-plus/es/components/result/src/result2.mjs
+// node_modules/element-plus/es/components/result/src/result.mjs
 var IconMap = {
   primary: "icon-primary",
   success: "icon-success",
@@ -60763,12 +62318,12 @@ var resultProps = buildProps({
   }
 });
 
-// node_modules/element-plus/es/components/result/src/result.mjs
-var __default__79 = defineComponent({
+// node_modules/element-plus/es/components/result/src/result2.mjs
+var __default__86 = defineComponent({
   name: "ElResult"
 });
-var _sfc_main110 = /* @__PURE__ */ defineComponent({
-  ...__default__79,
+var _sfc_main406 = /* @__PURE__ */ defineComponent({
+  ...__default__86,
   props: resultProps,
   setup(__props) {
     const props2 = __props;
@@ -60822,7 +62377,7 @@ var _sfc_main110 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Result = /* @__PURE__ */ _export_sfc(_sfc_main110, [["__file", "result.vue"]]);
+var Result = /* @__PURE__ */ _export_sfc(_sfc_main406, [["__file", "result.vue"]]);
 
 // node_modules/element-plus/es/components/result/index.mjs
 var ElResult = withInstall(Result);
@@ -60858,11 +62413,11 @@ var rowProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/row/src/row2.mjs
-var __default__80 = defineComponent({
+var __default__87 = defineComponent({
   name: "ElRow"
 });
-var _sfc_main111 = /* @__PURE__ */ defineComponent({
-  ...__default__80,
+var _sfc_main407 = /* @__PURE__ */ defineComponent({
+  ...__default__87,
   props: rowProps,
   setup(__props) {
     const props2 = __props;
@@ -60897,13 +62452,13 @@ var _sfc_main111 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Row = /* @__PURE__ */ _export_sfc(_sfc_main111, [["__file", "row.vue"]]);
+var Row = /* @__PURE__ */ _export_sfc(_sfc_main407, [["__file", "row.vue"]]);
 
 // node_modules/element-plus/es/components/row/index.mjs
 var ElRow = withInstall(Row);
 
 // node_modules/element-plus/es/components/select-v2/src/group-item.mjs
-var _sfc_main112 = defineComponent({
+var _sfc_main408 = defineComponent({
   props: {
     item: {
       type: Object,
@@ -60921,13 +62476,13 @@ var _sfc_main112 = defineComponent({
     };
   }
 });
-function _sfc_render21(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render18(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     class: normalizeClass(_ctx.ns.be("group", "title")),
     style: normalizeStyle({ ..._ctx.style, lineHeight: `${_ctx.height}px` })
   }, toDisplayString(_ctx.item.label), 7);
 }
-var GroupItem = /* @__PURE__ */ _export_sfc(_sfc_main112, [["render", _sfc_render21], ["__file", "group-item.vue"]]);
+var GroupItem = /* @__PURE__ */ _export_sfc(_sfc_main408, [["render", _sfc_render18], ["__file", "group-item.vue"]]);
 
 // node_modules/element-plus/es/components/select-v2/src/useOption.mjs
 function useOption2(props2, { emit: emit2 }) {
@@ -60942,28 +62497,6 @@ function useOption2(props2, { emit: emit2 }) {
         emit2("select", props2.item, props2.index);
       }
     }
-  };
-}
-
-// node_modules/element-plus/es/components/select-v2/src/useProps.mjs
-var defaultProps = {
-  label: "label",
-  value: "value",
-  disabled: "disabled",
-  options: "options"
-};
-function useProps(props2) {
-  const aliasProps = computed2(() => ({ ...defaultProps, ...props2.props }));
-  const getLabel = (option) => get_default(option, aliasProps.value.label);
-  const getValue4 = (option) => get_default(option, aliasProps.value.value);
-  const getDisabled = (option) => get_default(option, aliasProps.value.disabled);
-  const getOptions = (option) => get_default(option, aliasProps.value.options);
-  return {
-    aliasProps,
-    getLabel,
-    getValue: getValue4,
-    getDisabled,
-    getOptions
   };
 }
 
@@ -60997,7 +62530,9 @@ var selectV2Props = buildProps({
     default: void 0
   },
   filterable: Boolean,
-  filterMethod: Function,
+  filterMethod: {
+    type: definePropType(Function)
+  },
   height: {
     type: Number,
     default: 274
@@ -61010,7 +62545,8 @@ var selectV2Props = buildProps({
   loading: Boolean,
   loadingText: String,
   modelValue: {
-    type: definePropType([Array, String, Number, Boolean, Object])
+    type: definePropType([Array, String, Number, Boolean, Object]),
+    default: void 0
   },
   multiple: Boolean,
   multipleLimit: {
@@ -61020,7 +62556,9 @@ var selectV2Props = buildProps({
   name: String,
   noDataText: String,
   noMatchText: String,
-  remoteMethod: Function,
+  remoteMethod: {
+    type: definePropType(Function)
+  },
   reserveKeyword: {
     type: Boolean,
     default: true
@@ -61037,10 +62575,8 @@ var selectV2Props = buildProps({
     type: Boolean,
     default: true
   },
-  popperClass: {
-    type: String,
-    default: ""
-  },
+  popperClass: useTooltipContentProps.popperClass,
+  popperStyle: useTooltipContentProps.popperStyle,
   popperOptions: {
     type: definePropType(Object),
     default: () => ({})
@@ -61129,7 +62665,7 @@ var optionV2Emits = {
 var selectV2InjectionKey = Symbol("ElSelectV2Injection");
 
 // node_modules/element-plus/es/components/select-v2/src/option-item.mjs
-var _sfc_main113 = defineComponent({
+var _sfc_main409 = defineComponent({
   props: optionV2Props,
   emits: optionV2Emits,
   setup(props2, { emit: emit2 }) {
@@ -61145,7 +62681,7 @@ var _sfc_main113 = defineComponent({
     };
   }
 });
-function _sfc_render22(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render19(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("li", {
     "aria-selected": _ctx.selected,
     style: normalizeStyle(_ctx.style),
@@ -61168,7 +62704,7 @@ function _sfc_render22(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 46, ["aria-selected", "onMousemove", "onClick"]);
 }
-var OptionItem = /* @__PURE__ */ _export_sfc(_sfc_main113, [["render", _sfc_render22], ["__file", "option-item.vue"]]);
+var OptionItem = /* @__PURE__ */ _export_sfc(_sfc_main409, [["render", _sfc_render19], ["__file", "option-item.vue"]]);
 
 // node_modules/memoize-one/dist/memoize-one.esm.js
 var safeIsNaN = Number.isNaN || function ponyfill(value) {
@@ -61346,10 +62882,7 @@ var virtualizedProps = buildProps({
   style: {
     type: definePropType([Object, String, Array])
   },
-  useIsScrolling: {
-    type: Boolean,
-    default: false
-  },
+  useIsScrolling: Boolean,
   width: {
     type: [Number, String],
     required: false
@@ -61358,10 +62891,7 @@ var virtualizedProps = buildProps({
     type: Boolean,
     default: true
   },
-  scrollbarAlwaysOn: {
-    type: Boolean,
-    default: false
-  }
+  scrollbarAlwaysOn: Boolean
 });
 var virtualizedListProps = buildProps({
   cache,
@@ -61510,7 +63040,7 @@ var ScrollBar = defineComponent({
         return ratio * trackSize.value / 100;
       }
       const SCROLLBAR_MAX_SIZE = trackSize.value / 3;
-      return Math.floor(Math.min(Math.max(ratio * trackSize.value, SCROLLBAR_MIN_SIZE), SCROLLBAR_MAX_SIZE));
+      return Math.floor(Math.min(Math.max(ratio * trackSize.value / 100, SCROLLBAR_MIN_SIZE), SCROLLBAR_MAX_SIZE));
     });
     const thumbStyle = computed2(() => {
       if (!Number.isFinite(thumbSize.value)) {
@@ -61952,7 +63482,8 @@ var createList = ({
         onScroll: onScrollbarScroll,
         ratio: clientSize * 100 / this.estimatedTotalSize,
         scrollFrom: states.scrollOffset / (this.estimatedTotalSize - clientSize),
-        total: total2
+        total: total2,
+        alwaysOn: states.scrollbarAlwaysOn
       });
       const listContainer = h(Container2, {
         class: [ns.e("window"), className],
@@ -61977,14 +63508,6 @@ var FixedSizeList = createList({
   getEstimatedTotalSize: ({ total: total2, itemSize: itemSize3 }) => itemSize3 * total2,
   getOffset: ({ height, total: total2, itemSize: itemSize3, layout: layout2, width }, index3, alignment, scrollOffset) => {
     const size2 = isHorizontal(layout2) ? width : height;
-    if (isString(size2)) {
-      throwError("[ElVirtualList]", `
-        You should set
-          width/height
-        to number when your layout is
-          horizontal/vertical
-      `);
-    }
     const lastItemOffset = Math.max(0, total2 * itemSize3 - size2);
     const maxOffset = Math.min(lastItemOffset, index3 * itemSize3);
     const minOffset = Math.max(0, (index3 + 1) * itemSize3 - size2);
@@ -62040,7 +63563,6 @@ var FixedSizeList = createList({
 });
 
 // node_modules/element-plus/es/components/virtual-list/src/components/dynamic-size-list.mjs
-var SCOPE6 = "ElDynamicSizeList";
 var getItemFromCache = (props2, index3, listCache) => {
   const { itemSize: itemSize3 } = props2;
   const { items, lastVisitedIndex } = listCache;
@@ -62179,13 +63701,6 @@ var DynamicSizeList = createList({
   },
   clearCache: false,
   validateProps: ({ itemSize: itemSize3 }) => {
-    if (true) {
-      if (typeof itemSize3 !== "function") {
-        throwError(SCOPE6, `
-          itemSize is required as function, but the given value was ${typeof itemSize3}
-        `);
-      }
-    }
   }
 });
 
@@ -62423,6 +63938,10 @@ function useAllowCreate(props2, states) {
   const enableAllowCreateMode = computed2(() => {
     return props2.allowCreate && props2.filterable;
   });
+  watch2(() => props2.options, (options) => {
+    const optionLabelsSet = new Set(options.map((option) => getLabel(option)));
+    states.createdOptions = states.createdOptions.filter((createdOption) => !optionLabelsSet.has(getLabel(createdOption)));
+  });
   function hasExistingOption(query) {
     const hasOption = (option) => getLabel(option) === query;
     return props2.options && props2.options.some(hasOption) || states.createdOptions.some(hasOption);
@@ -62441,6 +63960,7 @@ function useAllowCreate(props2, states) {
     if (enableAllowCreateMode.value) {
       if (query && query.length > 0) {
         if (hasExistingOption(query)) {
+          states.createdOptions = states.createdOptions.filter((createdOption) => getLabel(createdOption) !== states.previousQuery);
           return;
         }
         const newOption = {
@@ -62535,10 +64055,9 @@ var useSelect2 = (props2, emit2) => {
   } = useComposition({
     afterComposition: (e) => onInput(e)
   });
+  const selectDisabled = computed2(() => props2.disabled || !!(elForm == null ? void 0 : elForm.disabled));
   const { wrapperRef, isFocused, handleBlur } = useFocusController(inputRef, {
-    beforeFocus() {
-      return selectDisabled.value;
-    },
+    disabled: selectDisabled,
     afterFocus() {
       if (props2.automaticDropdown && !expanded.value) {
         expanded.value = true;
@@ -62554,7 +64073,7 @@ var useSelect2 = (props2, emit2) => {
       expanded.value = false;
       states.menuVisibleOnFocus = false;
       if (props2.validateEvent) {
-        (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "blur").catch((err) => debugWarn(err));
+        (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "blur").catch((err) => debugWarn());
       }
     }
   });
@@ -62566,7 +64085,6 @@ var useSelect2 = (props2, emit2) => {
   });
   const filteredOptions = ref([]);
   const expanded = ref(false);
-  const selectDisabled = computed2(() => props2.disabled || (elForm == null ? void 0 : elForm.disabled));
   const needStatusIcon = computed2(() => {
     var _a26;
     return (_a26 = elForm == null ? void 0 : elForm.statusIcon) != null ? _a26 : false;
@@ -62579,7 +64097,7 @@ var useSelect2 = (props2, emit2) => {
     return props2.multiple ? isArray(props2.modelValue) && props2.modelValue.length > 0 : !isEmptyValue2(props2.modelValue);
   });
   const showClearBtn = computed2(() => {
-    return props2.clearable && !selectDisabled.value && states.inputHovering && hasModelValue.value;
+    return props2.clearable && !selectDisabled.value && hasModelValue.value && (isFocused.value || states.inputHovering);
   });
   const iconComponent = computed2(() => props2.remote && props2.filterable ? "" : props2.suffixIcon);
   const iconReverse = computed2(() => iconComponent.value && nsSelect.is("reverse", expanded.value));
@@ -62605,12 +64123,12 @@ var useSelect2 = (props2, emit2) => {
     }
     return null;
   });
+  const isFilterMethodValid = computed2(() => props2.filterable && isFunction(props2.filterMethod));
+  const isRemoteMethodValid = computed2(() => props2.filterable && props2.remote && isFunction(props2.remoteMethod));
   const filterOptions = (query) => {
     const regexp4 = new RegExp(escapeStringRegexp(query), "i");
-    const isFilterMethodValid = props2.filterable && isFunction(props2.filterMethod);
-    const isRemoteMethodValid = props2.filterable && props2.remote && isFunction(props2.remoteMethod);
     const isValidOption = (o2) => {
-      if (isFilterMethodValid || isRemoteMethodValid)
+      if (isFilterMethodValid.value || isRemoteMethodValid.value)
         return true;
       return query ? regexp4.test(getLabel(o2) || "") : true;
     };
@@ -62694,7 +64212,8 @@ var useSelect2 = (props2, emit2) => {
   };
   const tagStyle = computed2(() => {
     const gapWidth = getGapWidth();
-    const maxWidth = collapseItemRef.value && props2.maxCollapseTags === 1 ? states.selectionWidth - states.collapseItemWidth - gapWidth : states.selectionWidth;
+    const inputSlotWidth = props2.filterable ? gapWidth + MINIMUM_INPUT_WIDTH : 0;
+    const maxWidth = collapseItemRef.value && props2.maxCollapseTags === 1 ? states.selectionWidth - states.collapseItemWidth - gapWidth - inputSlotWidth : states.selectionWidth - inputSlotWidth;
     return { maxWidth: `${maxWidth}px` };
   });
   const collapseTagStyle = computed2(() => {
@@ -63022,7 +64541,7 @@ var useSelect2 = (props2, emit2) => {
   const handleClickOutside = (event) => {
     expanded.value = false;
     if (isFocused.value) {
-      const _event2 = new FocusEvent("focus", event);
+      const _event2 = new FocusEvent("blur", event);
       handleBlur(_event2);
     }
   };
@@ -63112,7 +64631,7 @@ var useSelect2 = (props2, emit2) => {
       initStates(true);
     }
     if (!isEqual_default(val, oldVal) && props2.validateEvent) {
-      (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "change").catch((err) => debugWarn(err));
+      (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "change").catch((err) => debugWarn());
     }
   }, {
     deep: true
@@ -63145,7 +64664,6 @@ var useSelect2 = (props2, emit2) => {
         v3 = get_default(optionValue, valueKey);
       }
       if (duplicateValue.get(v3)) {
-        debugWarn("ElSelectV2", `The option values you provided seem to be duplicated, which may cause some problems, please check.`);
         break;
       } else {
         duplicateValue.set(v3, true);
@@ -63235,7 +64753,7 @@ var useSelect2 = (props2, emit2) => {
 };
 
 // node_modules/element-plus/es/components/select-v2/src/select.mjs
-var _sfc_main114 = defineComponent({
+var _sfc_main410 = defineComponent({
   name: "ElSelectV2",
   components: {
     ElSelectMenu: ElSelectMenu2,
@@ -63288,7 +64806,7 @@ var _sfc_main114 = defineComponent({
     };
   }
 });
-function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render20(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_tag = resolveComponent("el-tag");
   const _component_el_tooltip = resolveComponent("el-tooltip");
   const _component_el_icon = resolveComponent("el-icon");
@@ -63305,6 +64823,7 @@ function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
       visible: _ctx.dropdownMenuVisible,
       teleported: _ctx.teleported,
       "popper-class": [_ctx.nsSelect.e("popper"), _ctx.popperClass],
+      "popper-style": _ctx.popperStyle,
       "gpu-acceleration": false,
       "stop-popper-mouse-event": false,
       "popper-options": _ctx.popperOptions,
@@ -63347,7 +64866,12 @@ function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
               _ctx.nsSelect.is("near", _ctx.multiple && !_ctx.$slots.prefix && !!_ctx.modelValue.length)
             ])
           }, [
-            _ctx.multiple ? renderSlot(_ctx.$slots, "tag", { key: 0 }, () => [
+            _ctx.multiple ? renderSlot(_ctx.$slots, "tag", {
+              key: 0,
+              data: _ctx.states.cachedOptions,
+              deleteTag: _ctx.deleteTag,
+              selectDisabled: _ctx.selectDisabled
+            }, () => [
               (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.showTagList, (item) => {
                 return openBlock(), createElementBlock("div", {
                   key: _ctx.getValueKey(_ctx.getValue(item)),
@@ -63385,6 +64909,8 @@ function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
                 "fallback-placements": ["bottom", "top", "right", "left"],
                 effect: _ctx.effect,
                 placement: "bottom",
+                "popper-class": _ctx.popperClass,
+                "popper-style": _ctx.popperStyle,
                 teleported: _ctx.teleported
               }, {
                 default: withCtx(() => [
@@ -63447,7 +64973,7 @@ function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
                   ], 2)
                 ]),
                 _: 3
-              }, 8, ["disabled", "effect", "teleported"])) : createCommentVNode("v-if", true)
+              }, 8, ["disabled", "effect", "popper-class", "popper-style", "teleported"])) : createCommentVNode("v-if", true)
             ]) : createCommentVNode("v-if", true),
             createBaseVNode("div", {
               class: normalizeClass([
@@ -63577,10 +65103,12 @@ function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
             name: "header",
             fn: withCtx(() => [
               createBaseVNode("div", {
-                class: normalizeClass(_ctx.nsSelect.be("dropdown", "header"))
+                class: normalizeClass(_ctx.nsSelect.be("dropdown", "header")),
+                onClick: withModifiers(() => {
+                }, ["stop"])
               }, [
                 renderSlot(_ctx.$slots, "header")
-              ], 2)
+              ], 10, ["onClick"])
             ])
           } : void 0,
           _ctx.$slots.loading && _ctx.loading ? {
@@ -63608,31 +65136,30 @@ function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
             name: "footer",
             fn: withCtx(() => [
               createBaseVNode("div", {
-                class: normalizeClass(_ctx.nsSelect.be("dropdown", "footer"))
+                class: normalizeClass(_ctx.nsSelect.be("dropdown", "footer")),
+                onClick: withModifiers(() => {
+                }, ["stop"])
               }, [
                 renderSlot(_ctx.$slots, "footer")
-              ], 2)
+              ], 10, ["onClick"])
             ])
           } : void 0
         ]), 1032, ["data", "width", "hovering-index", "scrollbar-always-on"])
       ]),
       _: 3
-    }, 8, ["visible", "teleported", "popper-class", "popper-options", "fallback-placements", "effect", "placement", "transition", "persistent", "append-to", "show-arrow", "offset", "onBeforeShow", "onHide"])
+    }, 8, ["visible", "teleported", "popper-class", "popper-style", "popper-options", "fallback-placements", "effect", "placement", "transition", "persistent", "append-to", "show-arrow", "offset", "onBeforeShow", "onHide"])
   ], 42, ["onMouseenter", "onMouseleave"])), [
     [_directive_click_outside, _ctx.handleClickOutside, _ctx.popperRef]
   ]);
 }
-var Select2 = /* @__PURE__ */ _export_sfc(_sfc_main114, [["render", _sfc_render23], ["__file", "select.vue"]]);
+var Select2 = /* @__PURE__ */ _export_sfc(_sfc_main410, [["render", _sfc_render20], ["__file", "select.vue"]]);
 
 // node_modules/element-plus/es/components/select-v2/index.mjs
 var ElSelectV2 = withInstall(Select2);
 
 // node_modules/element-plus/es/components/skeleton/src/skeleton.mjs
 var skeletonProps = buildProps({
-  animated: {
-    type: Boolean,
-    default: false
-  },
+  animated: Boolean,
   count: {
     type: Number,
     default: 1
@@ -63650,7 +65177,7 @@ var skeletonProps = buildProps({
   }
 });
 
-// node_modules/element-plus/es/components/skeleton/src/skeleton-item2.mjs
+// node_modules/element-plus/es/components/skeleton/src/skeleton-item.mjs
 var skeletonItemProps = buildProps({
   variant: {
     type: String,
@@ -63669,12 +65196,12 @@ var skeletonItemProps = buildProps({
   }
 });
 
-// node_modules/element-plus/es/components/skeleton/src/skeleton-item.mjs
-var __default__81 = defineComponent({
+// node_modules/element-plus/es/components/skeleton/src/skeleton-item2.mjs
+var __default__88 = defineComponent({
   name: "ElSkeletonItem"
 });
-var _sfc_main115 = /* @__PURE__ */ defineComponent({
-  ...__default__81,
+var _sfc_main411 = /* @__PURE__ */ defineComponent({
+  ...__default__88,
   props: skeletonItemProps,
   setup(__props) {
     const ns = useNamespace("skeleton");
@@ -63687,7 +65214,7 @@ var _sfc_main115 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var SkeletonItem = /* @__PURE__ */ _export_sfc(_sfc_main115, [["__file", "skeleton-item.vue"]]);
+var SkeletonItem = /* @__PURE__ */ _export_sfc(_sfc_main411, [["__file", "skeleton-item.vue"]]);
 
 // node_modules/element-plus/es/hooks/use-throttle-render/index.mjs
 var useThrottleRender = (loading, throttle2 = 0) => {
@@ -63731,11 +65258,11 @@ var useThrottleRender = (loading, throttle2 = 0) => {
 };
 
 // node_modules/element-plus/es/components/skeleton/src/skeleton2.mjs
-var __default__82 = defineComponent({
+var __default__89 = defineComponent({
   name: "ElSkeleton"
 });
-var _sfc_main116 = /* @__PURE__ */ defineComponent({
-  ...__default__82,
+var _sfc_main412 = /* @__PURE__ */ defineComponent({
+  ...__default__89,
   props: skeletonProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -63773,7 +65300,7 @@ var _sfc_main116 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Skeleton = /* @__PURE__ */ _export_sfc(_sfc_main116, [["__file", "skeleton.vue"]]);
+var Skeleton = /* @__PURE__ */ _export_sfc(_sfc_main412, [["__file", "skeleton.vue"]]);
 
 // node_modules/element-plus/es/components/skeleton/index.mjs
 var ElSkeleton = withInstall(Skeleton, {
@@ -63784,7 +65311,7 @@ var ElSkeletonItem = withNoopInstall(SkeletonItem);
 // node_modules/element-plus/es/components/slider/src/constants.mjs
 var sliderContextKey = Symbol("sliderContextKey");
 
-// node_modules/element-plus/es/components/slider/src/slider.mjs
+// node_modules/element-plus/es/components/slider/src/slider2.mjs
 var sliderProps = buildProps({
   modelValue: {
     type: definePropType([Number, Array]),
@@ -64126,11 +65653,11 @@ var useSliderButton = (props2, initData, emit2) => {
 };
 
 // node_modules/element-plus/es/components/slider/src/button2.mjs
-var __default__83 = defineComponent({
+var __default__90 = defineComponent({
   name: "ElSliderButton"
 });
-var _sfc_main117 = /* @__PURE__ */ defineComponent({
-  ...__default__83,
+var _sfc_main413 = /* @__PURE__ */ defineComponent({
+  ...__default__90,
   props: sliderButtonProps,
   emits: sliderButtonEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -64211,7 +65738,7 @@ var _sfc_main117 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var SliderButton = /* @__PURE__ */ _export_sfc(_sfc_main117, [["__file", "button.vue"]]);
+var SliderButton = /* @__PURE__ */ _export_sfc(_sfc_main413, [["__file", "button.vue"]]);
 
 // node_modules/element-plus/es/components/slider/src/marker.mjs
 var sliderMarkerProps = buildProps({
@@ -64275,7 +65802,8 @@ var useSlide = (props2, initData, emit2) => {
   });
   const resetSize = () => {
     if (slider.value) {
-      initData.sliderSize = slider.value[`client${props2.vertical ? "Height" : "Width"}`];
+      const rect = slider.value.getBoundingClientRect();
+      initData.sliderSize = rect[props2.vertical ? "height" : "width"];
     }
   };
   const getButtonRefByPercent = (percent) => {
@@ -64388,7 +65916,6 @@ var useStops = (props2, initData, minValue, maxValue) => {
     if (!props2.showStops || props2.min > props2.max)
       return [];
     if (props2.step === 0) {
-      debugWarn("ElSlider", "step should not be 0.");
       return [];
     }
     const stopCount = (props2.max - props2.min) / props2.step;
@@ -64459,7 +65986,7 @@ var useWatch = (props2, initData, minValue, maxValue, emit2, elFormItem) => {
         initData.secondValue = val[1];
         if (valueChanged()) {
           if (props2.validateEvent) {
-            (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "change").catch((err) => debugWarn(err));
+            (_a26 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _a26.call(elFormItem, "change").catch((err) => debugWarn());
           }
           initData.oldValue = val.slice();
         }
@@ -64473,7 +66000,7 @@ var useWatch = (props2, initData, minValue, maxValue, emit2, elFormItem) => {
         initData.firstValue = val;
         if (valueChanged()) {
           if (props2.validateEvent) {
-            (_b25 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _b25.call(elFormItem, "change").catch((err) => debugWarn(err));
+            (_b25 = elFormItem == null ? void 0 : elFormItem.validate) == null ? void 0 : _b25.call(elFormItem, "change").catch((err) => debugWarn());
           }
           initData.oldValue = val;
         }
@@ -64529,12 +66056,12 @@ var useLifecycle = (props2, initData, resetSize) => {
   };
 };
 
-// node_modules/element-plus/es/components/slider/src/slider2.mjs
-var __default__84 = defineComponent({
+// node_modules/element-plus/es/components/slider/src/slider.mjs
+var __default__91 = defineComponent({
   name: "ElSlider"
 });
-var _sfc_main118 = /* @__PURE__ */ defineComponent({
-  ...__default__84,
+var _sfc_main414 = /* @__PURE__ */ defineComponent({
+  ...__default__91,
   props: sliderProps,
   emits: sliderEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -64750,7 +66277,7 @@ var _sfc_main118 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Slider = /* @__PURE__ */ _export_sfc(_sfc_main118, [["__file", "slider.vue"]]);
+var Slider = /* @__PURE__ */ _export_sfc(_sfc_main414, [["__file", "slider.vue"]]);
 
 // node_modules/element-plus/es/components/slider/index.mjs
 var ElSlider = withInstall(Slider);
@@ -64910,8 +66437,6 @@ var Space = defineComponent({
           }, {
             default: () => [child]
           }, PatchFlags.PROPS | PatchFlags.STYLE, ["style", "prefixCls"]));
-        } else if (isVNode(child) && child.type === Comment) {
-          extractedChildren.push(child);
         }
       });
       return extractedChildren;
@@ -64983,11 +66508,11 @@ var statisticProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/statistic/src/statistic2.mjs
-var __default__85 = defineComponent({
+var __default__92 = defineComponent({
   name: "ElStatistic"
 });
-var _sfc_main119 = /* @__PURE__ */ defineComponent({
-  ...__default__85,
+var _sfc_main415 = /* @__PURE__ */ defineComponent({
+  ...__default__92,
   props: statisticProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -65046,7 +66571,7 @@ var _sfc_main119 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Statistic = /* @__PURE__ */ _export_sfc(_sfc_main119, [["__file", "statistic.vue"]]);
+var Statistic = /* @__PURE__ */ _export_sfc(_sfc_main415, [["__file", "statistic.vue"]]);
 
 // node_modules/element-plus/es/components/statistic/index.mjs
 var ElStatistic = withInstall(Statistic);
@@ -65102,11 +66627,11 @@ var formatTime = (timestamp2, format3) => {
 };
 
 // node_modules/element-plus/es/components/countdown/src/countdown2.mjs
-var __default__86 = defineComponent({
+var __default__93 = defineComponent({
   name: "ElCountdown"
 });
-var _sfc_main120 = /* @__PURE__ */ defineComponent({
-  ...__default__86,
+var _sfc_main416 = /* @__PURE__ */ defineComponent({
+  ...__default__93,
   props: countdownProps,
   emits: countdownEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -65175,12 +66700,12 @@ var _sfc_main120 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Countdown = /* @__PURE__ */ _export_sfc(_sfc_main120, [["__file", "countdown.vue"]]);
+var Countdown = /* @__PURE__ */ _export_sfc(_sfc_main416, [["__file", "countdown.vue"]]);
 
 // node_modules/element-plus/es/components/countdown/index.mjs
 var ElCountdown = withInstall(Countdown);
 
-// node_modules/element-plus/es/components/steps/src/steps.mjs
+// node_modules/element-plus/es/components/steps/src/steps2.mjs
 var stepsProps = buildProps({
   space: {
     type: [Number, String],
@@ -65219,12 +66744,12 @@ var stepsEmits = {
 // node_modules/element-plus/es/components/steps/src/tokens.mjs
 var STEPS_INJECTION_KEY = "ElSteps";
 
-// node_modules/element-plus/es/components/steps/src/steps2.mjs
-var __default__87 = defineComponent({
+// node_modules/element-plus/es/components/steps/src/steps.mjs
+var __default__94 = defineComponent({
   name: "ElSteps"
 });
-var _sfc_main121 = /* @__PURE__ */ defineComponent({
-  ...__default__87,
+var _sfc_main417 = /* @__PURE__ */ defineComponent({
+  ...__default__94,
   props: stepsProps,
   emits: stepsEmits,
   setup(__props, { emit: emit2 }) {
@@ -65233,7 +66758,8 @@ var _sfc_main121 = /* @__PURE__ */ defineComponent({
     const {
       children: steps,
       addChild: addStep,
-      removeChild: removeStep
+      removeChild: removeStep,
+      ChildrenSorter: StepsSorter
     } = useOrderedChildren(getCurrentInstance(), "ElStep");
     watch2(steps, () => {
       steps.value.forEach((instance, index3) => {
@@ -65248,12 +66774,13 @@ var _sfc_main121 = /* @__PURE__ */ defineComponent({
       return openBlock(), createElementBlock("div", {
         class: normalizeClass([unref(ns).b(), unref(ns).m(_ctx.simple ? "simple" : _ctx.direction)])
       }, [
-        renderSlot(_ctx.$slots, "default")
+        renderSlot(_ctx.$slots, "default"),
+        createVNode(unref(StepsSorter))
       ], 2);
     };
   }
 });
-var Steps2 = /* @__PURE__ */ _export_sfc(_sfc_main121, [["__file", "steps.vue"]]);
+var Steps2 = /* @__PURE__ */ _export_sfc(_sfc_main417, [["__file", "steps.vue"]]);
 
 // node_modules/element-plus/es/components/steps/src/item.mjs
 var stepProps = buildProps({
@@ -65276,11 +66803,11 @@ var stepProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/steps/src/item2.mjs
-var __default__88 = defineComponent({
+var __default__95 = defineComponent({
   name: "ElStep"
 });
-var _sfc_main122 = defineComponent({
-  ...__default__88,
+var _sfc_main418 = defineComponent({
+  ...__default__95,
   props: stepProps,
   setup(__props) {
     const props2 = __props;
@@ -65299,15 +66826,12 @@ var _sfc_main122 = defineComponent({
         updateStatus(active);
       }, { immediate: true });
     });
-    onBeforeUnmount(() => {
-      parent2.removeStep(stepItemState.uid);
-    });
     const currentStatus = computed2(() => {
       return props2.status || internalStatus.value;
     });
-    const prevStatus = computed2(() => {
+    const prevInternalStatus = computed2(() => {
       const prevStep = parent2.steps.value[index3.value - 1];
-      return prevStep ? prevStep.currentStatus : "wait";
+      return prevStep ? prevStep.internalStatus.value : "wait";
     });
     const isCenter = computed2(() => {
       return parent2.props.alignCenter;
@@ -65323,7 +66847,7 @@ var _sfc_main122 = defineComponent({
     });
     const isLast = computed2(() => {
       var _a26;
-      return ((_a26 = parent2.steps.value[stepsCount.value - 1]) == null ? void 0 : _a26.uid) === (currentInstance2 == null ? void 0 : currentInstance2.uid);
+      return ((_a26 = parent2.steps.value[stepsCount.value - 1]) == null ? void 0 : _a26.uid) === currentInstance2.uid;
     });
     const space = computed2(() => {
       return isSimple.value ? "" : parent2.props.space;
@@ -65363,7 +66887,7 @@ var _sfc_main122 = defineComponent({
     const updateStatus = (activeIndex) => {
       if (activeIndex > index3.value) {
         internalStatus.value = parent2.props.finishStatus;
-      } else if (activeIndex === index3.value && prevStatus.value !== "error") {
+      } else if (activeIndex === index3.value && prevInternalStatus.value !== "error") {
         internalStatus.value = parent2.props.processStatus;
       } else {
         internalStatus.value = "wait";
@@ -65372,13 +66896,18 @@ var _sfc_main122 = defineComponent({
       if (prevChild)
         prevChild.calcProgress(internalStatus.value);
     };
-    const stepItemState = reactive({
+    const stepItemState = {
       uid: currentInstance2.uid,
+      getVnode: () => currentInstance2.vnode,
       currentStatus,
+      internalStatus,
       setIndex,
       calcProgress
-    });
+    };
     parent2.addStep(stepItemState);
+    onBeforeUnmount(() => {
+      parent2.removeStep(stepItemState);
+    });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         style: normalizeStyle(unref(style)),
@@ -65459,7 +66988,7 @@ var _sfc_main122 = defineComponent({
     };
   }
 });
-var Step = /* @__PURE__ */ _export_sfc(_sfc_main122, [["__file", "item.vue"]]);
+var Step = /* @__PURE__ */ _export_sfc(_sfc_main418, [["__file", "item.vue"]]);
 
 // node_modules/element-plus/es/components/steps/index.mjs
 var ElSteps = withInstall(Steps2, {
@@ -65539,12 +67068,12 @@ var switchEmits = {
 };
 
 // node_modules/element-plus/es/components/switch/src/switch2.mjs
-var COMPONENT_NAME18 = "ElSwitch";
-var __default__89 = defineComponent({
-  name: COMPONENT_NAME18
+var COMPONENT_NAME19 = "ElSwitch";
+var __default__96 = defineComponent({
+  name: COMPONENT_NAME19
 });
-var _sfc_main123 = /* @__PURE__ */ defineComponent({
-  ...__default__89,
+var _sfc_main419 = /* @__PURE__ */ defineComponent({
+  ...__default__96,
   props: switchProps,
   emits: switchEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -65594,7 +67123,7 @@ var _sfc_main123 = /* @__PURE__ */ defineComponent({
       var _a26;
       input.value.checked = val;
       if (props2.validateEvent) {
-        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn(err));
+        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn());
       }
     });
     const handleChange = () => {
@@ -65620,7 +67149,7 @@ var _sfc_main123 = /* @__PURE__ */ defineComponent({
         isBoolean3(shouldChange)
       ].includes(true);
       if (!isPromiseOrBool) {
-        throwError(COMPONENT_NAME18, "beforeChange must return type `Promise<boolean>` or `boolean`");
+        throwError(COMPONENT_NAME19, "beforeChange must return type `Promise<boolean>` or `boolean`");
       }
       if (isPromise(shouldChange)) {
         shouldChange.then((result) => {
@@ -65628,7 +67157,6 @@ var _sfc_main123 = /* @__PURE__ */ defineComponent({
             handleChange();
           }
         }).catch((e) => {
-          debugWarn(COMPONENT_NAME18, `some error occurred: ${e}`);
         });
       } else if (shouldChange) {
         handleChange();
@@ -65754,7 +67282,7 @@ var _sfc_main123 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Switch = /* @__PURE__ */ _export_sfc(_sfc_main123, [["__file", "switch.vue"]]);
+var Switch = /* @__PURE__ */ _export_sfc(_sfc_main419, [["__file", "switch.vue"]]);
 
 // node_modules/element-plus/es/components/switch/index.mjs
 var ElSwitch = withInstall(Switch);
@@ -65775,10 +67303,7 @@ var orderBy = function(array7, sortKey, reverse2, sortMethod, sortBy) {
   }
   const getKey = sortMethod ? null : function(value, index3) {
     if (sortBy) {
-      if (!isArray(sortBy)) {
-        sortBy = [sortBy];
-      }
-      return sortBy.map((by) => {
+      return flatMap_default(castArray_default(sortBy), (by) => {
         if (isString(by)) {
           return get_default(value, by);
         } else {
@@ -65790,17 +67315,20 @@ var orderBy = function(array7, sortKey, reverse2, sortMethod, sortBy) {
       if (isObject(value) && "$value" in value)
         value = value.$value;
     }
-    return [isObject(value) ? get_default(value, sortKey) : value];
+    return [
+      isObject(value) ? sortKey ? get_default(value, sortKey) : null : value
+    ];
   };
   const compare = function(a5, b10) {
+    var _a26, _b25, _c, _d, _e, _f;
     if (sortMethod) {
       return sortMethod(a5.value, b10.value);
     }
-    for (let i = 0, len = a5.key.length; i < len; i++) {
-      if (a5.key[i] < b10.key[i]) {
+    for (let i = 0, len = (_b25 = (_a26 = a5.key) == null ? void 0 : _a26.length) != null ? _b25 : 0; i < len; i++) {
+      if (((_c = a5.key) == null ? void 0 : _c[i]) < ((_d = b10.key) == null ? void 0 : _d[i])) {
         return -1;
       }
-      if (a5.key[i] > b10.key[i]) {
+      if (((_e = a5.key) == null ? void 0 : _e[i]) > ((_f = b10.key) == null ? void 0 : _f[i])) {
         return 1;
       }
     }
@@ -65865,6 +67393,7 @@ var getRowIdentity = (row, rowKey2) => {
   } else if (isFunction(rowKey2)) {
     return rowKey2.call(null, row);
   }
+  return "";
 };
 var getKeysMap = function(array7, rowKey2, flatten4 = false, childrenKey = "children") {
   const data = array7 || [];
@@ -65940,10 +67469,17 @@ function compose(...funcs) {
   }
   return funcs.reduce((a5, b10) => (...args) => a5(b10(...args)));
 }
-function toggleRowStatus(statusArr, row, newVal, tableTreeProps, selectable, rowIndex) {
+function toggleRowStatus(statusArr, row, newVal, tableTreeProps, selectable, rowIndex, rowKey2) {
   let _rowIndex = rowIndex != null ? rowIndex : 0;
   let changed = false;
-  const index3 = statusArr.indexOf(row);
+  const getIndex = () => {
+    if (!rowKey2) {
+      return statusArr.indexOf(row);
+    }
+    const id2 = getRowIdentity(row, rowKey2);
+    return statusArr.findIndex((item) => getRowIdentity(item, rowKey2) === id2);
+  };
+  const index3 = getIndex();
   const included = index3 !== -1;
   const isRowSelectable = selectable == null ? void 0 : selectable.call(null, row, _rowIndex);
   const toggleStatus = (type5) => {
@@ -65978,7 +67514,7 @@ function toggleRowStatus(statusArr, row, newVal, tableTreeProps, selectable, row
   }
   if (!(tableTreeProps == null ? void 0 : tableTreeProps.checkStrictly) && (tableTreeProps == null ? void 0 : tableTreeProps.children) && isArray(row[tableTreeProps.children])) {
     row[tableTreeProps.children].forEach((item) => {
-      const childChanged = toggleRowStatus(statusArr, item, newVal != null ? newVal : !included, tableTreeProps, selectable, _rowIndex + 1);
+      const childChanged = toggleRowStatus(statusArr, item, newVal != null ? newVal : !included, tableTreeProps, selectable, _rowIndex + 1, rowKey2);
       _rowIndex += getChildrenCount(item) + 1;
       if (childChanged) {
         changed = childChanged;
@@ -65987,12 +67523,12 @@ function toggleRowStatus(statusArr, row, newVal, tableTreeProps, selectable, row
   }
   return changed;
 }
-function walkTreeNode(root4, cb, childrenKey = "children", lazyKey = "hasChildren") {
+function walkTreeNode(root4, cb, childrenKey = "children", lazyKey = "hasChildren", lazy = false) {
   const isNil2 = (array7) => !(isArray(array7) && array7.length);
   function _walker(parent2, children2, level) {
     cb(parent2, children2, level);
     children2.forEach((item) => {
-      if (item[lazyKey]) {
+      if (item[lazyKey] && lazy) {
         cb(item, null, level + 1);
         return;
       }
@@ -66003,7 +67539,7 @@ function walkTreeNode(root4, cb, childrenKey = "children", lazyKey = "hasChildre
     });
   }
   root4.forEach((item) => {
-    if (item[lazyKey]) {
+    if (item[lazyKey] && lazy) {
       cb(item, null, 0);
       return;
     }
@@ -66018,7 +67554,7 @@ var getTableOverflowTooltipProps = (props2, innerText, row, column2) => {
     strategy: "fixed",
     ...props2.popperOptions
   };
-  const tooltipFormatterContent = isFunction(column2.tooltipFormatter) ? column2.tooltipFormatter({
+  const tooltipFormatterContent = isFunction(column2 == null ? void 0 : column2.tooltipFormatter) ? column2.tooltipFormatter({
     row,
     column: column2,
     cellValue: getProp(row, column2.property).value
@@ -66040,15 +67576,16 @@ var getTableOverflowTooltipProps = (props2, innerText, row, column2) => {
 };
 var removePopper = null;
 function createTablePopper(props2, popperContent, row, column2, trigger2, table) {
+  var _a26;
   const tableOverflowTooltipProps = getTableOverflowTooltipProps(props2, popperContent, row, column2);
   const mergedProps = {
     ...tableOverflowTooltipProps,
     slotContent: void 0
   };
   if ((removePopper == null ? void 0 : removePopper.trigger) === trigger2) {
-    const comp = removePopper.vm.component;
-    merge_default(comp.props, mergedProps);
-    if (tableOverflowTooltipProps.slotContent) {
+    const comp = (_a26 = removePopper.vm) == null ? void 0 : _a26.component;
+    merge_default(comp == null ? void 0 : comp.props, mergedProps);
+    if (comp && tableOverflowTooltipProps.slotContent) {
       comp.slots.content = () => [tableOverflowTooltipProps.slotContent];
     }
     return;
@@ -66074,11 +67611,18 @@ function createTablePopper(props2, popperContent, row, column2, trigger2, table)
   vm.component.exposed.onOpen();
   const scrollContainer = parentNode == null ? void 0 : parentNode.querySelector(`.${ns}-scrollbar__wrap`);
   removePopper = () => {
+    var _a27, _b25;
+    if ((_b25 = (_a27 = vm.component) == null ? void 0 : _a27.exposed) == null ? void 0 : _b25.onClose) {
+      vm.component.exposed.onClose();
+    }
     render(null, container);
-    scrollContainer == null ? void 0 : scrollContainer.removeEventListener("scroll", removePopper);
+    const currentRemovePopper = removePopper;
+    scrollContainer == null ? void 0 : scrollContainer.removeEventListener("scroll", currentRemovePopper);
+    currentRemovePopper.trigger = void 0;
+    currentRemovePopper.vm = void 0;
     removePopper = null;
   };
-  removePopper.trigger = trigger2;
+  removePopper.trigger = trigger2 != null ? trigger2 : void 0;
   removePopper.vm = vm;
   scrollContainer == null ? void 0 : scrollContainer.addEventListener("scroll", removePopper);
 }
@@ -66198,7 +67742,7 @@ function useExpand(watcherData) {
     }
   };
   const toggleRowExpansion = (row, expanded) => {
-    const changed = toggleRowStatus(expandRows.value, row, expanded);
+    const changed = toggleRowStatus(expandRows.value, row, expanded, void 0, void 0, void 0, watcherData.rowKey.value);
     if (changed) {
       instance.emit("expand-change", row, expandRows.value.slice());
     }
@@ -66250,12 +67794,13 @@ function useCurrent(watcherData) {
     _currentRowKey.value = null;
   };
   const setCurrentRowByKey = (key) => {
+    var _a26;
     const { data, rowKey: rowKey2 } = watcherData;
     let _currentRow = null;
     if (rowKey2.value) {
-      _currentRow = (unref(data) || []).find((item) => getRowIdentity(item, rowKey2.value) === key);
+      _currentRow = (_a26 = (unref(data) || []).find((item) => getRowIdentity(item, rowKey2.value) === key)) != null ? _a26 : null;
     }
-    currentRow.value = _currentRow;
+    currentRow.value = _currentRow != null ? _currentRow : null;
     instance.emit("current-change", currentRow.value, null);
   };
   const updateCurrentRow = (_currentRow) => {
@@ -66274,7 +67819,7 @@ function useCurrent(watcherData) {
     const rowKey2 = watcherData.rowKey.value;
     const data = watcherData.data.value || [];
     const oldCurrentRow = currentRow.value;
-    if (!data.includes(oldCurrentRow) && oldCurrentRow) {
+    if (oldCurrentRow && !data.includes(oldCurrentRow)) {
       if (rowKey2) {
         const currentRowKey = getRowIdentity(oldCurrentRow, rowKey2);
         setCurrentRowByKey(currentRowKey);
@@ -66357,11 +67902,12 @@ function useTree(watcherData) {
           level
         };
       }
-    }, childrenColumnName.value, lazyColumnIdentifier.value);
+    }, childrenColumnName.value, lazyColumnIdentifier.value, lazy.value);
     return res;
   };
-  const updateTreeData = (ifChangeExpandRowKeys = false, ifExpandAll = ((_a26) => (_a26 = instance.store) == null ? void 0 : _a26.states.defaultExpandAll.value)()) => {
-    var _a26;
+  const updateTreeData = (ifChangeExpandRowKeys = false, ifExpandAll) => {
+    var _a26, _b25;
+    ifExpandAll || (ifExpandAll = (_a26 = instance.store) == null ? void 0 : _a26.states.defaultExpandAll.value);
     const nested = normalizedData.value;
     const normalizedLazyNode_ = normalizedLazyNode.value;
     const keys2 = Object.keys(nested);
@@ -66396,10 +67942,11 @@ function useTree(watcherData) {
       const lazyKeys = Object.keys(normalizedLazyNode_);
       if (lazy.value && lazyKeys.length && rootLazyRowKeys.length) {
         lazyKeys.forEach((key) => {
+          var _a27;
           const oldValue = oldTreeData[key];
           const lazyNodeChildren = normalizedLazyNode_[key].children;
           if (rootLazyRowKeys.includes(key)) {
-            if (newTreeData[key].children.length !== 0) {
+            if (((_a27 = newTreeData[key].children) == null ? void 0 : _a27.length) !== 0) {
               throw new Error("[ElTable]children must be an empty array.");
             }
             newTreeData[key].children = lazyNodeChildren;
@@ -66411,14 +67958,14 @@ function useTree(watcherData) {
               loading: !!loading,
               expanded: getExpanded(oldValue, key),
               children: lazyNodeChildren,
-              level: ""
+              level: void 0
             };
           }
         });
       }
     }
     treeData.value = newTreeData;
-    (_a26 = instance.store) == null ? void 0 : _a26.updateTableScrollY();
+    (_b25 = instance.store) == null ? void 0 : _b25.updateTableScrollY();
   };
   watch2(() => expandRowKeys.value, () => {
     updateTreeData(true);
@@ -66604,14 +68151,14 @@ function useWatcher() {
     }
     rightFixedColumns.value = _columns.value.filter((column2) => column2.fixed === "right");
     const notFixedColumns = _columns.value.filter((column2) => (selectColFixLeft ? column2.type !== "selection" : true) && !column2.fixed);
-    originColumns.value = [].concat(fixedColumns.value).concat(notFixedColumns).concat(rightFixedColumns.value);
+    originColumns.value = Array.from(fixedColumns.value).concat(notFixedColumns).concat(rightFixedColumns.value);
     const leafColumns2 = doFlattenColumns(notFixedColumns);
     const fixedLeafColumns2 = doFlattenColumns(fixedColumns.value);
     const rightFixedLeafColumns2 = doFlattenColumns(rightFixedColumns.value);
     leafColumnsLength.value = leafColumns2.length;
     fixedLeafColumnsLength.value = fixedLeafColumns2.length;
     rightFixedLeafColumnsLength.value = rightFixedLeafColumns2.length;
-    columns2.value = [].concat(fixedLeafColumns2).concat(leafColumns2).concat(rightFixedLeafColumns2);
+    columns2.value = Array.from(fixedLeafColumns2).concat(leafColumns2).concat(rightFixedLeafColumns2);
     isComplex.value = fixedColumns.value.length > 0 || rightFixedColumns.value.length > 0;
   };
   const scheduleLayout = (needUpdateColumns, immediate = false) => {
@@ -66669,7 +68216,7 @@ function useWatcher() {
       children: (_b25 = (_a27 = instance == null ? void 0 : instance.store) == null ? void 0 : _a27.states) == null ? void 0 : _b25.childrenColumnName.value,
       checkStrictly: (_d = (_c = instance == null ? void 0 : instance.store) == null ? void 0 : _c.states) == null ? void 0 : _d.checkStrictly.value
     };
-    const changed = toggleRowStatus(selection2.value, row, selected, treeProps2, ignoreSelectable ? void 0 : selectable.value, data.value.indexOf(row));
+    const changed = toggleRowStatus(selection2.value, row, selected, treeProps2, ignoreSelectable ? void 0 : selectable.value, data.value.indexOf(row), rowKey2.value);
     if (changed) {
       const newSelection = (selection2.value || []).slice();
       if (emitChange) {
@@ -66692,7 +68239,7 @@ function useWatcher() {
     };
     data.value.forEach((row, index3) => {
       const rowIndex = index3 + childrenCount;
-      if (toggleRowStatus(selection2.value, row, value, treeProps2, selectable.value, rowIndex)) {
+      if (toggleRowStatus(selection2.value, row, value, treeProps2, selectable.value, rowIndex, rowKey22)) {
         selectionChanged = true;
       }
       childrenCount += getChildrenCount(getRowIdentity(row, rowKey22));
@@ -66701,15 +68248,6 @@ function useWatcher() {
       instance.emit("selection-change", selection2.value ? selection2.value.slice() : []);
     }
     instance.emit("select-all", (selection2.value || []).slice());
-  };
-  const updateSelectionByRowKey = () => {
-    data.value.forEach((row) => {
-      const rowId = getRowIdentity(row, rowKey2.value);
-      const rowInfo = selectedMap.value[rowId];
-      if (rowInfo) {
-        selection2.value[rowInfo.index] = row;
-      }
-    });
   };
   const updateAllSelected = () => {
     var _a27;
@@ -66756,12 +68294,9 @@ function useWatcher() {
     }
     return count3;
   };
-  const updateFilters = (columns22, values) => {
-    if (!isArray(columns22)) {
-      columns22 = [columns22];
-    }
+  const updateFilters = (column2, values) => {
     const filters_ = {};
-    columns22.forEach((col) => {
+    castArray_default(column2).forEach((col) => {
       filters.value[col.id] = values;
       filters_[col.columnKey || col.id] = values;
     });
@@ -66793,14 +68328,15 @@ function useWatcher() {
     filteredData.value = sourceData;
   };
   const execSort = () => {
-    data.value = sortData(filteredData.value, {
+    var _a27;
+    data.value = sortData((_a27 = filteredData.value) != null ? _a27 : [], {
       sortingColumn: sortingColumn.value,
       sortProp: sortProp.value,
       sortOrder: sortOrder.value
     });
   };
   const execQuery = (ignore = void 0) => {
-    if (!(ignore && ignore.filter)) {
+    if (!(ignore == null ? void 0 : ignore.filter)) {
       execFilter();
     }
     execSort();
@@ -66908,7 +68444,6 @@ function useWatcher() {
     toggleRowSelection,
     _toggleAllSelection,
     toggleAllSelection: null,
-    updateSelectionByRowKey,
     updateAllSelected,
     updateFilters,
     updateCurrentRow,
@@ -67001,7 +68536,6 @@ function useStore() {
       instance.store.updateTreeData(instance.store.states.defaultExpandAll.value);
       if (unref(states.reserveSelection)) {
         instance.store.assertRowKey();
-        instance.store.updateSelectionByRowKey();
       } else {
         if (dataInstanceChanged) {
           instance.store.clearSelection();
@@ -67015,6 +68549,7 @@ function useStore() {
       }
     },
     insertColumn(states, column2, parent2, updateColumnOrder) {
+      var _a26;
       const array7 = unref(states._columns);
       let newColumns = [];
       if (!parent2) {
@@ -67024,7 +68559,7 @@ function useStore() {
         if (parent2 && !parent2.children) {
           parent2.children = [];
         }
-        parent2.children.push(column2);
+        (_a26 = parent2.children) == null ? void 0 : _a26.push(column2);
         newColumns = replaceColumn(array7, parent2);
       }
       sortColumn(newColumns);
@@ -67050,12 +68585,13 @@ function useStore() {
       }
     },
     removeColumn(states, column2, parent2, updateColumnOrder) {
+      var _a26;
       const array7 = unref(states._columns) || [];
       if (parent2) {
-        parent2.children.splice(parent2.children.findIndex((item) => item.id === column2.id), 1);
+        (_a26 = parent2.children) == null ? void 0 : _a26.splice(parent2.children.findIndex((item) => item.id === column2.id), 1);
         nextTick(() => {
-          var _a26;
-          if (((_a26 = parent2.children) == null ? void 0 : _a26.length) === 0) {
+          var _a27;
+          if (((_a27 = parent2.children) == null ? void 0 : _a27.length) === 0) {
             delete parent2.children;
           }
         });
@@ -67113,7 +68649,8 @@ function useStore() {
       instance.store.updateTableScrollY();
     },
     toggleAllSelection() {
-      instance.store.toggleAllSelection();
+      var _a26, _b25;
+      (_b25 = (_a26 = instance.store).toggleAllSelection) == null ? void 0 : _b25.call(_a26);
     },
     rowSelectedChanged(_states, row) {
       instance.store.toggleRowSelection(row);
@@ -67129,7 +68666,10 @@ function useStore() {
   const commit = function(name, ...args) {
     const mutations2 = instance.store.mutations;
     if (mutations2[name]) {
-      mutations2[name].apply(instance, [instance.store.states].concat(args));
+      mutations2[name].apply(instance, [
+        instance.store.states,
+        ...args
+      ]);
     } else {
       throw new Error(`Action not found: ${name}`);
     }
@@ -67189,22 +68729,22 @@ function proxyTableProps(store, props2) {
 function handleValue(value, propsKey, store) {
   let newVal = value;
   let storeKey = InitialStateMap[propsKey];
-  if (isObject(InitialStateMap[propsKey])) {
+  if (isObject(storeKey)) {
+    newVal = newVal || storeKey.default;
     storeKey = storeKey.key;
-    newVal = newVal || InitialStateMap[propsKey].default;
   }
   store.states[storeKey].value = newVal;
 }
-function getArrKeysValue(props2, keys2) {
-  if (keys2.includes(".")) {
-    const keyList = keys2.split(".");
+function getArrKeysValue(props2, key) {
+  if (key.includes(".")) {
+    const keyList = key.split(".");
     let value = props2;
-    keyList.forEach((key) => {
-      value = value[key];
+    keyList.forEach((k2) => {
+      value = value[k2];
     });
     return value;
   } else {
-    return props2[keys2];
+    return props2[key];
   }
 }
 
@@ -67260,12 +68800,14 @@ var TableLayout = class {
     const el = this.table.vnode.el;
     value = parseHeight(value);
     this.height.value = Number(value);
-    if (!el && (value || value === 0))
-      return nextTick(() => this.setHeight(value, prop));
-    if (isNumber2(value)) {
+    if (!el && (value || value === 0)) {
+      nextTick(() => this.setHeight(value, prop));
+      return;
+    }
+    if (el && isNumber2(value)) {
       el.style[prop] = `${value}px`;
       this.updateElsHeight();
-    } else if (isString(value)) {
+    } else if (el && isString(value)) {
       el.style[prop] = value;
       this.updateElsHeight();
     }
@@ -67302,10 +68844,11 @@ var TableLayout = class {
     return false;
   }
   updateColumnsWidth() {
+    var _a26;
     if (!isClient)
       return;
     const fit2 = this.fit;
-    const bodyWidth = this.table.vnode.el.clientWidth;
+    const bodyWidth = (_a26 = this.table.vnode.el) == null ? void 0 : _a26.clientWidth;
     let bodyMinWidth = 0;
     const flattenColumns = this.getFlattenColumns();
     const flexColumns = flattenColumns.filter((column2) => !isNumber2(column2.width));
@@ -67402,7 +68945,7 @@ var TableLayout = class {
 
 // node_modules/element-plus/es/components/table/src/filter-panel.mjs
 var { CheckboxGroup: ElCheckboxGroup2 } = ElCheckbox;
-var _sfc_main124 = defineComponent({
+var _sfc_main420 = defineComponent({
   name: "ElTableFilterPanel",
   components: {
     ElCheckbox,
@@ -67435,7 +68978,7 @@ var _sfc_main124 = defineComponent({
     const { t } = useLocale();
     const ns = useNamespace("table-filter");
     const parent2 = instance == null ? void 0 : instance.parent;
-    if (!parent2.filterPanels.value[props2.column.id]) {
+    if (props2.column && !parent2.filterPanels.value[props2.column.id]) {
       parent2.filterPanels.value[props2.column.id] = instance;
     }
     const tooltipVisible = ref(false);
@@ -67444,7 +68987,7 @@ var _sfc_main124 = defineComponent({
       return props2.column && props2.column.filters;
     });
     const filterClassName = computed2(() => {
-      if (props2.column.filterClassName) {
+      if (props2.column && props2.column.filterClassName) {
         return `${ns.b()} ${props2.column.filterClassName}`;
       }
       return ns.b();
@@ -67472,8 +69015,9 @@ var _sfc_main124 = defineComponent({
         return [];
       },
       set(value) {
+        var _a26;
         if (props2.column) {
-          props2.upDataColumn("filteredValue", value);
+          (_a26 = props2.upDataColumn) == null ? void 0 : _a26.call(props2, "filteredValue", value);
         }
       }
     });
@@ -67515,15 +69059,17 @@ var _sfc_main124 = defineComponent({
       hidden();
     };
     const confirmFilter = (filteredValue2) => {
-      props2.store.commit("filterChange", {
+      var _a26, _b25;
+      (_a26 = props2.store) == null ? void 0 : _a26.commit("filterChange", {
         column: props2.column,
         values: filteredValue2
       });
-      props2.store.updateAllSelected();
+      (_b25 = props2.store) == null ? void 0 : _b25.updateAllSelected();
     };
     watch2(tooltipVisible, (value) => {
+      var _a26;
       if (props2.column) {
-        props2.upDataColumn("filterOpened", value);
+        (_a26 = props2.upDataColumn) == null ? void 0 : _a26.call(props2, "filterOpened", value);
       }
     }, {
       immediate: true
@@ -67553,7 +69099,7 @@ var _sfc_main124 = defineComponent({
     };
   }
 });
-function _sfc_render24(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render21(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_checkbox = resolveComponent("el-checkbox");
   const _component_el_checkbox_group = resolveComponent("el-checkbox-group");
   const _component_el_scrollbar = resolveComponent("el-scrollbar");
@@ -67656,9 +69202,12 @@ function _sfc_render24(_ctx, _cache, $props, $setup, $data, $options) {
       }, [
         createVNode(_component_el_icon, null, {
           default: withCtx(() => [
-            renderSlot(_ctx.$slots, "filter-icon", {}, () => [
-              _ctx.column.filterOpened ? (openBlock(), createBlock(_component_arrow_up, { key: 0 })) : (openBlock(), createBlock(_component_arrow_down, { key: 1 }))
-            ])
+            renderSlot(_ctx.$slots, "filter-icon", {}, () => {
+              var _a26;
+              return [
+                ((_a26 = _ctx.column) == null ? void 0 : _a26.filterOpened) ? (openBlock(), createBlock(_component_arrow_up, { key: 0 })) : (openBlock(), createBlock(_component_arrow_down, { key: 1 }))
+              ];
+            })
           ]),
           _: 3
         })
@@ -67669,7 +69218,7 @@ function _sfc_render24(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   }, 8, ["visible", "placement", "popper-class", "append-to"]);
 }
-var FilterPanel = /* @__PURE__ */ _export_sfc(_sfc_main124, [["render", _sfc_render24], ["__file", "filter-panel.vue"]]);
+var FilterPanel = /* @__PURE__ */ _export_sfc(_sfc_main420, [["render", _sfc_render21], ["__file", "filter-panel.vue"]]);
 
 // node_modules/element-plus/es/components/table/src/layout-observer.mjs
 function useLayoutObserver(root4) {
@@ -67759,8 +69308,9 @@ function useEvent(props2, emit2) {
   };
   const draggingColumn = ref(null);
   const dragging = ref(false);
-  const dragState = ref({});
+  const dragState = ref();
   const handleMouseDown = (event, column2) => {
+    var _a26, _b25;
     if (!isClient)
       return;
     if (column2.children && column2.children.length > 0)
@@ -67770,8 +69320,8 @@ function useEvent(props2, emit2) {
       const table = parent2;
       emit2("set-drag-visible", true);
       const tableEl = table == null ? void 0 : table.vnode.el;
-      const tableLeft = tableEl.getBoundingClientRect().left;
-      const columnEl = instance.vnode.el.querySelector(`th.${column2.id}`);
+      const tableLeft = tableEl == null ? void 0 : tableEl.getBoundingClientRect().left;
+      const columnEl = (_b25 = (_a26 = instance == null ? void 0 : instance.vnode) == null ? void 0 : _a26.el) == null ? void 0 : _b25.querySelector(`th.${column2.id}`);
       const columnRect = columnEl.getBoundingClientRect();
       const minLeft = columnRect.left - tableLeft + 30;
       addClass(columnEl, "noclick");
@@ -67807,7 +69357,7 @@ function useEvent(props2, emit2) {
           document.body.style.cursor = "";
           dragging.value = false;
           draggingColumn.value = null;
-          dragState.value = {};
+          dragState.value = void 0;
           emit2("set-drag-visible", false);
         }
         document.removeEventListener("mousemove", handleMouseMove2);
@@ -68104,14 +69654,15 @@ var TableHeader = defineComponent({
     const isTableLayoutAuto = (parent2 == null ? void 0 : parent2.props.tableLayout) === "auto";
     const saveIndexSelection = reactive(/* @__PURE__ */ new Map());
     const theadRef = ref();
+    let delayId;
     const updateFixedColumnStyle = () => {
-      setTimeout(() => {
+      delayId = setTimeout(() => {
         if (saveIndexSelection.size > 0) {
           saveIndexSelection.forEach((column2, key) => {
             const el = theadRef.value.querySelector(`.${key.replace(/\s/g, ".")}`);
             if (el) {
               const width = el.getBoundingClientRect().width;
-              column2.width = width;
+              column2.width = width || column2.width;
             }
           });
           saveIndexSelection.clear();
@@ -68119,6 +69670,12 @@ var TableHeader = defineComponent({
       });
     };
     watch2(saveIndexSelection, updateFixedColumnStyle);
+    onBeforeUnmount(() => {
+      if (delayId) {
+        clearTimeout(delayId);
+        delayId = void 0;
+      }
+    });
     onMounted(async () => {
       await nextTick();
       await nextTick();
@@ -68215,7 +69772,8 @@ var TableHeader = defineComponent({
         rowspan: column2.rowSpan,
         style: getHeaderCellStyle(rowIndex, cellIndex, subColumns, column2),
         onClick: ($event) => {
-          if ($event.currentTarget.classList.contains("noclick")) {
+          var _a26;
+          if ((_a26 = $event.currentTarget) == null ? void 0 : _a26.classList.contains("noclick")) {
             return;
           }
           handleHeaderClick($event, column2);
@@ -68253,7 +69811,7 @@ var TableHeader = defineComponent({
           column2.filterable && h(FilterPanel, {
             store,
             placement: column2.filterPlacement || "bottom-start",
-            appendTo: $parent.appendFilterPanelTo,
+            appendTo: $parent == null ? void 0 : $parent.appendFilterPanelTo,
             column: column2,
             upDataColumn: (key, value) => {
               column2[key] = value;
@@ -68278,14 +69836,14 @@ function useEvents(props2) {
   const tooltipContent = ref("");
   const tooltipTrigger = ref(h("div"));
   const handleEvent = (event, row, name) => {
-    var _a26;
+    var _a26, _b25, _c;
     const table = parent2;
     const cell = getCell(event);
-    let column2;
+    let column2 = null;
     const namespace = (_a26 = table == null ? void 0 : table.vnode.el) == null ? void 0 : _a26.dataset.prefix;
     if (cell) {
       column2 = getColumnByCell({
-        columns: props2.store.states.columns.value
+        columns: (_c = (_b25 = props2.store) == null ? void 0 : _b25.states.columns.value) != null ? _c : []
       }, cell, namespace);
       if (column2) {
         table == null ? void 0 : table.emit(`cell-${name}`, row, column2, cell, event);
@@ -68297,17 +69855,20 @@ function useEvents(props2) {
     handleEvent(event, row, "dblclick");
   };
   const handleClick = (event, row) => {
-    props2.store.commit("setCurrentRow", row);
+    var _a26;
+    (_a26 = props2.store) == null ? void 0 : _a26.commit("setCurrentRow", row);
     handleEvent(event, row, "click");
   };
   const handleContextMenu = (event, row) => {
     handleEvent(event, row, "contextmenu");
   };
   const handleMouseEnter = debounce_default((index3) => {
-    props2.store.commit("setHoverRow", index3);
+    var _a26;
+    (_a26 = props2.store) == null ? void 0 : _a26.commit("setHoverRow", index3);
   }, 30);
   const handleMouseLeave = debounce_default(() => {
-    props2.store.commit("setHoverRow", null);
+    var _a26;
+    (_a26 = props2.store) == null ? void 0 : _a26.commit("setHoverRow", null);
   }, 30);
   const getPadding = (el) => {
     const style = window.getComputedStyle(el, null);
@@ -68323,7 +69884,8 @@ function useEvents(props2) {
     };
   };
   const toggleRowClassByCell = (rowSpan, event, toggle) => {
-    let node = event.target.parentNode;
+    var _a26;
+    let node = (_a26 = event == null ? void 0 : event.target) == null ? void 0 : _a26.parentNode;
     while (rowSpan > 1) {
       node = node == null ? void 0 : node.nextSibling;
       if (!node || node.nodeName !== "TR")
@@ -68333,22 +69895,34 @@ function useEvents(props2) {
     }
   };
   const handleCellMouseEnter = (event, row, tooltipOptions) => {
-    var _a26, _b25, _c;
+    var _a26, _b25, _c, _d, _e, _f, _g, _h;
+    if (!parent2)
+      return;
     const table = parent2;
     const cell = getCell(event);
     const namespace = (_a26 = table == null ? void 0 : table.vnode.el) == null ? void 0 : _a26.dataset.prefix;
-    let column2;
+    let column2 = null;
     if (cell) {
       column2 = getColumnByCell({
-        columns: props2.store.states.columns.value
+        columns: (_c = (_b25 = props2.store) == null ? void 0 : _b25.states.columns.value) != null ? _c : []
       }, cell, namespace);
+      if (!column2) {
+        return;
+      }
       if (cell.rowSpan > 1) {
         toggleRowClassByCell(cell.rowSpan, event, addClass);
       }
-      const hoverState = table.hoverState = { cell, column: column2, row };
+      const hoverState = table.hoverState = {
+        cell,
+        column: column2,
+        row
+      };
       table == null ? void 0 : table.emit("cell-mouse-enter", hoverState.row, hoverState.column, hoverState.cell, event);
     }
     if (!tooltipOptions) {
+      if (((_d = removePopper) == null ? void 0 : _d.trigger) === cell) {
+        (_e = removePopper) == null ? void 0 : _e();
+      }
       return;
     }
     const cellChild = event.target.querySelector(".cell");
@@ -68364,9 +69938,9 @@ function useEvents(props2) {
     const horizontalPadding = left2 + right2;
     const verticalPadding = top2 + bottom2;
     if (isGreaterThan(rangeWidth + horizontalPadding, cellChildWidth) || isGreaterThan(rangeHeight + verticalPadding, cellChildHeight) || isGreaterThan(cellChild.scrollWidth, cellChildWidth)) {
-      createTablePopper(tooltipOptions, cell.innerText || cell.textContent, row, column2, cell, table);
-    } else if (((_b25 = removePopper) == null ? void 0 : _b25.trigger) === cell) {
-      (_c = removePopper) == null ? void 0 : _c();
+      createTablePopper(tooltipOptions, (_f = (cell == null ? void 0 : cell.innerText) || (cell == null ? void 0 : cell.textContent)) != null ? _f : "", row, column2, cell, table);
+    } else if (((_g = removePopper) == null ? void 0 : _g.trigger) === cell) {
+      (_h = removePopper) == null ? void 0 : _h();
     }
   };
   const handleCellMouseLeave = (event) => {
@@ -68407,8 +69981,9 @@ function useStyles(props2) {
     return rowStyle || null;
   };
   const getRowClass = (row, rowIndex) => {
+    var _a26;
     const classes = [ns.e("row")];
-    if ((parent2 == null ? void 0 : parent2.props.highlightCurrentRow) && row === props2.store.states.currentRow.value) {
+    if ((parent2 == null ? void 0 : parent2.props.highlightCurrentRow) && row === ((_a26 = props2.store) == null ? void 0 : _a26.states.currentRow.value)) {
       classes.push("current-row");
     }
     if (props2.stripe && rowIndex % 2 === 1) {
@@ -68497,11 +70072,11 @@ function useStyles(props2) {
 }
 
 // node_modules/element-plus/es/components/table/src/table-body/td-wrapper.mjs
-var __default__90 = defineComponent({
+var __default__97 = defineComponent({
   name: "TableTdWrapper"
 });
-var _sfc_main125 = /* @__PURE__ */ defineComponent({
-  ...__default__90,
+var _sfc_main421 = /* @__PURE__ */ defineComponent({
+  ...__default__97,
   props: {
     colspan: {
       type: Number,
@@ -68523,7 +70098,7 @@ var _sfc_main125 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TdWrapper = /* @__PURE__ */ _export_sfc(_sfc_main125, [["__file", "td-wrapper.vue"]]);
+var TdWrapper = /* @__PURE__ */ _export_sfc(_sfc_main421, [["__file", "td-wrapper.vue"]]);
 
 // node_modules/element-plus/es/components/table/src/table-body/render-helper.mjs
 function useRender(props2) {
@@ -68549,10 +70124,12 @@ function useRender(props2) {
     getColspanRealWidth
   } = useStyles(props2);
   const firstDefaultColumnIndex = computed2(() => {
-    return props2.store.states.columns.value.findIndex(({ type: type5 }) => type5 === "default");
+    var _a26;
+    return (_a26 = props2.store) == null ? void 0 : _a26.states.columns.value.findIndex(({ type: type5 }) => type5 === "default");
   });
   const getKeyOfRow = (row, index3) => {
-    const rowKey2 = parent2.props.rowKey;
+    var _a26;
+    const rowKey2 = (_a26 = parent2 == null ? void 0 : parent2.props) == null ? void 0 : _a26.rowKey;
     if (rowKey2) {
       return getRowIdentity(row, rowKey2);
     }
@@ -68565,7 +70142,7 @@ function useRender(props2) {
     let display = true;
     if (treeRowData) {
       rowClasses.push(ns.em("row", `level-${treeRowData.level}`));
-      display = treeRowData.display;
+      display = !!treeRowData.display;
     }
     const displayStyle = display ? null : { display: "none" };
     return h("tr", {
@@ -68585,7 +70162,7 @@ function useRender(props2) {
       const columnData = Object.assign({}, column2);
       columnData.realWidth = getColspanRealWidth(columns2.value, colspan, cellIndex);
       const data = {
-        store: props2.store,
+        store,
         _self: props2.context || parent2,
         column: columnData,
         row,
@@ -68595,7 +70172,7 @@ function useRender(props2) {
       };
       if (cellIndex === firstDefaultColumnIndex.value && treeRowData) {
         data.treeNode = {
-          indent: treeRowData.level * indent.value,
+          indent: treeRowData.level && treeRowData.level * indent.value,
           level: treeRowData.level
         };
         if (isBoolean3(treeRowData.expanded)) {
@@ -68626,7 +70203,7 @@ function useRender(props2) {
       });
     }));
   };
-  const cellChildren = (cellIndex, column2, data) => {
+  const cellChildren = (_cellIndex, column2, data) => {
     return column2.renderCell(data);
   };
   const wrappedRowRender = (row, $index) => {
@@ -68638,7 +70215,7 @@ function useRender(props2) {
     if (hasExpandColumn) {
       const expanded = isRowExpanded(row);
       const tr = rowRender(row, $index, void 0, expanded);
-      const renderExpanded = parent2.renderExpanded;
+      const renderExpanded = parent2 == null ? void 0 : parent2.renderExpanded;
       if (!renderExpanded) {
         console.error("[Element Error]renderExpanded is required.");
         return tr;
@@ -68665,16 +70242,18 @@ function useRender(props2) {
         treeRowData = {
           expanded: cur.expanded,
           level: cur.level,
-          display: true
+          display: true,
+          noLazyChildren: void 0,
+          loading: void 0
         };
         if (isBoolean3(cur.lazy)) {
-          if (isBoolean3(cur.loaded) && cur.loaded) {
+          if (treeRowData && isBoolean3(cur.loaded) && cur.loaded) {
             treeRowData.noLazyChildren = !(cur.children && cur.children.length);
           }
           treeRowData.loading = cur.loading;
         }
       }
-      const tmp = [rowRender(row, $index, treeRowData)];
+      const tmp = [rowRender(row, $index, treeRowData != null ? treeRowData : void 0)];
       if (cur) {
         let i = 0;
         const traverse3 = (children2, parent22) => {
@@ -68757,24 +70336,25 @@ var TableBody = defineComponent({
   name: "ElTableBody",
   props: defaultProps2,
   setup(props2) {
+    var _a26;
     const instance = getCurrentInstance();
     const parent2 = inject(TABLE_INJECTION_KEY);
     const ns = useNamespace("table");
     const { wrappedRowRender, tooltipContent, tooltipTrigger } = useRender(props2);
     const { onColumnsChange, onScrollableChange } = useLayoutObserver(parent2);
     const hoveredCellList = [];
-    watch2(props2.store.states.hoverRow, (newVal, oldVal) => {
-      var _a26;
+    watch2((_a26 = props2.store) == null ? void 0 : _a26.states.hoverRow, (newVal, oldVal) => {
+      var _a27, _b25;
       const el = instance == null ? void 0 : instance.vnode.el;
       const rows = Array.from((el == null ? void 0 : el.children) || []).filter((e) => e == null ? void 0 : e.classList.contains(`${ns.e("row")}`));
       let rowNum = newVal;
-      const childNodes = (_a26 = rows[rowNum]) == null ? void 0 : _a26.childNodes;
+      const childNodes = (_a27 = rows[rowNum]) == null ? void 0 : _a27.childNodes;
       if (childNodes == null ? void 0 : childNodes.length) {
         let control = 0;
         const indexes2 = Array.from(childNodes).reduce((acc, item, index3) => {
-          var _a27, _b25;
-          if (((_a27 = childNodes[index3]) == null ? void 0 : _a27.colSpan) > 1) {
-            control = (_b25 = childNodes[index3]) == null ? void 0 : _b25.colSpan;
+          var _a33, _b26;
+          if (((_a33 = childNodes[index3]) == null ? void 0 : _a33.colSpan) > 1) {
+            control = (_b26 = childNodes[index3]) == null ? void 0 : _b26.colSpan;
           }
           if (item.nodeName !== "TD" && control === 0) {
             acc.push(index3);
@@ -68783,10 +70363,10 @@ var TableBody = defineComponent({
           return acc;
         }, []);
         indexes2.forEach((rowIndex) => {
-          var _a27;
+          var _a33;
           rowNum = newVal;
           while (rowNum > 0) {
-            const preChildNodes = (_a27 = rows[rowNum - 1]) == null ? void 0 : _a27.childNodes;
+            const preChildNodes = (_a33 = rows[rowNum - 1]) == null ? void 0 : _a33.childNodes;
             if (preChildNodes[rowIndex] && preChildNodes[rowIndex].nodeName === "TD" && preChildNodes[rowIndex].rowSpan > 1) {
               addClass(preChildNodes[rowIndex], "hover-cell");
               hoveredCellList.push(preChildNodes[rowIndex]);
@@ -68799,7 +70379,7 @@ var TableBody = defineComponent({
         hoveredCellList.forEach((item) => removeClass(item, "hover-cell"));
         hoveredCellList.length = 0;
       }
-      if (!props2.store.states.isComplex.value || !isClient)
+      if (!((_b25 = props2.store) == null ? void 0 : _b25.states.isComplex.value) || !isClient)
         return;
       rAF(() => {
         const oldRow = rows[oldVal];
@@ -68813,8 +70393,8 @@ var TableBody = defineComponent({
       });
     });
     onUnmounted(() => {
-      var _a26;
-      (_a26 = removePopper) == null ? void 0 : _a26();
+      var _a27;
+      (_a27 = removePopper) == null ? void 0 : _a27();
     });
     return {
       ns,
@@ -68827,7 +70407,7 @@ var TableBody = defineComponent({
   },
   render() {
     const { wrappedRowRender, store } = this;
-    const data = store.states.data.value || [];
+    const data = (store == null ? void 0 : store.states.data.value) || [];
     return h("tbody", { tabIndex: -1 }, [
       data.reduce((acc, row) => {
         return acc.concat(wrappedRowRender(row, acc.length));
@@ -68838,28 +70418,27 @@ var TableBody = defineComponent({
 
 // node_modules/element-plus/es/components/table/src/table-footer/mapState-helper.mjs
 function useMapState() {
-  var _a26;
   const table = inject(TABLE_INJECTION_KEY);
   const store = table == null ? void 0 : table.store;
   const leftFixedLeafCount = computed2(() => {
-    var _a27;
-    return (_a27 = store == null ? void 0 : store.states.fixedLeafColumnsLength.value) != null ? _a27 : 0;
+    var _a26;
+    return (_a26 = store == null ? void 0 : store.states.fixedLeafColumnsLength.value) != null ? _a26 : 0;
   });
   const rightFixedLeafCount = computed2(() => {
-    var _a27;
-    return (_a27 = store == null ? void 0 : store.states.rightFixedColumns.value.length) != null ? _a27 : 0;
+    var _a26;
+    return (_a26 = store == null ? void 0 : store.states.rightFixedColumns.value.length) != null ? _a26 : 0;
   });
   const columnsCount = computed2(() => {
-    var _a27;
-    return (_a27 = store == null ? void 0 : store.states.columns.value.length) != null ? _a27 : 0;
+    var _a26;
+    return (_a26 = store == null ? void 0 : store.states.columns.value.length) != null ? _a26 : 0;
   });
   const leftFixedCount = computed2(() => {
-    var _a27;
-    return (_a27 = store == null ? void 0 : store.states.fixedColumns.value.length) != null ? _a27 : 0;
+    var _a26;
+    return (_a26 = store == null ? void 0 : store.states.fixedColumns.value.length) != null ? _a26 : 0;
   });
   const rightFixedCount = computed2(() => {
-    var _a27;
-    return (_a27 = store == null ? void 0 : store.states.rightFixedColumns.value.length) != null ? _a27 : 0;
+    var _a26;
+    return (_a26 = store == null ? void 0 : store.states.rightFixedColumns.value.length) != null ? _a26 : 0;
   });
   return {
     leftFixedLeafCount,
@@ -68867,7 +70446,10 @@ function useMapState() {
     columnsCount,
     leftFixedCount,
     rightFixedCount,
-    columns: (_a26 = store == null ? void 0 : store.states.columns) != null ? _a26 : []
+    columns: computed2(() => {
+      var _a26;
+      return (_a26 = store == null ? void 0 : store.states.columns.value) != null ? _a26 : [];
+    })
   };
 }
 
@@ -69074,10 +70656,12 @@ function useStyle3(props2, layout2, store, table) {
   const footerScrollHeight = ref(0);
   const appendScrollHeight = ref(0);
   watchEffect(() => {
-    layout2.setHeight(props2.height);
+    var _a26;
+    layout2.setHeight((_a26 = props2.height) != null ? _a26 : null);
   });
   watchEffect(() => {
-    layout2.setMaxHeight(props2.maxHeight);
+    var _a26;
+    layout2.setMaxHeight((_a26 = props2.maxHeight) != null ? _a26 : null);
   });
   watch2(() => [props2.currentRowKey, store.states.rowKey], ([currentRowKey, rowKey2]) => {
     if (!unref(rowKey2) || !unref(currentRowKey))
@@ -69102,7 +70686,7 @@ function useStyle3(props2, layout2, store, table) {
     if (table.hoverState)
       table.hoverState = null;
   };
-  const handleHeaderFooterMousewheel = (event, data) => {
+  const handleHeaderFooterMousewheel = (_event2, data) => {
     const { pixelX, pixelY } = data;
     if (Math.abs(pixelX) >= Math.abs(pixelY)) {
       table.refs.bodyWrapper.scrollLeft += data.pixelX / 5;
@@ -69262,7 +70846,7 @@ function useStyle3(props2, layout2, store, table) {
   });
   const emptyBlockStyle = computed2(() => {
     if (props2.data && props2.data.length)
-      return null;
+      return;
     let height = "100%";
     if (props2.height && bodyScrollHeight.value) {
       height = `${bodyScrollHeight.value}px`;
@@ -69282,7 +70866,7 @@ function useStyle3(props2, layout2, store, table) {
     if (props2.maxHeight) {
       if (!Number.isNaN(Number(props2.maxHeight))) {
         return {
-          maxHeight: `${props2.maxHeight - headerScrollHeight.value - footerScrollHeight.value}px`
+          maxHeight: `${+props2.maxHeight - headerScrollHeight.value - footerScrollHeight.value}px`
         };
       } else {
         return {
@@ -69292,21 +70876,6 @@ function useStyle3(props2, layout2, store, table) {
     }
     return {};
   });
-  const handleFixedMousewheel = (event, data) => {
-    const bodyWrapper = table.refs.bodyWrapper;
-    if (Math.abs(data.spinY) > 0) {
-      const currentScrollTop = bodyWrapper.scrollTop;
-      if (data.pixelY < 0 && currentScrollTop !== 0) {
-        event.preventDefault();
-      }
-      if (data.pixelY > 0 && bodyWrapper.scrollHeight - bodyWrapper.clientHeight > currentScrollTop) {
-        event.preventDefault();
-      }
-      bodyWrapper.scrollTop += Math.ceil(data.pixelY / 5);
-    } else {
-      bodyWrapper.scrollLeft += Math.ceil(data.pixelX / 5);
-    }
-  };
   return {
     isHidden: isHidden2,
     renderExpanded,
@@ -69316,7 +70885,6 @@ function useStyle3(props2, layout2, store, table) {
     handleHeaderFooterMousewheel,
     tableSize,
     emptyBlockStyle,
-    handleFixedMousewheel,
     resizeProxyVisible,
     bodyWidth,
     resizeState,
@@ -69436,10 +71004,8 @@ var defaultProps3 = {
     type: Boolean,
     default: true
   },
-  preserveExpandedContent: {
-    type: Boolean,
-    default: false
-  }
+  preserveExpandedContent: Boolean,
+  nativeScrollbar: Boolean
 };
 
 // node_modules/element-plus/es/components/table/src/h-helper.mjs
@@ -69613,7 +71179,7 @@ var Mousewheel = {
 
 // node_modules/element-plus/es/components/table/src/table.mjs
 var tableIdSeed = 1;
-var _sfc_main126 = defineComponent({
+var _sfc_main422 = defineComponent({
   name: "ElTable",
   directives: {
     Mousewheel
@@ -69683,7 +71249,6 @@ var _sfc_main126 = defineComponent({
       handleHeaderFooterMousewheel,
       tableSize,
       emptyBlockStyle,
-      handleFixedMousewheel,
       resizeProxyVisible,
       bodyWidth,
       resizeState,
@@ -69737,7 +71302,6 @@ var _sfc_main126 = defineComponent({
       tableBodyStyles,
       emptyBlockStyle,
       debouncedUpdateLayout,
-      handleFixedMousewheel,
       setCurrentRow,
       getSelectionRows,
       toggleRowSelection,
@@ -69765,7 +71329,7 @@ var _sfc_main126 = defineComponent({
     };
   }
 });
-function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render22(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_hColgroup = resolveComponent("hColgroup");
   const _component_table_header = resolveComponent("table-header");
   const _component_table_body = resolveComponent("table-body");
@@ -69846,6 +71410,7 @@ function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
           "wrap-style": _ctx.scrollbarStyle,
           always: _ctx.scrollbarAlwaysOn,
           tabindex: _ctx.scrollbarTabindex,
+          native: _ctx.nativeScrollbar,
           onScroll: ($event) => _ctx.$emit("scroll", $event)
         }, {
           default: withCtx(() => [
@@ -69917,7 +71482,7 @@ function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
             ], 2)) : createCommentVNode("v-if", true)
           ]),
           _: 3
-        }, 8, ["view-style", "wrap-style", "always", "tabindex", "onScroll"])
+        }, 8, ["view-style", "wrap-style", "always", "tabindex", "native", "onScroll"])
       ], 2),
       _ctx.showSummary && _ctx.tableLayout === "fixed" ? withDirectives((openBlock(), createElementBlock("div", {
         key: 1,
@@ -69960,7 +71525,7 @@ function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 46, ["data-prefix", "onMouseleave"]);
 }
-var Table = /* @__PURE__ */ _export_sfc(_sfc_main126, [["render", _sfc_render25], ["__file", "table.vue"]]);
+var Table = /* @__PURE__ */ _export_sfc(_sfc_main422, [["render", _sfc_render22], ["__file", "table.vue"]]);
 
 // node_modules/element-plus/es/components/table/src/config.mjs
 var defaultClassNames = {
@@ -69995,7 +71560,11 @@ var getDefaultClassName = (type5) => {
 };
 var cellForced = {
   selection: {
-    renderHeader({ store, column: column2 }) {
+    renderHeader({
+      store,
+      column: column2
+    }) {
+      var _a26;
       function isDisabled() {
         return store.states.data.value && store.states.data.value.length === 0;
       }
@@ -70003,7 +71572,7 @@ var cellForced = {
         disabled: isDisabled(),
         size: store.states.tableSize.value,
         indeterminate: store.states.selection.value.length > 0 && !store.states.isAllSelected.value,
-        "onUpdate:modelValue": store.toggleAllSelection,
+        "onUpdate:modelValue": (_a26 = store.toggleAllSelection) != null ? _a26 : void 0,
         modelValue: store.states.isAllSelected.value,
         ariaLabel: column2.label
       });
@@ -70029,7 +71598,9 @@ var cellForced = {
     resizable: false
   },
   index: {
-    renderHeader({ column: column2 }) {
+    renderHeader({
+      column: column2
+    }) {
       return column2.label || "#";
     },
     renderCell({
@@ -70048,7 +71619,9 @@ var cellForced = {
     sortable: false
   },
   expand: {
-    renderHeader({ column: column2 }) {
+    renderHeader({
+      column: column2
+    }) {
       return column2.label || "";
     },
     renderCell({
@@ -70214,6 +71787,7 @@ function useWatcher2(owner, props_) {
       "showOverflowTooltip",
       "tooltipFormatter"
     ];
+    const parentProps = ["showOverflowTooltip"];
     const aliases = {
       property: "prop",
       align: "realAlign",
@@ -70224,6 +71798,13 @@ function useWatcher2(owner, props_) {
       const columnKey = aliases[key];
       if (hasOwn(props_, columnKey)) {
         watch2(() => props_[columnKey], (newVal) => {
+          instance.columnConfig.value[key] = newVal;
+        });
+      }
+    });
+    parentProps.forEach((key) => {
+      if (hasOwn(owner.value.props, key)) {
+        watch2(() => owner.value.props[key], (newVal) => {
           instance.columnConfig.value[key] = newVal;
         });
       }
@@ -70313,9 +71894,9 @@ function useRender2(props2, slots, owner) {
     }
   };
   const setColumnRenders = (column2) => {
-    if (props2.renderHeader) {
-      debugWarn("TableColumn", "Comparing to render-header, scoped-slot header is easier to use. We recommend users to use scoped-slot header.");
-    } else if (column2.type !== "selection") {
+    if (props2.renderHeader)
+      ;
+    else if (column2.type !== "selection") {
       column2.renderHeader = (scope) => {
         instance.columnConfig.value["label"];
         return renderSlot(slots, "header", scope, () => [column2.label]);
@@ -70336,8 +71917,8 @@ function useRender2(props2, slots, owner) {
       column2.renderCell = (data) => h("div", {
         class: "cell"
       }, [originRenderCell(data)]);
-      owner.value.renderExpanded = (data) => {
-        return slots.default ? slots.default(data) : slots.default;
+      owner.value.renderExpanded = (row) => {
+        return slots.default ? slots.default(row) : slots.default;
       };
     } else {
       originRenderCell = originRenderCell || defaultRenderCell;
@@ -70496,7 +72077,7 @@ var ElTableColumn = defineComponent({
       updateColumnOrder
     } = useRender2(props2, slots, owner);
     const parent2 = columnOrTableParent.value;
-    columnId.value = `${parent2.tableId || parent2.columnId}_column_${columnIdSeed++}`;
+    columnId.value = `${"tableId" in parent2 && parent2.tableId || "columnId" in parent2 && parent2.columnId}_column_${columnIdSeed++}`;
     onBeforeMount(() => {
       isSubColumn.value = owner.value !== parent2;
       const type5 = props2.type || "default";
@@ -70554,18 +72135,18 @@ var ElTableColumn = defineComponent({
       registerComplexWatchers();
     });
     onMounted(() => {
-      var _a26;
+      var _a26, _b25;
       const parent22 = columnOrTableParent.value;
-      const children2 = isSubColumn.value ? parent22.vnode.el.children : (_a26 = parent22.refs.hiddenColumns) == null ? void 0 : _a26.children;
+      const children2 = isSubColumn.value ? (_a26 = parent22.vnode.el) == null ? void 0 : _a26.children : (_b25 = parent22.refs.hiddenColumns) == null ? void 0 : _b25.children;
       const getColumnIndex = () => getColumnElIndex(children2 || [], instance.vnode.el);
       columnConfig.value.getColumnIndex = getColumnIndex;
       const columnIndex = getColumnIndex();
-      columnIndex > -1 && owner.value.store.commit("insertColumn", columnConfig.value, isSubColumn.value ? parent22.columnConfig.value : null, updateColumnOrder);
+      columnIndex > -1 && owner.value.store.commit("insertColumn", columnConfig.value, isSubColumn.value ? "columnConfig" in parent22 && parent22.columnConfig.value : null, updateColumnOrder);
     });
     onBeforeUnmount(() => {
       const getColumnIndex = columnConfig.value.getColumnIndex;
       const columnIndex = getColumnIndex ? getColumnIndex() : -1;
-      columnIndex > -1 && owner.value.store.commit("removeColumn", columnConfig.value, isSubColumn.value ? parent2.columnConfig.value : null, updateColumnOrder);
+      columnIndex > -1 && owner.value.store.commit("removeColumn", columnConfig.value, isSubColumn.value ? "columnConfig" in parent2 && parent2.columnConfig.value : null, updateColumnOrder);
     });
     instance.columnId = columnId.value;
     instance.columnConfig = columnConfig;
@@ -70877,6 +72458,11 @@ var useRow = (props2, {
       rowKey: rowKey2
     });
     (_b25 = props2.onExpandedRowsChange) == null ? void 0 : _b25.call(props2, _expandedRowKeys);
+    const tableRoot = tableInstance.vnode.el;
+    const hoverRow = tableRoot.querySelector(`.${ns.is("hovered")}[rowkey="${String(rowKey2)}"]`);
+    if (hoverRow) {
+      nextTick(() => onRowHovered({ hovered: true, rowKey: rowKey2 }));
+    }
   }
   const flushingRowHeights = debounce_default(() => {
     var _a26, _b25, _c, _d;
@@ -71458,9 +73044,9 @@ var tableV2Props = buildProps({
 });
 
 // node_modules/element-plus/es/components/table-v2/src/components/header.mjs
-var COMPONENT_NAME19 = "ElTableV2Header";
+var COMPONENT_NAME20 = "ElTableV2Header";
 var TableV2Header = defineComponent({
-  name: COMPONENT_NAME19,
+  name: COMPONENT_NAME20,
   props: tableV2HeaderProps,
   setup(props2, {
     slots,
@@ -72027,7 +73613,6 @@ var createGrid = ({
 
 // node_modules/element-plus/es/components/virtual-list/src/components/dynamic-size-grid.mjs
 var { max, min, floor } = Math;
-var SCOPE7 = "ElDynamicSizeGrid";
 var ACCESS_SIZER_KEY_MAP = {
   column: "columnWidth",
   row: "rowHeight"
@@ -72249,25 +73834,10 @@ var DynamicSizeGrid = createGrid({
   },
   clearCache: false,
   validateProps: ({ columnWidth, rowHeight }) => {
-    if (true) {
-      if (!isFunction(columnWidth)) {
-        throwError(SCOPE7, `
-          "columnWidth" must be passed as function,
-            instead ${typeof columnWidth} was given.
-        `);
-      }
-      if (!isFunction(rowHeight)) {
-        throwError(SCOPE7, `
-          "rowHeight" must be passed as function,
-            instead ${typeof rowHeight} was given.
-        `);
-      }
-    }
   }
 });
 
 // node_modules/element-plus/es/components/virtual-list/src/components/fixed-size-grid.mjs
-var SCOPE8 = "ElFixedSizeGrid";
 var FixedSizeGrid = createGrid({
   name: "ElFixedSizeGrid",
   getColumnPosition: ({ columnWidth }, index3) => [
@@ -72375,25 +73945,11 @@ var FixedSizeGrid = createGrid({
   initCache: () => void 0,
   clearCache: true,
   validateProps: ({ columnWidth, rowHeight }) => {
-    if (true) {
-      if (!isNumber2(columnWidth)) {
-        throwError(SCOPE8, `
-          "columnWidth" must be passed as number,
-            instead ${typeof columnWidth} was given.
-        `);
-      }
-      if (!isNumber2(rowHeight)) {
-        throwError(SCOPE8, `
-          "columnWidth" must be passed as number,
-            instead ${typeof rowHeight} was given.
-        `);
-      }
-    }
   }
 });
 
 // node_modules/element-plus/es/components/table-v2/src/table-grid.mjs
-var COMPONENT_NAME20 = "ElTableV2Grid";
+var COMPONENT_NAME21 = "ElTableV2Grid";
 var useTableGrid = (props2) => {
   const headerRef = ref();
   const bodyRef = ref();
@@ -72505,7 +74061,7 @@ var useTableGrid = (props2) => {
   };
 };
 var TableGrid = defineComponent({
-  name: COMPONENT_NAME20,
+  name: COMPONENT_NAME21,
   props: tableV2GridProps,
   setup(props2, {
     slots,
@@ -72626,7 +74182,7 @@ var TableGrid = defineComponent({
 var Table2 = TableGrid;
 
 // node_modules/element-plus/es/components/table-v2/src/renderers/main-table.mjs
-function _isSlot(s3) {
+function _isSlot3(s3) {
   return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
 }
 var MainTable = (props2, {
@@ -72638,14 +74194,14 @@ var MainTable = (props2, {
   } = props2;
   return createVNode(Table2, mergeProps({
     "ref": mainTableRef
-  }, rest), _isSlot(slots) ? slots : {
+  }, rest), _isSlot3(slots) ? slots : {
     default: () => [slots]
   });
 };
 var MainTable$1 = MainTable;
 
 // node_modules/element-plus/es/components/table-v2/src/renderers/left-table.mjs
-function _isSlot2(s3) {
+function _isSlot4(s3) {
   return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
 }
 var LeftTable = (props2, {
@@ -72659,14 +74215,14 @@ var LeftTable = (props2, {
   } = props2;
   return createVNode(Table2, mergeProps({
     "ref": leftTableRef
-  }, rest), _isSlot2(slots) ? slots : {
+  }, rest), _isSlot4(slots) ? slots : {
     default: () => [slots]
   });
 };
 var LeftTable$1 = LeftTable;
 
 // node_modules/element-plus/es/components/table-v2/src/renderers/right-table.mjs
-function _isSlot3(s3) {
+function _isSlot5(s3) {
   return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
 }
 var LeftTable2 = (props2, {
@@ -72680,7 +74236,7 @@ var LeftTable2 = (props2, {
   } = props2;
   return createVNode(Table2, mergeProps({
     "ref": rightTableRef
-  }, rest), _isSlot3(slots) ? slots : {
+  }, rest), _isSlot5(slots) ? slots : {
     default: () => [slots]
   });
 };
@@ -72798,9 +74354,9 @@ var useTableRow = (props2) => {
     onExpand
   };
 };
-var COMPONENT_NAME21 = "ElTableV2TableRow";
+var COMPONENT_NAME22 = "ElTableV2TableRow";
 var TableV2Row = defineComponent({
-  name: COMPONENT_NAME21,
+  name: COMPONENT_NAME22,
   props: tableV2RowProps,
   setup(props2, {
     expose,
@@ -72887,7 +74443,7 @@ var TableV2Row = defineComponent({
 var Row2 = TableV2Row;
 
 // node_modules/element-plus/es/components/table-v2/src/renderers/row.mjs
-function _isSlot4(s3) {
+function _isSlot6(s3) {
   return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
 }
 var RowRenderer = (props2, {
@@ -72949,7 +74505,7 @@ var RowRenderer = (props2, {
     rowEventHandlers,
     style
   };
-  const handlerMosueEnter = (e) => {
+  const handlerMouseEnter = (e) => {
     onRowHover == null ? void 0 : onRowHover({
       hovered: true,
       rowKey: _rowKey,
@@ -72969,10 +74525,10 @@ var RowRenderer = (props2, {
   };
   return createVNode(Row2, mergeProps(_rowProps, {
     "onRowExpand": onRowExpanded,
-    "onMouseenter": handlerMosueEnter,
+    "onMouseenter": handlerMouseEnter,
     "onMouseleave": handlerMouseLeave,
     "rowkey": _rowKey
-  }), _isSlot4(slots) ? slots : {
+  }), _isSlot6(slots) ? slots : {
     default: () => [slots]
   });
 };
@@ -73169,7 +74725,7 @@ var TableV2HeaderRow = defineComponent({
 var HeaderRow = TableV2HeaderRow;
 
 // node_modules/element-plus/es/components/table-v2/src/renderers/header.mjs
-function _isSlot5(s3) {
+function _isSlot7(s3) {
   return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
 }
 var HeaderRenderer = ({
@@ -73198,7 +74754,7 @@ var HeaderRenderer = ({
     headerIndex,
     style
   };
-  return createVNode(HeaderRow, extraProps, _isSlot5(slots) ? slots : {
+  return createVNode(HeaderRow, extraProps, _isSlot7(slots) ? slots : {
     default: () => [slots]
   });
 };
@@ -73331,12 +74887,12 @@ Overlay2.displayName = "ElTableV2Overlay";
 var Overlay$1 = Overlay2;
 
 // node_modules/element-plus/es/components/table-v2/src/table-v2.mjs
-function _isSlot6(s3) {
+function _isSlot8(s3) {
   return typeof s3 === "function" || Object.prototype.toString.call(s3) === "[object Object]" && !isVNode(s3);
 }
-var COMPONENT_NAME22 = "ElTableV2";
+var COMPONENT_NAME23 = "ElTableV2";
 var TableV2 = defineComponent({
-  name: COMPONENT_NAME22,
+  name: COMPONENT_NAME23,
   props: tableV2Props,
   setup(props2, {
     slots,
@@ -73534,7 +75090,7 @@ var TableV2 = defineComponent({
             let _slot;
             return slots.cell ? createVNode(Cell, mergeProps(props3, tableCellProps, {
               "style": _columnsStyles[props3.column.key]
-            }), _isSlot6(_slot = slots.cell(props3)) ? _slot : {
+            }), _isSlot8(_slot = slots.cell(props3)) ? _slot : {
               default: () => [_slot]
             }) : createVNode(Cell, mergeProps(props3, tableCellProps, {
               "style": _columnsStyles[props3.column.key]
@@ -73547,7 +75103,7 @@ var TableV2 = defineComponent({
             let _slot2;
             return slots["header-cell"] ? createVNode(HeaderCell2, mergeProps(props3, tableHeaderCellProps, {
               "style": _columnsStyles[props3.column.key]
-            }), _isSlot6(_slot2 = slots["header-cell"](props3)) ? _slot2 : {
+            }), _isSlot8(_slot2 = slots["header-cell"](props3)) ? _slot2 : {
               default: () => [_slot2]
             }) : createVNode(HeaderCell2, mergeProps(props3, tableHeaderCellProps, {
               "style": _columnsStyles[props3.column.key]
@@ -73565,11 +75121,11 @@ var TableV2 = defineComponent({
       return createVNode("div", {
         "class": rootKls,
         "style": unref(rootStyle)
-      }, [createVNode(MainTable$1, mainTableProps, _isSlot6(tableSlots) ? tableSlots : {
+      }, [createVNode(MainTable$1, mainTableProps, _isSlot8(tableSlots) ? tableSlots : {
         default: () => [tableSlots]
-      }), createVNode(LeftTable$1, leftTableProps, _isSlot6(tableSlots) ? tableSlots : {
+      }), createVNode(LeftTable$1, leftTableProps, _isSlot8(tableSlots) ? tableSlots : {
         default: () => [tableSlots]
-      }), createVNode(RightTable, rightTableProps, _isSlot6(tableSlots) ? tableSlots : {
+      }), createVNode(RightTable, rightTableProps, _isSlot8(tableSlots) ? tableSlots : {
         default: () => [tableSlots]
       }), slots.footer && createVNode(Footer$1, footerProps, {
         default: slots.footer
@@ -73676,23 +75232,26 @@ var tabBarProps = buildProps({
   tabs: {
     type: definePropType(Array),
     default: () => mutable([])
+  },
+  tabRefs: {
+    type: definePropType(Object),
+    default: () => mutable({})
   }
 });
 
 // node_modules/element-plus/es/components/tabs/src/tab-bar2.mjs
-var COMPONENT_NAME23 = "ElTabBar";
-var __default__91 = defineComponent({
-  name: COMPONENT_NAME23
+var COMPONENT_NAME24 = "ElTabBar";
+var __default__98 = defineComponent({
+  name: COMPONENT_NAME24
 });
-var _sfc_main127 = /* @__PURE__ */ defineComponent({
-  ...__default__91,
+var _sfc_main423 = /* @__PURE__ */ defineComponent({
+  ...__default__98,
   props: tabBarProps,
   setup(__props, { expose }) {
     const props2 = __props;
-    const instance = getCurrentInstance();
     const rootTabs = inject(tabsRootContextKey);
     if (!rootTabs)
-      throwError(COMPONENT_NAME23, "<el-tabs><el-tab-bar /></el-tabs>");
+      throwError(COMPONENT_NAME24, "<el-tabs><el-tab-bar /></el-tabs>");
     const ns = useNamespace("tabs");
     const barRef = ref();
     const barStyle = ref();
@@ -73703,8 +75262,9 @@ var _sfc_main127 = /* @__PURE__ */ defineComponent({
       const sizeDir = sizeName === "width" ? "x" : "y";
       const position = sizeDir === "x" ? "left" : "top";
       props2.tabs.every((tab) => {
-        var _a26, _b25;
-        const $el = (_b25 = (_a26 = instance.parent) == null ? void 0 : _a26.refs) == null ? void 0 : _b25[`tab-${tab.uid}`];
+        if (isUndefined4(tab.paneName))
+          return false;
+        const $el = props2.tabRefs[tab.paneName];
         if (!$el)
           return false;
         if (!tab.active) {
@@ -73725,33 +75285,24 @@ var _sfc_main127 = /* @__PURE__ */ defineComponent({
       };
     };
     const update2 = () => barStyle.value = getBarStyle();
-    const saveObserver = [];
+    const tabObservers = [];
     const observerTabs = () => {
-      var _a26;
-      saveObserver.forEach((observer) => observer.stop());
-      saveObserver.length = 0;
-      const list = (_a26 = instance.parent) == null ? void 0 : _a26.refs;
-      if (!list)
-        return;
-      for (const key in list) {
-        if (key.startsWith("tab-")) {
-          const _el = list[key];
-          if (_el) {
-            saveObserver.push(useResizeObserver(_el, update2));
-          }
-        }
-      }
+      tabObservers.forEach((observer) => observer.stop());
+      tabObservers.length = 0;
+      Object.values(props2.tabRefs).forEach((tab) => {
+        tabObservers.push(useResizeObserver(tab, update2));
+      });
     };
     watch2(() => props2.tabs, async () => {
       await nextTick();
       update2();
       observerTabs();
     }, { immediate: true });
-    const barObserever = useResizeObserver(barRef, () => update2());
+    const barObserver = useResizeObserver(barRef, () => update2());
     onBeforeUnmount(() => {
-      saveObserver.forEach((observer) => observer.stop());
-      saveObserver.length = 0;
-      barObserever.stop();
+      tabObservers.forEach((observer) => observer.stop());
+      tabObservers.length = 0;
+      barObserver.stop();
     });
     expose({
       ref: barRef,
@@ -73767,7 +75318,7 @@ var _sfc_main127 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TabBar = /* @__PURE__ */ _export_sfc(_sfc_main127, [["__file", "tab-bar.vue"]]);
+var TabBar = /* @__PURE__ */ _export_sfc(_sfc_main423, [["__file", "tab-bar.vue"]]);
 
 // node_modules/element-plus/es/components/tabs/src/tab-nav.mjs
 var tabNavProps = buildProps({
@@ -73791,9 +75342,9 @@ var tabNavEmits = {
   tabClick: (tab, tabName, ev) => ev instanceof Event,
   tabRemove: (tab, ev) => ev instanceof Event
 };
-var COMPONENT_NAME24 = "ElTabNav";
+var COMPONENT_NAME25 = "ElTabNav";
 var TabNav = defineComponent({
-  name: COMPONENT_NAME24,
+  name: COMPONENT_NAME25,
   props: tabNavProps,
   emits: tabNavEmits,
   setup(props2, {
@@ -73802,18 +75353,20 @@ var TabNav = defineComponent({
   }) {
     const rootTabs = inject(tabsRootContextKey);
     if (!rootTabs)
-      throwError(COMPONENT_NAME24, `<el-tabs><tab-nav /></el-tabs>`);
+      throwError(COMPONENT_NAME25, `<el-tabs><tab-nav /></el-tabs>`);
     const ns = useNamespace("tabs");
     const visibility = useDocumentVisibility();
     const focused = useWindowFocus();
     const navScroll$ = ref();
     const nav$ = ref();
     const el$ = ref();
+    const tabRefsMap = ref({});
     const tabBarRef = ref();
     const scrollable = ref(false);
     const navOffset = ref(0);
     const isFocus = ref(false);
     const focusable = ref(true);
+    const tracker = shallowRef();
     const sizeName = computed2(() => ["top", "bottom"].includes(rootTabs.props.tabPosition) ? "width" : "height");
     const navStyle = computed2(() => {
       const dir = sizeName.value === "width" ? "X" : "Y";
@@ -73847,7 +75400,7 @@ var TabNav = defineComponent({
       if (!scrollable.value || !el$.value || !navScroll$.value || !nav)
         return;
       await nextTick();
-      const activeTab = el$.value.querySelector(".is-active");
+      const activeTab = tabRefsMap.value[props2.currentName];
       if (!activeTab)
         return;
       const navScroll = navScroll$.value;
@@ -73930,6 +75483,16 @@ var TabNav = defineComponent({
         isFocus.value = true;
     };
     const removeFocus = () => isFocus.value = false;
+    const setRefs = (el, key) => {
+      tabRefsMap.value[key] = el;
+    };
+    const focusActiveTab = async () => {
+      await nextTick();
+      const activeTab = tabRefsMap.value[props2.currentName];
+      activeTab == null ? void 0 : activeTab.focus({
+        preventScroll: true
+      });
+    };
     watch2(visibility, (visibility2) => {
       if (visibility2 === "hidden") {
         focusable.value = false;
@@ -73950,8 +75513,10 @@ var TabNav = defineComponent({
     expose({
       scrollToActiveTab,
       removeFocus,
+      focusActiveTab,
       tabListRef: nav$,
-      tabBarRef
+      tabBarRef,
+      scheduleRender: () => triggerRef(tracker)
     });
     return () => {
       const scrollBtn = scrollable.value ? [createVNode("span", {
@@ -73981,7 +75546,7 @@ var TabNav = defineComponent({
         const tabLabelContent = ((_d = (_c = pane.slots).label) == null ? void 0 : _d.call(_c)) || pane.props.label;
         const tabindex = !disabled && pane.active ? 0 : -1;
         return createVNode("div", {
-          "ref": `tab-${uid3}`,
+          "ref": (el) => setRefs(el, tabName),
           "class": [ns.e("item"), ns.is(rootTabs.props.tabPosition), ns.is("active", pane.active), ns.is("disabled", disabled), ns.is("closable", closable), ns.is("focus", isFocus.value)],
           "id": `tab-${tabName}`,
           "key": `tab-${uid3}`,
@@ -74002,13 +75567,14 @@ var TabNav = defineComponent({
           }
         }, [...[tabLabelContent, btnClose]]);
       });
+      tracker.value;
       return createVNode("div", {
         "ref": el$,
         "class": [ns.e("nav-wrap"), ns.is("scrollable", !!scrollable.value), ns.is(rootTabs.props.tabPosition)]
       }, [scrollBtn, createVNode("div", {
         "class": ns.e("nav-scroll"),
         "ref": navScroll$
-      }, [createVNode("div", {
+      }, [props2.panes.length > 0 ? createVNode("div", {
         "class": [ns.e("nav"), ns.is(rootTabs.props.tabPosition), ns.is("stretch", props2.stretch && ["top", "bottom"].includes(rootTabs.props.tabPosition))],
         "ref": nav$,
         "style": navStyle.value,
@@ -74016,8 +75582,9 @@ var TabNav = defineComponent({
         "onKeydown": changeTab
       }, [...[!props2.type ? createVNode(TabBar, {
         "ref": tabBarRef,
-        "tabs": [...props2.panes]
-      }, null) : null, tabs]])])]);
+        "tabs": [...props2.panes],
+        "tabRefs": tabRefsMap.value
+      }, null) : null, tabs]]) : null])]);
     };
   }
 });
@@ -74069,13 +75636,14 @@ var Tabs = defineComponent({
     const isVertical = computed2(() => ["left", "right"].includes(props2.tabPosition));
     const {
       children: panes,
-      addChild: sortPane,
-      removeChild: unregisterPane
+      addChild: registerPane,
+      removeChild: unregisterPane,
+      ChildrenSorter: PanesSorter
     } = useOrderedChildren(getCurrentInstance(), "ElTabPane");
     const nav$ = ref();
     const currentName = ref((_a26 = props2.modelValue) != null ? _a26 : "0");
     const setCurrentName = async (value, trigger2 = false) => {
-      var _a27, _b25;
+      var _a27, _b25, _c, _d;
       if (currentName.value === value || isUndefined4(value))
         return;
       try {
@@ -74087,12 +75655,16 @@ var Tabs = defineComponent({
           canLeave = true;
         }
         if (canLeave !== false) {
+          const isFocusInsidePane = (_a27 = panes.value.find((item) => item.paneName === currentName.value)) == null ? void 0 : _a27.isFocusInsidePane();
           currentName.value = value;
           if (trigger2) {
             emit2(UPDATE_MODEL_EVENT, value);
             emit2("tabChange", value);
           }
-          (_b25 = (_a27 = nav$.value) == null ? void 0 : _a27.removeFocus) == null ? void 0 : _b25.call(_a27);
+          (_c = (_b25 = nav$.value) == null ? void 0 : _b25.removeFocus) == null ? void 0 : _c.call(_b25);
+          if (isFocusInsidePane) {
+            (_d = nav$.value) == null ? void 0 : _d.focusActiveTab();
+          }
         }
       } catch (e) {
       }
@@ -74114,6 +75686,13 @@ var Tabs = defineComponent({
       emit2("edit", void 0, "add");
       emit2("tabAdd");
     };
+    const swapChildren = (vnode) => {
+      const actualFirstChild = vnode.el.firstChild;
+      const firstChild = ["bottom", "right"].includes(props2.tabPosition) ? vnode.children[0].el : vnode.children[1].el;
+      if (actualFirstChild !== firstChild) {
+        actualFirstChild.before(firstChild);
+      }
+    };
     watch2(() => props2.modelValue, (modelValue) => setCurrentName(modelValue));
     watch2(currentName, async () => {
       var _a27;
@@ -74123,21 +75702,16 @@ var Tabs = defineComponent({
     provide(tabsRootContextKey, {
       props: props2,
       currentName,
-      registerPane: (pane) => {
-        panes.value.push(pane);
-      },
-      sortPane,
-      unregisterPane
+      registerPane,
+      unregisterPane,
+      nav$
     });
     expose({
       currentName,
-      tabNavRef: nav$
+      get tabNavRef() {
+        return omit_default(nav$.value, ["scheduleRender"]);
+      }
     });
-    const TabNavRenderer = ({
-      render: render6
-    }) => {
-      return render6();
-    };
     return () => {
       const addSlot = slots["add-icon"];
       const newButton = props2.editable || props2.addable ? createVNode("div", {
@@ -74153,25 +75727,22 @@ var Tabs = defineComponent({
       }, {
         default: () => [createVNode(plus_default, null, null)]
       })]) : null;
+      const tabNav = () => createVNode(TabNav, {
+        "ref": nav$,
+        "currentName": currentName.value,
+        "editable": props2.editable,
+        "type": props2.type,
+        "panes": panes.value,
+        "stretch": props2.stretch,
+        "onTabClick": handleTabClick,
+        "onTabRemove": handleTabRemove
+      }, null);
       const header = createVNode("div", {
         "class": [ns.e("header"), isVertical.value && ns.e("header-vertical"), ns.is(props2.tabPosition)]
-      }, [createVNode(TabNavRenderer, {
-        "render": () => {
-          const hasLabelSlot = panes.value.some((pane) => pane.slots.label);
-          return createVNode(TabNav, {
-            ref: nav$,
-            currentName: currentName.value,
-            editable: props2.editable,
-            type: props2.type,
-            panes: panes.value,
-            stretch: props2.stretch,
-            onTabClick: handleTabClick,
-            onTabRemove: handleTabRemove
-          }, {
-            $stable: !hasLabelSlot
-          });
-        }
-      }, null), newButton]);
+      }, [createVNode(PanesSorter, null, {
+        default: tabNav,
+        $stable: true
+      }), newButton]);
       const panels = createVNode("div", {
         "class": ns.e("content")
       }, [renderSlot(slots, "default")]);
@@ -74179,7 +75750,9 @@ var Tabs = defineComponent({
         "class": [ns.b(), ns.m(props2.tabPosition), {
           [ns.m("card")]: props2.type === "card",
           [ns.m("border-card")]: props2.type === "border-card"
-        }]
+        }],
+        "onVnodeMounted": swapChildren,
+        "onVnodeUpdated": swapChildren
       }, [panels, header]);
     };
   }
@@ -74201,12 +75774,12 @@ var tabPaneProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/tabs/src/tab-pane2.mjs
-var COMPONENT_NAME25 = "ElTabPane";
-var __default__92 = defineComponent({
-  name: COMPONENT_NAME25
+var COMPONENT_NAME26 = "ElTabPane";
+var __default__99 = defineComponent({
+  name: COMPONENT_NAME26
 });
-var _sfc_main128 = /* @__PURE__ */ defineComponent({
-  ...__default__92,
+var _sfc_main424 = /* @__PURE__ */ defineComponent({
+  ...__default__99,
   props: tabPaneProps,
   setup(__props) {
     const props2 = __props;
@@ -74214,8 +75787,9 @@ var _sfc_main128 = /* @__PURE__ */ defineComponent({
     const slots = useSlots();
     const tabsRoot = inject(tabsRootContextKey);
     if (!tabsRoot)
-      throwError(COMPONENT_NAME25, "usage: <el-tabs><el-tab-pane /></el-tabs/>");
+      throwError(COMPONENT_NAME26, "usage: <el-tabs><el-tab-pane /></el-tabs/>");
     const ns = useNamespace("tab-pane");
+    const paneRef = ref();
     const index3 = ref();
     const isClosable = computed2(() => props2.closable || tabsRoot.props.closable);
     const active = computedEager(() => {
@@ -74228,30 +75802,40 @@ var _sfc_main128 = /* @__PURE__ */ defineComponent({
       return (_a26 = props2.name) != null ? _a26 : index3.value;
     });
     const shouldBeRender = computedEager(() => !props2.lazy || loaded.value || active.value);
+    const isFocusInsidePane = () => {
+      var _a26;
+      return (_a26 = paneRef.value) == null ? void 0 : _a26.contains(document.activeElement);
+    };
     watch2(active, (val) => {
       if (val)
         loaded.value = true;
     });
     const pane = reactive({
       uid: instance.uid,
+      getVnode: () => instance.vnode,
       slots,
       props: props2,
       paneName,
       active,
       index: index3,
-      isClosable
+      isClosable,
+      isFocusInsidePane
     });
     tabsRoot.registerPane(pane);
-    onMounted(() => {
-      tabsRoot.sortPane(pane);
+    onBeforeUnmount(() => {
+      tabsRoot.unregisterPane(pane);
     });
-    onUnmounted(() => {
-      tabsRoot.unregisterPane(pane.uid);
+    onBeforeUpdate(() => {
+      var _a26;
+      if (slots.label)
+        (_a26 = tabsRoot.nav$.value) == null ? void 0 : _a26.scheduleRender();
     });
     return (_ctx, _cache) => {
       return unref(shouldBeRender) ? withDirectives((openBlock(), createElementBlock("div", {
         key: 0,
         id: `pane-${unref(paneName)}`,
+        ref_key: "paneRef",
+        ref: paneRef,
         class: normalizeClass(unref(ns).b()),
         role: "tabpanel",
         "aria-hidden": !unref(active),
@@ -74264,7 +75848,7 @@ var _sfc_main128 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TabPane = /* @__PURE__ */ _export_sfc(_sfc_main128, [["__file", "tab-pane.vue"]]);
+var TabPane = /* @__PURE__ */ _export_sfc(_sfc_main424, [["__file", "tab-pane.vue"]]);
 
 // node_modules/element-plus/es/components/tabs/index.mjs
 var ElTabs = withInstall(Tabs$1, {
@@ -74272,7 +75856,7 @@ var ElTabs = withInstall(Tabs$1, {
 });
 var ElTabPane = withNoopInstall(TabPane);
 
-// node_modules/element-plus/es/components/text/src/text.mjs
+// node_modules/element-plus/es/components/text/src/text2.mjs
 var textProps = buildProps({
   type: {
     type: String,
@@ -74294,12 +75878,12 @@ var textProps = buildProps({
   }
 });
 
-// node_modules/element-plus/es/components/text/src/text2.mjs
-var __default__93 = defineComponent({
+// node_modules/element-plus/es/components/text/src/text.mjs
+var __default__100 = defineComponent({
   name: "ElText"
 });
-var _sfc_main129 = /* @__PURE__ */ defineComponent({
-  ...__default__93,
+var _sfc_main425 = /* @__PURE__ */ defineComponent({
+  ...__default__100,
   props: textProps,
   setup(__props) {
     const props2 = __props;
@@ -74356,7 +75940,7 @@ var _sfc_main129 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Text2 = /* @__PURE__ */ _export_sfc(_sfc_main129, [["__file", "text.vue"]]);
+var Text2 = /* @__PURE__ */ _export_sfc(_sfc_main425, [["__file", "text.vue"]]);
 
 // node_modules/element-plus/es/components/text/index.mjs
 var ElText = withInstall(Text2);
@@ -74371,7 +75955,9 @@ var timeSelectProps = buildProps({
     type: String,
     default: "HH:mm"
   },
-  modelValue: String,
+  modelValue: {
+    type: definePropType(String)
+  },
   disabled: Boolean,
   editable: {
     type: Boolean,
@@ -74399,12 +75985,13 @@ var timeSelectProps = buildProps({
     type: String,
     default: "00:30"
   },
-  minTime: String,
-  maxTime: String,
-  includeEndTime: {
-    type: Boolean,
-    default: false
+  minTime: {
+    type: definePropType(String)
   },
+  maxTime: {
+    type: definePropType(String)
+  },
+  includeEndTime: Boolean,
   name: String,
   prefixIcon: {
     type: definePropType([String, Object]),
@@ -74475,11 +76062,11 @@ var nextTime = (time2, step2) => {
 };
 
 // node_modules/element-plus/es/components/time-select/src/time-select2.mjs
-var __default__94 = defineComponent({
+var __default__101 = defineComponent({
   name: "ElTimeSelect"
 });
-var _sfc_main130 = /* @__PURE__ */ defineComponent({
-  ...__default__94,
+var _sfc_main426 = /* @__PURE__ */ defineComponent({
+  ...__default__101,
   props: timeSelectProps,
   emits: [CHANGE_EVENT, "blur", "focus", "clear", UPDATE_MODEL_EVENT],
   setup(__props, { expose }) {
@@ -74594,7 +76181,7 @@ var _sfc_main130 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TimeSelect = /* @__PURE__ */ _export_sfc(_sfc_main130, [["__file", "time-select.vue"]]);
+var TimeSelect = /* @__PURE__ */ _export_sfc(_sfc_main426, [["__file", "time-select.vue"]]);
 
 // node_modules/element-plus/es/components/time-select/index.mjs
 var ElTimeSelect = withInstall(TimeSelect);
@@ -74648,11 +76235,11 @@ var timelineItemProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/timeline/src/timeline-item2.mjs
-var __default__95 = defineComponent({
+var __default__102 = defineComponent({
   name: "ElTimelineItem"
 });
-var _sfc_main131 = /* @__PURE__ */ defineComponent({
-  ...__default__95,
+var _sfc_main427 = /* @__PURE__ */ defineComponent({
+  ...__default__102,
   props: timelineItemProps,
   setup(__props) {
     const props2 = __props;
@@ -74714,7 +76301,7 @@ var _sfc_main131 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TimelineItem = /* @__PURE__ */ _export_sfc(_sfc_main131, [["__file", "timeline-item.vue"]]);
+var TimelineItem = /* @__PURE__ */ _export_sfc(_sfc_main427, [["__file", "timeline-item.vue"]]);
 
 // node_modules/element-plus/es/components/timeline/index.mjs
 var ElTimeline = withInstall(Timeline, {
@@ -74863,11 +76450,11 @@ var tooltipV2ContentKey = Symbol("tooltipV2Content");
 var TOOLTIP_V2_OPEN = "tooltip_v2.open";
 
 // node_modules/element-plus/es/components/tooltip-v2/src/root2.mjs
-var __default__96 = defineComponent({
+var __default__103 = defineComponent({
   name: "ElTooltipV2Root"
 });
-var _sfc_main132 = /* @__PURE__ */ defineComponent({
-  ...__default__96,
+var _sfc_main428 = /* @__PURE__ */ defineComponent({
+  ...__default__103,
   props: tooltipV2RootProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -74934,14 +76521,14 @@ var _sfc_main132 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TooltipV2Root = /* @__PURE__ */ _export_sfc(_sfc_main132, [["__file", "root.vue"]]);
+var TooltipV2Root = /* @__PURE__ */ _export_sfc(_sfc_main428, [["__file", "root.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/src/arrow2.mjs
-var __default__97 = defineComponent({
+var __default__104 = defineComponent({
   name: "ElTooltipV2Arrow"
 });
-var _sfc_main133 = /* @__PURE__ */ defineComponent({
-  ...__default__97,
+var _sfc_main429 = /* @__PURE__ */ defineComponent({
+  ...__default__104,
   props: {
     ...tooltipV2ArrowProps,
     ...tooltipV2ArrowSpecialProps
@@ -74971,7 +76558,7 @@ var _sfc_main133 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TooltipV2Arrow = /* @__PURE__ */ _export_sfc(_sfc_main133, [["__file", "arrow.vue"]]);
+var TooltipV2Arrow = /* @__PURE__ */ _export_sfc(_sfc_main429, [["__file", "arrow.vue"]]);
 
 // node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
 var min2 = Math.min;
@@ -75010,8 +76597,9 @@ function getOppositeAxis(axis2) {
 function getAxisLength(axis2) {
   return axis2 === "y" ? "height" : "width";
 }
+var yAxisSides = /* @__PURE__ */ new Set(["top", "bottom"]);
 function getSideAxis(placement) {
-  return ["top", "bottom"].includes(getSide(placement)) ? "y" : "x";
+  return yAxisSides.has(getSide(placement)) ? "y" : "x";
 }
 function getAlignmentAxis(placement) {
   return getOppositeAxis(getSideAxis(placement));
@@ -75036,20 +76624,20 @@ function getExpandedPlacements(placement) {
 function getOppositeAlignmentPlacement(placement) {
   return placement.replace(/start|end/g, (alignment) => oppositeAlignmentMap[alignment]);
 }
+var lrPlacement = ["left", "right"];
+var rlPlacement = ["right", "left"];
+var tbPlacement = ["top", "bottom"];
+var btPlacement = ["bottom", "top"];
 function getSideList(side, isStart, rtl) {
-  const lr = ["left", "right"];
-  const rl = ["right", "left"];
-  const tb = ["top", "bottom"];
-  const bt2 = ["bottom", "top"];
   switch (side) {
     case "top":
     case "bottom":
       if (rtl)
-        return isStart ? rl : lr;
-      return isStart ? lr : rl;
+        return isStart ? rlPlacement : lrPlacement;
+      return isStart ? lrPlacement : rlPlacement;
     case "left":
     case "right":
-      return isStart ? tb : bt2;
+      return isStart ? tbPlacement : btPlacement;
     default:
       return [];
   }
@@ -75422,7 +77010,7 @@ var flip = function(options) {
           const ignoreCrossAxisOverflow = checkCrossAxis === "alignment" ? initialSideAxis !== getSideAxis(nextPlacement) : false;
           if (!ignoreCrossAxisOverflow || // We leave the current main axis only if every placement on that axis
           // overflows the main axis.
-          overflowsData.every((d2) => d2.overflows[0] > 0 && getSideAxis(d2.placement) === initialSideAxis)) {
+          overflowsData.every((d2) => getSideAxis(d2.placement) === initialSideAxis ? d2.overflows[0] > 0 : true)) {
             return {
               data: {
                 index: nextIndex,
@@ -75470,6 +77058,7 @@ var flip = function(options) {
     }
   };
 };
+var originSides = /* @__PURE__ */ new Set(["left", "top"]);
 async function convertValueToCoords(state, options) {
   const {
     placement,
@@ -75480,7 +77069,7 @@ async function convertValueToCoords(state, options) {
   const side = getSide(placement);
   const alignment = getAlignment(placement);
   const isVertical = getSideAxis(placement) === "y";
-  const mainAxisMulti = ["left", "top"].includes(side) ? -1 : 1;
+  const mainAxisMulti = originSides.has(side) ? -1 : 1;
   const crossAxisMulti = rtl && isVertical ? -1 : 1;
   const rawValue = evaluate(options, state);
   let {
@@ -75652,6 +77241,7 @@ function isShadowRoot(value) {
   }
   return value instanceof ShadowRoot || value instanceof getWindow(value).ShadowRoot;
 }
+var invalidOverflowDisplayValues = /* @__PURE__ */ new Set(["inline", "contents"]);
 function isOverflowElement(element) {
   const {
     overflow,
@@ -75659,24 +77249,29 @@ function isOverflowElement(element) {
     overflowY,
     display
   } = getComputedStyle2(element);
-  return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !["inline", "contents"].includes(display);
+  return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !invalidOverflowDisplayValues.has(display);
 }
+var tableElements = /* @__PURE__ */ new Set(["table", "td", "th"]);
 function isTableElement(element) {
-  return ["table", "td", "th"].includes(getNodeName(element));
+  return tableElements.has(getNodeName(element));
 }
+var topLayerSelectors = [":popover-open", ":modal"];
 function isTopLayer(element) {
-  return [":popover-open", ":modal"].some((selector) => {
+  return topLayerSelectors.some((selector) => {
     try {
       return element.matches(selector);
-    } catch (e) {
+    } catch (_e) {
       return false;
     }
   });
 }
+var transformProperties = ["transform", "translate", "scale", "rotate", "perspective"];
+var willChangeValues = ["transform", "translate", "scale", "rotate", "perspective", "filter"];
+var containValues = ["paint", "layout", "strict", "content"];
 function isContainingBlock(elementOrCss) {
   const webkit = isWebKit();
   const css = isElement2(elementOrCss) ? getComputedStyle2(elementOrCss) : elementOrCss;
-  return ["transform", "translate", "scale", "rotate", "perspective"].some((value) => css[value] ? css[value] !== "none" : false) || (css.containerType ? css.containerType !== "normal" : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== "none" : false) || !webkit && (css.filter ? css.filter !== "none" : false) || ["transform", "translate", "scale", "rotate", "perspective", "filter"].some((value) => (css.willChange || "").includes(value)) || ["paint", "layout", "strict", "content"].some((value) => (css.contain || "").includes(value));
+  return transformProperties.some((value) => css[value] ? css[value] !== "none" : false) || (css.containerType ? css.containerType !== "normal" : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== "none" : false) || !webkit && (css.filter ? css.filter !== "none" : false) || willChangeValues.some((value) => (css.willChange || "").includes(value)) || containValues.some((value) => (css.contain || "").includes(value));
 }
 function getContainingBlock(element) {
   let currentNode = getParentNode(element);
@@ -75695,8 +77290,9 @@ function isWebKit() {
     return false;
   return CSS.supports("-webkit-backdrop-filter", "none");
 }
+var lastTraversableNodeNames = /* @__PURE__ */ new Set(["html", "body", "#document"]);
 function isLastTraversableNode(node) {
-  return ["html", "body", "#document"].includes(getNodeName(node));
+  return lastTraversableNodeNames.has(getNodeName(node));
 }
 function getComputedStyle2(element) {
   return getWindow(element).getComputedStyle(element);
@@ -75882,15 +77478,9 @@ function getWindowScrollBarX(element, rect) {
   }
   return rect.left + leftScroll;
 }
-function getHTMLOffset(documentElement, scroll, ignoreScrollbarX) {
-  if (ignoreScrollbarX === void 0) {
-    ignoreScrollbarX = false;
-  }
+function getHTMLOffset(documentElement, scroll) {
   const htmlRect = documentElement.getBoundingClientRect();
-  const x5 = htmlRect.left + scroll.scrollLeft - (ignoreScrollbarX ? 0 : (
-    // RTL <body> scrollbar.
-    getWindowScrollBarX(documentElement, htmlRect)
-  ));
+  const x5 = htmlRect.left + scroll.scrollLeft - getWindowScrollBarX(documentElement, htmlRect);
   const y4 = htmlRect.top + scroll.scrollTop;
   return {
     x: x5,
@@ -75928,7 +77518,7 @@ function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
       offsets.y = offsetRect.y + offsetParent.clientTop;
     }
   }
-  const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll, true) : createCoords(0);
+  const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll) : createCoords(0);
   return {
     width: rect.width * scale2.x,
     height: rect.height * scale2.y,
@@ -75957,6 +77547,7 @@ function getDocumentRect(element) {
     y: y4
   };
 }
+var SCROLLBAR_MAX = 25;
 function getViewportRect(element, strategy) {
   const win = getWindow(element);
   const html2 = getDocumentElement(element);
@@ -75974,6 +77565,19 @@ function getViewportRect(element, strategy) {
       y4 = visualViewport.offsetTop;
     }
   }
+  const windowScrollbarX = getWindowScrollBarX(html2);
+  if (windowScrollbarX <= 0) {
+    const doc2 = html2.ownerDocument;
+    const body = doc2.body;
+    const bodyStyles = getComputedStyle(body);
+    const bodyMarginInline = doc2.compatMode === "CSS1Compat" ? parseFloat(bodyStyles.marginLeft) + parseFloat(bodyStyles.marginRight) || 0 : 0;
+    const clippingStableScrollbarWidth = Math.abs(html2.clientWidth - body.clientWidth - bodyMarginInline);
+    if (clippingStableScrollbarWidth <= SCROLLBAR_MAX) {
+      width -= clippingStableScrollbarWidth;
+    }
+  } else if (windowScrollbarX <= SCROLLBAR_MAX) {
+    width += windowScrollbarX;
+  }
   return {
     width,
     height,
@@ -75981,6 +77585,7 @@ function getViewportRect(element, strategy) {
     y: y4
   };
 }
+var absoluteOrFixed = /* @__PURE__ */ new Set(["absolute", "fixed"]);
 function getInnerBoundingClientRect(element, strategy) {
   const clientRect = getBoundingClientRect(element, true, strategy === "fixed");
   const top2 = clientRect.top + element.clientTop;
@@ -76038,7 +77643,7 @@ function getClippingElementAncestors(element, cache2) {
     if (!currentNodeIsContaining && computedStyle.position === "fixed") {
       currentContainingBlockComputedStyle = null;
     }
-    const shouldDropCurrentNode = elementIsFixed ? !currentNodeIsContaining && !currentContainingBlockComputedStyle : !currentNodeIsContaining && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && ["absolute", "fixed"].includes(currentContainingBlockComputedStyle.position) || isOverflowElement(currentNode) && !currentNodeIsContaining && hasFixedPositionAncestor(element, currentNode);
+    const shouldDropCurrentNode = elementIsFixed ? !currentNodeIsContaining && !currentContainingBlockComputedStyle : !currentNodeIsContaining && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && absoluteOrFixed.has(currentContainingBlockComputedStyle.position) || isOverflowElement(currentNode) && !currentNodeIsContaining && hasFixedPositionAncestor(element, currentNode);
     if (shouldDropCurrentNode) {
       result = result.filter((ancestor) => ancestor !== currentNode);
     } else {
@@ -76366,11 +77971,11 @@ var visualHiddenProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/visual-hidden/src/visual-hidden2.mjs
-var __default__98 = defineComponent({
+var __default__105 = defineComponent({
   name: "ElVisuallyHidden"
 });
-var _sfc_main134 = /* @__PURE__ */ defineComponent({
-  ...__default__98,
+var _sfc_main430 = /* @__PURE__ */ defineComponent({
+  ...__default__105,
   props: visualHiddenProps,
   setup(__props) {
     const props2 = __props;
@@ -76398,7 +78003,7 @@ var _sfc_main134 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElVisuallyHidden = /* @__PURE__ */ _export_sfc(_sfc_main134, [["__file", "visual-hidden.vue"]]);
+var ElVisuallyHidden = /* @__PURE__ */ _export_sfc(_sfc_main430, [["__file", "visual-hidden.vue"]]);
 
 // node_modules/element-plus/es/hooks/use-floating/index.mjs
 var useFloatingProps = buildProps({});
@@ -76480,11 +78085,11 @@ var arrowMiddleware = ({
 };
 
 // node_modules/element-plus/es/components/tooltip-v2/src/content.mjs
-var __default__99 = defineComponent({
+var __default__106 = defineComponent({
   name: "ElTooltipV2Content"
 });
-var _sfc_main135 = /* @__PURE__ */ defineComponent({
-  ...__default__99,
+var _sfc_main431 = /* @__PURE__ */ defineComponent({
+  ...__default__106,
   props: { ...tooltipV2ContentProps, ...tooltipV2CommonProps },
   setup(__props) {
     const props2 = __props;
@@ -76579,7 +78184,7 @@ var _sfc_main135 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TooltipV2Content = /* @__PURE__ */ _export_sfc(_sfc_main135, [["__file", "content.vue"]]);
+var TooltipV2Content = /* @__PURE__ */ _export_sfc(_sfc_main431, [["__file", "content.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/src/forward-ref.mjs
 var forwardRefProps = buildProps({
@@ -76614,11 +78219,11 @@ var ForwardRef = defineComponent({
 });
 
 // node_modules/element-plus/es/components/tooltip-v2/src/trigger2.mjs
-var __default__100 = defineComponent({
+var __default__107 = defineComponent({
   name: "ElTooltipV2Trigger"
 });
-var _sfc_main136 = /* @__PURE__ */ defineComponent({
-  ...__default__100,
+var _sfc_main432 = /* @__PURE__ */ defineComponent({
+  ...__default__107,
   props: {
     ...tooltipV2CommonProps,
     ...tooltipV2TriggerProps
@@ -76695,14 +78300,14 @@ var _sfc_main136 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TooltipV2Trigger = /* @__PURE__ */ _export_sfc(_sfc_main136, [["__file", "trigger.vue"]]);
+var TooltipV2Trigger = /* @__PURE__ */ _export_sfc(_sfc_main432, [["__file", "trigger.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/src/tooltip2.mjs
-var __default__101 = defineComponent({
+var __default__108 = defineComponent({
   name: "ElTooltipV2"
 });
-var _sfc_main137 = /* @__PURE__ */ defineComponent({
-  ...__default__101,
+var _sfc_main433 = /* @__PURE__ */ defineComponent({
+  ...__default__108,
   props: tooltipV2Props,
   setup(__props) {
     const props2 = __props;
@@ -76764,7 +78369,7 @@ var _sfc_main137 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TooltipV2 = /* @__PURE__ */ _export_sfc(_sfc_main137, [["__file", "tooltip.vue"]]);
+var TooltipV2 = /* @__PURE__ */ _export_sfc(_sfc_main433, [["__file", "tooltip.vue"]]);
 
 // node_modules/element-plus/es/components/tooltip-v2/index.mjs
 var ElTooltipV2 = withInstall(TooltipV2);
@@ -76835,7 +78440,7 @@ var transferEmits = {
   [RIGHT_CHECK_CHANGE_EVENT]: transferCheckedChangeFn
 };
 
-// node_modules/element-plus/es/components/transfer/src/transfer-panel2.mjs
+// node_modules/element-plus/es/components/transfer/src/transfer-panel.mjs
 var CHECKED_CHANGE_EVENT = "checked-change";
 var transferPanelProps = buildProps({
   data: transferProps.data,
@@ -76951,12 +78556,12 @@ var useCheck = (props2, panelState, emit2) => {
   };
 };
 
-// node_modules/element-plus/es/components/transfer/src/transfer-panel.mjs
-var __default__102 = defineComponent({
+// node_modules/element-plus/es/components/transfer/src/transfer-panel2.mjs
+var __default__109 = defineComponent({
   name: "ElTransferPanel"
 });
-var _sfc_main138 = /* @__PURE__ */ defineComponent({
-  ...__default__102,
+var _sfc_main434 = /* @__PURE__ */ defineComponent({
+  ...__default__109,
   props: transferPanelProps,
   emits: transferPanelEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -77070,7 +78675,7 @@ var _sfc_main138 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TransferPanel = /* @__PURE__ */ _export_sfc(_sfc_main138, [["__file", "transfer-panel.vue"]]);
+var TransferPanel = /* @__PURE__ */ _export_sfc(_sfc_main434, [["__file", "transfer-panel.vue"]]);
 
 // node_modules/element-plus/es/components/transfer/src/composables/use-computed-data.mjs
 var useComputedData = (props2) => {
@@ -77152,11 +78757,11 @@ var useCheckedChange = (checkedState, emit2) => {
 };
 
 // node_modules/element-plus/es/components/transfer/src/transfer2.mjs
-var __default__103 = defineComponent({
+var __default__110 = defineComponent({
   name: "ElTransfer"
 });
-var _sfc_main139 = /* @__PURE__ */ defineComponent({
-  ...__default__103,
+var _sfc_main435 = /* @__PURE__ */ defineComponent({
+  ...__default__110,
   props: transferProps,
   emits: transferEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -77192,7 +78797,7 @@ var _sfc_main139 = /* @__PURE__ */ defineComponent({
     watch2(() => props2.modelValue, () => {
       var _a26;
       if (props2.validateEvent) {
-        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn(err));
+        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn());
       }
     });
     const optionRender = computed2(() => (option) => {
@@ -77300,7 +78905,7 @@ var _sfc_main139 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Transfer = /* @__PURE__ */ _export_sfc(_sfc_main139, [["__file", "transfer.vue"]]);
+var Transfer = /* @__PURE__ */ _export_sfc(_sfc_main435, [["__file", "transfer.vue"]]);
 
 // node_modules/element-plus/es/components/transfer/index.mjs
 var ElTransfer = withInstall(Transfer);
@@ -77380,9 +78985,17 @@ var getPropertyFromData = function(node, prop) {
     return isUndefined4(dataProp) ? "" : dataProp;
   }
 };
+var setCanFocus = function(childNodes, focus) {
+  childNodes.forEach((item) => {
+    item.canFocus = focus;
+    setCanFocus(item.childNodes, focus);
+  });
+};
 var nodeIdSeed = 0;
 var Node3 = class _Node {
   constructor(options) {
+    this.isLeafByUser = void 0;
+    this.isLeaf = void 0;
     this.id = nodeIdSeed++;
     this.text = null;
     this.checked = false;
@@ -77407,6 +79020,7 @@ var Node3 = class _Node {
     }
   }
   initialize() {
+    var _a26;
     const store = this.store;
     if (!store) {
       throw new Error("[Node]store is required!");
@@ -77435,7 +79049,7 @@ var Node3 = class _Node {
       return;
     const defaultExpandedKeys = store.defaultExpandedKeys;
     const key = store.key;
-    if (key && defaultExpandedKeys && defaultExpandedKeys.includes(this.key)) {
+    if (key && !isNil_default(this.key) && defaultExpandedKeys && defaultExpandedKeys.includes(this.key)) {
       this.expand(null, store.autoExpandParent);
     }
     if (key && store.currentNodeKey !== void 0 && this.key === store.currentNodeKey) {
@@ -77446,7 +79060,7 @@ var Node3 = class _Node {
       store._initDefaultCheckedNode(this);
     }
     this.updateLeafState();
-    if (this.parent && (this.level === 1 || this.parent.expanded === true))
+    if (this.level === 1 || ((_a26 = this.parent) == null ? void 0 : _a26.expanded) === true)
       this.canFocus = true;
   }
   setData(data) {
@@ -77512,11 +79126,11 @@ var Node3 = class _Node {
     if (!(child instanceof _Node)) {
       if (!batch2) {
         const children2 = this.getChildren(true);
-        if (!children2.includes(child.data)) {
+        if (!(children2 == null ? void 0 : children2.includes(child.data))) {
           if (isUndefined4(index3) || index3 < 0) {
-            children2.push(child.data);
+            children2 == null ? void 0 : children2.push(child.data);
           } else {
-            children2.splice(index3, 0, child.data);
+            children2 == null ? void 0 : children2.splice(index3, 0, child.data);
           }
         }
       }
@@ -77583,7 +79197,7 @@ var Node3 = class _Node {
     const done = () => {
       if (expandParent) {
         let parent2 = this.parent;
-        while (parent2.level > 0) {
+        while (parent2 && parent2.level > 0) {
           parent2.expanded = true;
           parent2 = parent2.parent;
         }
@@ -77591,9 +79205,7 @@ var Node3 = class _Node {
       this.expanded = true;
       if (callback)
         callback();
-      this.childNodes.forEach((item) => {
-        item.canFocus = true;
-      });
+      setCanFocus(this.childNodes, true);
     };
     if (this.shouldLoadData()) {
       this.loadData((data) => {
@@ -77617,12 +79229,10 @@ var Node3 = class _Node {
   }
   collapse() {
     this.expanded = false;
-    this.childNodes.forEach((item) => {
-      item.canFocus = false;
-    });
+    setCanFocus(this.childNodes, false);
   }
   shouldLoadData() {
-    return this.store.lazy === true && this.store.load && !this.loaded;
+    return Boolean(this.store.lazy === true && this.store.load && !this.loaded);
   }
   updateLeafState() {
     if (this.store.lazy === true && this.loaded !== true && typeof this.isLeafByUser !== "undefined") {
@@ -77708,7 +79318,7 @@ var Node3 = class _Node {
     const newNodes = [];
     newData.forEach((item, index3) => {
       const key = item[NODE_KEY];
-      const isNodeExists = !!key && oldData.findIndex((data) => data[NODE_KEY] === key) >= 0;
+      const isNodeExists = !!key && oldData.findIndex((data) => (data == null ? void 0 : data[NODE_KEY]) === key) >= 0;
       if (isNodeExists) {
         newDataMap[key] = { index: index3, data: item };
       } else {
@@ -77717,7 +79327,7 @@ var Node3 = class _Node {
     });
     if (!this.store.lazy) {
       oldData.forEach((item) => {
-        if (!newDataMap[item[NODE_KEY]])
+        if (!newDataMap[item == null ? void 0 : item[NODE_KEY]])
           this.removeChildByData(item);
       });
     }
@@ -77767,6 +79377,11 @@ var Node3 = class _Node {
 // node_modules/element-plus/es/components/tree/src/model/tree-store.mjs
 var TreeStore = class {
   constructor(options) {
+    this.lazy = false;
+    this.checkStrictly = false;
+    this.autoExpandParent = false;
+    this.defaultExpandAll = false;
+    this.checkDescendants = false;
     this.currentNode = null;
     this.currentNodeKey = null;
     for (const option in options) {
@@ -77787,7 +79402,7 @@ var TreeStore = class {
       loadFn(this.root, (data) => {
         this.root.doCreateChildren(data);
         this._initDefaultCheckedNodes();
-      });
+      }, NOOP);
     } else {
       this._initDefaultCheckedNodes();
     }
@@ -77798,7 +79413,7 @@ var TreeStore = class {
     const traverse3 = async function(node) {
       const childNodes = node.root ? node.root.childNodes : node.childNodes;
       for (const [index3, child] of childNodes.entries()) {
-        child.visible = filterNodeMethod.call(child, value, child.data, child);
+        child.visible = !!(filterNodeMethod == null ? void 0 : filterNodeMethod.call(child, value, child.data, child));
         if (index3 % 80 === 0 && index3 > 0) {
           await nextTick();
         }
@@ -77841,12 +79456,14 @@ var TreeStore = class {
     return this.nodesMap[key] || null;
   }
   insertBefore(data, refData) {
+    var _a26;
     const refNode = this.getNode(refData);
-    refNode.parent.insertBefore({ data }, refNode);
+    (_a26 = refNode.parent) == null ? void 0 : _a26.insertBefore({ data }, refNode);
   }
   insertAfter(data, refData) {
+    var _a26;
     const refNode = this.getNode(refData);
-    refNode.parent.insertAfter({ data }, refNode);
+    (_a26 = refNode.parent) == null ? void 0 : _a26.insertAfter({ data }, refNode);
   }
   remove(data) {
     const node = this.getNode(data);
@@ -77875,7 +79492,7 @@ var TreeStore = class {
   }
   _initDefaultCheckedNode(node) {
     const defaultCheckedKeys = this.defaultCheckedKeys || [];
-    if (defaultCheckedKeys.includes(node.key)) {
+    if (!isNil_default(node.key) && defaultCheckedKeys.includes(node.key)) {
       node.setChecked(true, !this.checkStrictly);
     }
   }
@@ -77893,8 +79510,8 @@ var TreeStore = class {
       this.nodesMap[node.id] = node;
     } else {
       const nodeKey = node.key;
-      if (nodeKey !== void 0)
-        this.nodesMap[node.key] = node;
+      if (!isNil_default(nodeKey))
+        this.nodesMap[nodeKey] = node;
     }
   }
   deregisterNode(node) {
@@ -78055,14 +79672,16 @@ var TreeStore = class {
     this.currentNode.isCurrent = true;
   }
   setUserCurrentNode(node, shouldAutoExpandParent = true) {
+    var _a26;
     const key = node[this.key];
     const currNode = this.nodesMap[key];
     this.setCurrentNode(currNode);
-    if (shouldAutoExpandParent && this.currentNode.level > 1) {
-      this.currentNode.parent.expand(null, true);
+    if (shouldAutoExpandParent && this.currentNode && this.currentNode.level > 1) {
+      (_a26 = this.currentNode.parent) == null ? void 0 : _a26.expand(null, true);
     }
   }
   setCurrentNodeKey(key, shouldAutoExpandParent = true) {
+    var _a26;
     this.currentNodeKey = key;
     if (isPropAbsent(key)) {
       this.currentNode && (this.currentNode.isCurrent = false);
@@ -78072,8 +79691,8 @@ var TreeStore = class {
     const node = this.getNode(key);
     if (node) {
       this.setCurrentNode(node);
-      if (shouldAutoExpandParent && this.currentNode.level > 1) {
-        this.currentNode.parent.expand(null, true);
+      if (shouldAutoExpandParent && this.currentNode && this.currentNode.level > 1) {
+        (_a26 = this.currentNode.parent) == null ? void 0 : _a26.expand(null, true);
       }
     }
   }
@@ -78085,7 +79704,7 @@ var NODE_INSTANCE_INJECTION_KEY = "NodeInstance";
 var TREE_NODE_MAP_INJECTION_KEY = "TreeNodeMap";
 
 // node_modules/element-plus/es/components/tree/src/tree-node-content.mjs
-var _sfc_main140 = defineComponent({
+var _sfc_main436 = defineComponent({
   name: "ElTreeNodeContent",
   props: {
     node: {
@@ -78107,15 +79726,16 @@ var _sfc_main140 = defineComponent({
     };
   }
 });
-var NodeContent2 = /* @__PURE__ */ _export_sfc(_sfc_main140, [["__file", "tree-node-content.vue"]]);
+var NodeContent2 = /* @__PURE__ */ _export_sfc(_sfc_main436, [["__file", "tree-node-content.vue"]]);
 
 // node_modules/element-plus/es/components/tree/src/model/useNodeExpandEventBroadcast.mjs
 function useNodeExpandEventBroadcast(props2) {
   const parentNodeMap = inject(TREE_NODE_MAP_INJECTION_KEY, null);
   const currentNodeMap = {
     treeNodeExpand: (node) => {
+      var _a26;
       if (props2.node !== node) {
-        props2.node.collapse();
+        (_a26 = props2.node) == null ? void 0 : _a26.collapse();
       }
     },
     children: []
@@ -78137,7 +79757,13 @@ function useNodeExpandEventBroadcast(props2) {
 
 // node_modules/element-plus/es/components/tree/src/model/useDragNode.mjs
 var dragEventsKey = Symbol("dragEvents");
-function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) {
+function useDragNodeHandler({
+  props: props2,
+  ctx,
+  el$,
+  dropIndicator$,
+  store
+}) {
   const ns = useNamespace("tree");
   const dragState = ref({
     showDropIndicator: false,
@@ -78147,6 +79773,8 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
     dropType: null
   });
   const treeNodeDragStart = ({ event, treeNode }) => {
+    if (!event.dataTransfer)
+      return;
     if (isFunction(props2.allowDrag) && !props2.allowDrag(treeNode.node)) {
       event.preventDefault();
       return false;
@@ -78160,6 +79788,8 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
     ctx.emit("node-drag-start", treeNode.node, event);
   };
   const treeNodeDragOver = ({ event, treeNode }) => {
+    if (!event.dataTransfer)
+      return;
     const dropNode = treeNode;
     const oldDropNode = dragState.value.dropNode;
     if (oldDropNode && oldDropNode.node.id !== dropNode.node.id) {
@@ -78203,7 +79833,8 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
       dropInner = false;
       dropNext = false;
     }
-    const targetPosition = dropNode.$el.querySelector(`.${ns.be("node", "content")}`).getBoundingClientRect();
+    const dropEl = dropNode.$el;
+    const targetPosition = dropEl.querySelector(`.${ns.be("node", "content")}`).getBoundingClientRect();
     const treePosition = el$.value.getBoundingClientRect();
     let dropType;
     const prevPercent = dropPrev ? dropInner ? 0.25 : dropNext ? 0.45 : 1 : -1;
@@ -78219,7 +79850,7 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
     } else {
       dropType = "none";
     }
-    const iconPosition = dropNode.$el.querySelector(`.${ns.be("node", "expand-icon")}`).getBoundingClientRect();
+    const iconPosition = dropEl.querySelector(`.${ns.be("node", "expand-icon")}`).getBoundingClientRect();
     const dropIndicator = dropIndicator$.value;
     if (dropType === "before") {
       indicatorTop = iconPosition.top - treePosition.top;
@@ -78229,9 +79860,9 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
     dropIndicator.style.top = `${indicatorTop}px`;
     dropIndicator.style.left = `${iconPosition.right - treePosition.left}px`;
     if (dropType === "inner") {
-      addClass(dropNode.$el, ns.is("drop-inner"));
+      addClass(dropEl, ns.is("drop-inner"));
     } else {
-      removeClass(dropNode.$el, ns.is("drop-inner"));
+      removeClass(dropEl, ns.is("drop-inner"));
     }
     dragState.value.showDropIndicator = dropType === "before" || dropType === "after";
     dragState.value.allowDrop = dragState.value.showDropIndicator || userAllowDropInner;
@@ -78239,20 +79870,21 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
     ctx.emit("node-drag-over", draggingNode.node, dropNode.node, event);
   };
   const treeNodeDragEnd = (event) => {
+    var _a26, _b25;
     const { draggingNode, dropType, dropNode } = dragState.value;
     event.preventDefault();
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = "move";
     }
-    if (draggingNode && dropNode) {
+    if ((draggingNode == null ? void 0 : draggingNode.node.data) && dropNode) {
       const draggingNodeCopy = { data: draggingNode.node.data };
       if (dropType !== "none") {
         draggingNode.node.remove();
       }
       if (dropType === "before") {
-        dropNode.node.parent.insertBefore(draggingNodeCopy, dropNode.node);
+        (_a26 = dropNode.node.parent) == null ? void 0 : _a26.insertBefore(draggingNodeCopy, dropNode.node);
       } else if (dropType === "after") {
-        dropNode.node.parent.insertAfter(draggingNodeCopy, dropNode.node);
+        (_b25 = dropNode.node.parent) == null ? void 0 : _b25.insertAfter(draggingNodeCopy, dropNode.node);
       } else if (dropType === "inner") {
         dropNode.node.insertChild(draggingNodeCopy);
       }
@@ -78260,8 +79892,8 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
         store.value.registerNode(draggingNodeCopy);
         if (store.value.key) {
           draggingNode.node.eachNode((node) => {
-            var _a26;
-            (_a26 = store.value.nodesMap[node.data[store.value.key]]) == null ? void 0 : _a26.setChecked(node.checked, !store.value.checkStrictly);
+            var _a27;
+            (_a27 = store.value.nodesMap[node.data[store.value.key]]) == null ? void 0 : _a27.setChecked(node.checked, !store.value.checkStrictly);
           });
         }
       }
@@ -78290,7 +79922,7 @@ function useDragNodeHandler({ props: props2, ctx, el$, dropIndicator$, store }) 
 }
 
 // node_modules/element-plus/es/components/tree/src/tree-node.mjs
-var _sfc_main141 = defineComponent({
+var _sfc_main437 = defineComponent({
   name: "ElTreeNode",
   components: {
     ElCollapseTransition,
@@ -78311,10 +79943,7 @@ var _sfc_main141 = defineComponent({
     accordion: Boolean,
     renderContent: Function,
     renderAfterExpand: Boolean,
-    showCheckbox: {
-      type: Boolean,
-      default: false
-    }
+    showCheckbox: Boolean
   },
   emits: ["node-expand"],
   setup(props2, ctx) {
@@ -78329,9 +79958,6 @@ var _sfc_main141 = defineComponent({
     const dragEvents = inject(dragEventsKey);
     const instance = getCurrentInstance();
     provide(NODE_INSTANCE_INJECTION_KEY, instance);
-    if (!tree) {
-      debugWarn("Tree", "Can not find node's tree.");
-    }
     if (props2.node.expanded) {
       expanded.value = true;
       childNodeRendered.value = true;
@@ -78487,7 +80113,7 @@ var _sfc_main141 = defineComponent({
     };
   }
 });
-function _sfc_render26(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render23(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_icon = resolveComponent("el-icon");
   const _component_el_checkbox = resolveComponent("el-checkbox");
   const _component_loading = resolveComponent("loading");
@@ -78594,7 +80220,7 @@ function _sfc_render26(_ctx, _cache, $props, $setup, $data, $options) {
     [vShow, _ctx.node.visible]
   ]);
 }
-var ElTreeNode = /* @__PURE__ */ _export_sfc(_sfc_main141, [["render", _sfc_render26], ["__file", "tree-node.vue"]]);
+var ElTreeNode = /* @__PURE__ */ _export_sfc(_sfc_main437, [["render", _sfc_render23], ["__file", "tree-node.vue"]]);
 
 // node_modules/element-plus/es/components/tree/src/model/useKeydown.mjs
 function useKeydown({ el$ }, store) {
@@ -78608,6 +80234,11 @@ function useKeydown({ el$ }, store) {
       checkbox.setAttribute("tabindex", "-1");
     });
   });
+  function canNodeFocus(treeItems, nextIndex) {
+    var _a26, _b25;
+    const currentNode = store.value.getNode(treeItems[nextIndex].dataset.key);
+    return currentNode.canFocus && currentNode.visible && (((_a26 = currentNode.parent) == null ? void 0 : _a26.expanded) || ((_b25 = currentNode.parent) == null ? void 0 : _b25.level) === 0);
+  }
   const handleKeydown = (ev) => {
     const currentItem = ev.target;
     if (!currentItem.className.includes(ns.b("node")))
@@ -78622,8 +80253,9 @@ function useKeydown({ el$ }, store) {
         nextIndex = currentIndex === -1 ? 0 : currentIndex !== 0 ? currentIndex - 1 : treeItems.length - 1;
         const startIndex = nextIndex;
         while (true) {
-          if (store.value.getNode(treeItems[nextIndex].dataset.key).canFocus)
+          if (canNodeFocus(treeItems, nextIndex)) {
             break;
+          }
           nextIndex--;
           if (nextIndex === startIndex) {
             nextIndex = -1;
@@ -78637,8 +80269,9 @@ function useKeydown({ el$ }, store) {
         nextIndex = currentIndex === -1 ? 0 : currentIndex < treeItems.length - 1 ? currentIndex + 1 : 0;
         const startIndex = nextIndex;
         while (true) {
-          if (store.value.getNode(treeItems[nextIndex].dataset.key).canFocus)
+          if (canNodeFocus(treeItems, nextIndex)) {
             break;
+          }
           nextIndex++;
           if (nextIndex === startIndex) {
             nextIndex = -1;
@@ -78664,6 +80297,8 @@ function useKeydown({ el$ }, store) {
   useEventListener(el$, "keydown", handleKeydown);
   const initTabIndex = () => {
     var _a26;
+    if (!el$.value)
+      return;
     const treeItems = Array.from(el$.value.querySelectorAll(`.${ns.is("focusable")}[role=treeitem]`));
     const checkboxItems = Array.from(el$.value.querySelectorAll("input[type=checkbox]"));
     checkboxItems.forEach((checkbox) => {
@@ -78679,12 +80314,12 @@ function useKeydown({ el$ }, store) {
 }
 
 // node_modules/element-plus/es/components/tree/src/tree.mjs
-var _sfc_main142 = defineComponent({
+var _sfc_main438 = defineComponent({
   name: "ElTree",
   components: { ElTreeNode },
   props: {
     data: {
-      type: Array,
+      type: definePropType(Array),
       default: () => []
     },
     emptyText: {
@@ -78706,10 +80341,7 @@ var _sfc_main142 = defineComponent({
       type: Boolean,
       default: true
     },
-    checkDescendants: {
-      type: Boolean,
-      default: false
-    },
+    checkDescendants: Boolean,
     autoExpandParent: {
       type: Boolean,
       default: true
@@ -78717,17 +80349,17 @@ var _sfc_main142 = defineComponent({
     defaultCheckedKeys: Array,
     defaultExpandedKeys: Array,
     currentNodeKey: [String, Number],
-    renderContent: Function,
-    showCheckbox: {
-      type: Boolean,
-      default: false
+    renderContent: {
+      type: definePropType(Function)
     },
-    draggable: {
-      type: Boolean,
-      default: false
+    showCheckbox: Boolean,
+    draggable: Boolean,
+    allowDrag: {
+      type: definePropType(Function)
     },
-    allowDrag: Function,
-    allowDrop: Function,
+    allowDrop: {
+      type: definePropType(Function)
+    },
     props: {
       type: Object,
       default: () => ({
@@ -78736,10 +80368,7 @@ var _sfc_main142 = defineComponent({
         disabled: "disabled"
       })
     },
-    lazy: {
-      type: Boolean,
-      default: false
-    },
+    lazy: Boolean,
     highlightCurrent: Boolean,
     load: Function,
     filterNodeMethod: Function,
@@ -78806,13 +80435,15 @@ var _sfc_main142 = defineComponent({
       return (!childNodes || childNodes.length === 0 || childNodes.every(({ visible }) => !visible)) && !hasFilteredOptions;
     });
     watch2(() => props2.currentNodeKey, (newVal) => {
-      store.value.setCurrentNodeKey(newVal);
+      store.value.setCurrentNodeKey(newVal != null ? newVal : null);
     });
-    watch2(() => props2.defaultCheckedKeys, (newVal) => {
-      store.value.setDefaultCheckedKey(newVal);
+    watch2(() => props2.defaultCheckedKeys, (newVal, oldVal) => {
+      if (isEqual_default(newVal, oldVal))
+        return;
+      store.value.setDefaultCheckedKey(newVal != null ? newVal : []);
     });
     watch2(() => props2.defaultExpandedKeys, (newVal) => {
-      store.value.setDefaultExpandedKeys(newVal);
+      store.value.setDefaultExpandedKeys(newVal != null ? newVal : []);
     });
     watch2(() => props2.data, (newVal) => {
       store.value.setData(newVal);
@@ -78890,7 +80521,7 @@ var _sfc_main142 = defineComponent({
         throw new Error("[Tree] nodeKey is required in setCurrentKey");
       handleCurrentChange(store, ctx.emit, () => {
         broadcastExpanded();
-        store.value.setCurrentNodeKey(key, shouldAutoExpandParent);
+        store.value.setCurrentNodeKey(key != null ? key : null, shouldAutoExpandParent);
       });
     };
     const getNode = (data) => {
@@ -78960,7 +80591,7 @@ var _sfc_main142 = defineComponent({
     };
   }
 });
-function _sfc_render27(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render24(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_tree_node = resolveComponent("el-tree-node");
   return openBlock(), createElementBlock("div", {
     ref: "el$",
@@ -79006,7 +80637,7 @@ function _sfc_render27(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2);
 }
-var Tree = /* @__PURE__ */ _export_sfc(_sfc_main142, [["render", _sfc_render27], ["__file", "tree.vue"]]);
+var Tree = /* @__PURE__ */ _export_sfc(_sfc_main438, [["render", _sfc_render24], ["__file", "tree.vue"]]);
 
 // node_modules/element-plus/es/components/tree/index.mjs
 var ElTree = withInstall(Tree);
@@ -79300,7 +80931,7 @@ var CacheOptions = defineComponent({
 });
 
 // node_modules/element-plus/es/components/tree-select/src/tree-select.mjs
-var _sfc_main143 = defineComponent({
+var _sfc_main439 = defineComponent({
   name: "ElTreeSelect",
   inheritAttrs: false,
   props: {
@@ -79364,7 +80995,7 @@ var _sfc_main143 = defineComponent({
     });
   }
 });
-var TreeSelect = /* @__PURE__ */ _export_sfc(_sfc_main143, [["__file", "tree-select.vue"]]);
+var TreeSelect = /* @__PURE__ */ _export_sfc(_sfc_main439, [["__file", "tree-select.vue"]]);
 
 // node_modules/element-plus/es/components/tree-select/index.mjs
 var ElTreeSelect = withInstall(TreeSelect);
@@ -79416,22 +81047,13 @@ var treeProps = buildProps({
       /* CLASS */
     })
   },
-  highlightCurrent: {
-    type: Boolean,
-    default: false
-  },
-  showCheckbox: {
-    type: Boolean,
-    default: false
-  },
+  highlightCurrent: Boolean,
+  showCheckbox: Boolean,
   defaultCheckedKeys: {
     type: definePropType(Array),
     default: () => mutable([])
   },
-  checkStrictly: {
-    type: Boolean,
-    default: false
-  },
+  checkStrictly: Boolean,
   defaultExpandedKeys: {
     type: definePropType(Array),
     default: () => mutable([])
@@ -79448,10 +81070,7 @@ var treeProps = buildProps({
     type: Boolean,
     default: true
   },
-  checkOnClickNode: {
-    type: Boolean,
-    default: false
-  },
+  checkOnClickNode: Boolean,
   checkOnClickLeaf: {
     type: Boolean,
     default: true
@@ -79459,51 +81078,28 @@ var treeProps = buildProps({
   currentNodeKey: {
     type: definePropType([String, Number])
   },
-  accordion: {
-    type: Boolean,
-    default: false
-  },
+  accordion: Boolean,
   filterMethod: {
     type: definePropType(Function)
   },
   perfMode: {
     type: Boolean,
     default: true
-  }
+  },
+  scrollbarAlwaysOn: Boolean
 });
 var treeNodeProps = buildProps({
   node: {
     type: definePropType(Object),
     default: () => mutable(EMPTY_NODE)
   },
-  expanded: {
-    type: Boolean,
-    default: false
-  },
-  checked: {
-    type: Boolean,
-    default: false
-  },
-  indeterminate: {
-    type: Boolean,
-    default: false
-  },
-  showCheckbox: {
-    type: Boolean,
-    default: false
-  },
-  disabled: {
-    type: Boolean,
-    default: false
-  },
-  current: {
-    type: Boolean,
-    default: false
-  },
-  hiddenExpandIcon: {
-    type: Boolean,
-    default: false
-  },
+  expanded: Boolean,
+  checked: Boolean,
+  indeterminate: Boolean,
+  showCheckbox: Boolean,
+  disabled: Boolean,
+  current: Boolean,
+  hiddenExpandIcon: Boolean,
   itemSize: itemSize2
 });
 var treeNodeContentProps = buildProps({
@@ -79786,7 +81382,7 @@ function useFilter(props2, tree) {
 
 // node_modules/element-plus/es/components/tree-v2/src/composables/useTree.mjs
 function useTree3(props2, emit2) {
-  const expandedKeySet = ref(new Set(props2.defaultExpandedKeys));
+  const expandedKeySet = ref(/* @__PURE__ */ new Set());
   const currentKey = ref();
   const tree = shallowRef();
   const listRef = ref();
@@ -79863,6 +81459,7 @@ function useTree3(props2, emit2) {
         const children2 = getChildren(rawNode);
         node.disabled = getDisabled(rawNode);
         node.isLeaf = !children2 || children2.length === 0;
+        node.expanded = expandedKeySet.value.has(value);
         if (children2 && children2.length) {
           node.children = traverse3(children2, level + 1, node);
         }
@@ -79922,6 +81519,7 @@ function useTree3(props2, emit2) {
       let node = nodeMap.get(k2);
       while (node && !expandedKeys.has(node.key)) {
         expandedKeys.add(node.key);
+        node.expanded = true;
         node = node.parent;
       }
     });
@@ -79957,18 +81555,18 @@ function useTree3(props2, emit2) {
         const treeNode = treeNodeMap.get(key);
         if (node && node.level === (treeNode == null ? void 0 : treeNode.level)) {
           keySet.delete(key);
+          treeNode.expanded = false;
         }
       });
     }
     keySet.add(node.key);
+    node.expanded = true;
     emit2(NODE_EXPAND, node.data, node);
   }
   function collapseNode(node) {
     expandedKeySet.value.delete(node.key);
+    node.expanded = false;
     emit2(NODE_COLLAPSE, node.data, node);
-  }
-  function isExpanded(node) {
-    return expandedKeySet.value.has(node.key);
   }
   function isDisabled(node) {
     return !!node.disabled;
@@ -80012,6 +81610,11 @@ function useTree3(props2, emit2) {
   }, {
     immediate: true
   });
+  watch2(() => props2.defaultExpandedKeys, (key) => {
+    expandedKeySet.value = new Set(key);
+  }, {
+    immediate: true
+  });
   watch2(() => props2.data, (data) => {
     setData(data);
   }, {
@@ -80026,7 +81629,6 @@ function useTree3(props2, emit2) {
     getChildren,
     toggleExpand,
     toggleCheckbox,
-    isExpanded,
     isChecked,
     isIndeterminate,
     isDisabled,
@@ -80071,11 +81673,11 @@ var ElNodeContent = defineComponent({
 });
 
 // node_modules/element-plus/es/components/tree-v2/src/tree-node.mjs
-var __default__104 = defineComponent({
+var __default__111 = defineComponent({
   name: "ElTreeNode"
 });
-var _sfc_main144 = /* @__PURE__ */ defineComponent({
-  ...__default__104,
+var _sfc_main440 = /* @__PURE__ */ defineComponent({
+  ...__default__111,
   props: treeNodeProps,
   emits: treeNodeEmits,
   setup(__props, { emit: emit2 }) {
@@ -80182,20 +81784,22 @@ var _sfc_main144 = /* @__PURE__ */ defineComponent({
             onClick: withModifiers(() => {
             }, ["stop"])
           }, null, 8, ["model-value", "indeterminate", "disabled", "onClick"])) : createCommentVNode("v-if", true),
-          createVNode(unref(ElNodeContent), { node: _ctx.node }, null, 8, ["node"])
+          createVNode(unref(ElNodeContent), {
+            node: { ..._ctx.node, expanded: _ctx.expanded }
+          }, null, 8, ["node"])
         ], 6)
       ], 42, ["aria-expanded", "aria-disabled", "aria-checked", "data-key", "onClick", "onDragover", "onDragenter", "onDrop"]);
     };
   }
 });
-var ElTreeNode2 = /* @__PURE__ */ _export_sfc(_sfc_main144, [["__file", "tree-node.vue"]]);
+var ElTreeNode2 = /* @__PURE__ */ _export_sfc(_sfc_main440, [["__file", "tree-node.vue"]]);
 
 // node_modules/element-plus/es/components/tree-v2/src/tree.mjs
-var __default__105 = defineComponent({
+var __default__112 = defineComponent({
   name: "ElTreeV2"
 });
-var _sfc_main145 = /* @__PURE__ */ defineComponent({
-  ...__default__105,
+var _sfc_main441 = /* @__PURE__ */ defineComponent({
+  ...__default__112,
   props: treeProps,
   emits: treeEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -80218,7 +81822,6 @@ var _sfc_main145 = /* @__PURE__ */ defineComponent({
       isNotEmpty,
       listRef,
       toggleExpand,
-      isExpanded,
       isIndeterminate,
       isChecked,
       isDisabled,
@@ -80280,14 +81883,15 @@ var _sfc_main145 = /* @__PURE__ */ defineComponent({
           total: unref(flattenTree).length,
           height: _ctx.height,
           "item-size": unref(treeNodeSize),
-          "perf-mode": _ctx.perfMode
+          "perf-mode": _ctx.perfMode,
+          "scrollbar-always-on": _ctx.scrollbarAlwaysOn
         }, {
           default: withCtx(({ data, index: index3, style }) => [
             (openBlock(), createBlock(ElTreeNode2, {
               key: data[index3].key,
               style: normalizeStyle(style),
               node: data[index3],
-              expanded: unref(isExpanded)(data[index3]),
+              expanded: data[index3].expanded,
               "show-checkbox": _ctx.showCheckbox,
               checked: unref(isChecked)(data[index3]),
               indeterminate: unref(isIndeterminate)(data[index3]),
@@ -80302,7 +81906,7 @@ var _sfc_main145 = /* @__PURE__ */ defineComponent({
             }, null, 8, ["style", "node", "expanded", "show-checkbox", "checked", "indeterminate", "item-size", "disabled", "current", "hidden-expand-icon", "onClick", "onToggle", "onCheck", "onDrop"]))
           ]),
           _: 1
-        }, 8, ["class-name", "data", "total", "height", "item-size", "perf-mode"])) : (openBlock(), createElementBlock("div", {
+        }, 8, ["class-name", "data", "total", "height", "item-size", "perf-mode", "scrollbar-always-on"])) : (openBlock(), createElementBlock("div", {
           key: 1,
           class: normalizeClass(unref(ns).e("empty-block"))
         }, [
@@ -80319,7 +81923,7 @@ var _sfc_main145 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TreeV2 = /* @__PURE__ */ _export_sfc(_sfc_main145, [["__file", "tree.vue"]]);
+var TreeV2 = /* @__PURE__ */ _export_sfc(_sfc_main441, [["__file", "tree.vue"]]);
 
 // node_modules/element-plus/es/components/tree-v2/index.mjs
 var ElTreeV2 = withInstall(TreeV2);
@@ -80328,7 +81932,7 @@ var ElTreeV2 = withInstall(TreeV2);
 var uploadContextKey = Symbol("uploadContextKey");
 
 // node_modules/element-plus/es/components/upload/src/ajax.mjs
-var SCOPE9 = "ElUpload";
+var SCOPE2 = "ElUpload";
 var UploadAjaxError = class extends Error {
   constructor(message2, status, method4, url2) {
     super(message2);
@@ -80362,7 +81966,7 @@ function getBody(xhr) {
 }
 var ajaxUpload = (option) => {
   if (typeof XMLHttpRequest === "undefined")
-    throwError(SCOPE9, "XMLHttpRequest is undefined");
+    throwError(SCOPE2, "XMLHttpRequest is undefined");
   const xhr = new XMLHttpRequest();
   const action = option.action;
   if (xhr.upload) {
@@ -80512,10 +82116,7 @@ var uploadListProps = buildProps({
     type: definePropType(Array),
     default: () => mutable([])
   },
-  disabled: {
-    type: Boolean,
-    default: false
-  },
+  disabled: Boolean,
   handlePreview: {
     type: definePropType(Function),
     default: NOOP
@@ -80534,11 +82135,11 @@ var uploadListEmits = {
 };
 
 // node_modules/element-plus/es/components/upload/src/upload-list2.mjs
-var __default__106 = defineComponent({
+var __default__113 = defineComponent({
   name: "ElUploadList"
 });
-var _sfc_main146 = /* @__PURE__ */ defineComponent({
-  ...__default__106,
+var _sfc_main442 = /* @__PURE__ */ defineComponent({
+  ...__default__113,
   props: uploadListProps,
   emits: uploadListEmits,
   setup(__props, { emit: emit2 }) {
@@ -80698,32 +82299,29 @@ var _sfc_main146 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var UploadList = /* @__PURE__ */ _export_sfc(_sfc_main146, [["__file", "upload-list.vue"]]);
+var UploadList = /* @__PURE__ */ _export_sfc(_sfc_main442, [["__file", "upload-list.vue"]]);
 
 // node_modules/element-plus/es/components/upload/src/upload-dragger.mjs
 var uploadDraggerProps = buildProps({
-  disabled: {
-    type: Boolean,
-    default: false
-  }
+  disabled: Boolean
 });
 var uploadDraggerEmits = {
   file: (file) => isArray(file)
 };
 
 // node_modules/element-plus/es/components/upload/src/upload-dragger2.mjs
-var COMPONENT_NAME26 = "ElUploadDrag";
-var __default__107 = defineComponent({
-  name: COMPONENT_NAME26
+var COMPONENT_NAME27 = "ElUploadDrag";
+var __default__114 = defineComponent({
+  name: COMPONENT_NAME27
 });
-var _sfc_main147 = /* @__PURE__ */ defineComponent({
-  ...__default__107,
+var _sfc_main443 = /* @__PURE__ */ defineComponent({
+  ...__default__114,
   props: uploadDraggerProps,
   emits: uploadDraggerEmits,
   setup(__props, { emit: emit2 }) {
     const uploaderContext = inject(uploadContextKey);
     if (!uploaderContext) {
-      throwError(COMPONENT_NAME26, "usage: <el-upload><el-upload-dragger /></el-upload>");
+      throwError(COMPONENT_NAME27, "usage: <el-upload><el-upload-dragger /></el-upload>");
     }
     const ns = useNamespace("upload");
     const dragover = ref(false);
@@ -80749,19 +82347,23 @@ var _sfc_main147 = /* @__PURE__ */ defineComponent({
       if (!disabled.value)
         dragover.value = true;
     };
+    const onDragleave = (e) => {
+      if (!e.currentTarget.contains(e.relatedTarget))
+        dragover.value = false;
+    };
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
         class: normalizeClass([unref(ns).b("dragger"), unref(ns).is("dragover", dragover.value)]),
         onDrop: withModifiers(onDrop, ["prevent"]),
         onDragover: withModifiers(onDragover, ["prevent"]),
-        onDragleave: withModifiers(($event) => dragover.value = false, ["prevent"])
+        onDragleave: withModifiers(onDragleave, ["prevent"])
       }, [
         renderSlot(_ctx.$slots, "default")
       ], 42, ["onDrop", "onDragover", "onDragleave"]);
     };
   }
 });
-var UploadDragger = /* @__PURE__ */ _export_sfc(_sfc_main147, [["__file", "upload-dragger.vue"]]);
+var UploadDragger = /* @__PURE__ */ _export_sfc(_sfc_main443, [["__file", "upload-dragger.vue"]]);
 
 // node_modules/element-plus/es/components/upload/src/upload-content.mjs
 var uploadContentProps = buildProps({
@@ -80797,12 +82399,12 @@ var uploadContentProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/upload/src/upload-content2.mjs
-var __default__108 = defineComponent({
+var __default__115 = defineComponent({
   name: "ElUploadContent",
   inheritAttrs: false
 });
-var _sfc_main148 = /* @__PURE__ */ defineComponent({
-  ...__default__108,
+var _sfc_main444 = /* @__PURE__ */ defineComponent({
+  ...__default__115,
   props: uploadContentProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -80983,10 +82585,10 @@ var _sfc_main148 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var UploadContent = /* @__PURE__ */ _export_sfc(_sfc_main148, [["__file", "upload-content.vue"]]);
+var UploadContent = /* @__PURE__ */ _export_sfc(_sfc_main444, [["__file", "upload-content.vue"]]);
 
 // node_modules/element-plus/es/components/upload/src/use-handlers.mjs
-var SCOPE10 = "ElUpload";
+var SCOPE3 = "ElUpload";
 var revokeFileObjectURL = (file) => {
   var _a26;
   if ((_a26 = file.url) == null ? void 0 : _a26.startsWith("blob:")) {
@@ -81048,7 +82650,7 @@ var useHandlers = (props2, uploadRef) => {
       try {
         uploadFile.url = URL.createObjectURL(file);
       } catch (err) {
-        debugWarn(SCOPE10, err.message);
+        debugWarn(SCOPE3, err.message);
         props2.onError(err, uploadFile, uploadFiles.value);
       }
     }
@@ -81058,7 +82660,7 @@ var useHandlers = (props2, uploadRef) => {
   const handleRemove = async (file) => {
     const uploadFile = file instanceof File ? getFile(file) : file;
     if (!uploadFile)
-      throwError(SCOPE10, "file to be removed not found");
+      throwError(SCOPE3, "file to be removed not found");
     const doRemove = (file2) => {
       abort(file2);
       removeFile(file2);
@@ -81116,11 +82718,11 @@ var useHandlers = (props2, uploadRef) => {
 };
 
 // node_modules/element-plus/es/components/upload/src/upload2.mjs
-var __default__109 = defineComponent({
+var __default__116 = defineComponent({
   name: "ElUpload"
 });
-var _sfc_main149 = /* @__PURE__ */ defineComponent({
-  ...__default__109,
+var _sfc_main445 = /* @__PURE__ */ defineComponent({
+  ...__default__116,
   props: uploadProps,
   setup(__props, { expose }) {
     const props2 = __props;
@@ -81234,7 +82836,7 @@ var _sfc_main149 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Upload = /* @__PURE__ */ _export_sfc(_sfc_main149, [["__file", "upload.vue"]]);
+var Upload = /* @__PURE__ */ _export_sfc(_sfc_main445, [["__file", "upload.vue"]]);
 
 // node_modules/element-plus/es/components/upload/index.mjs
 var ElUpload = withInstall(Upload);
@@ -81291,6 +82893,13 @@ var reRendering = (mutation, watermarkElement) => {
 
 // node_modules/element-plus/es/components/watermark/src/useClips.mjs
 var FontGap = 3;
+var TEXT_ALIGN_RATIO_MAP = {
+  left: [0, 0.5],
+  start: [0, 0.5],
+  center: [0.5, 0],
+  right: [1, -0.5],
+  end: [1, -0.5]
+};
 function prepareCanvas(width, height, ratio = 1) {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -81302,7 +82911,7 @@ function prepareCanvas(width, height, ratio = 1) {
   return [ctx, canvas, realWidth, realHeight];
 }
 function useClips() {
-  function getClips(content, rotate, ratio, width, height, font, gapX, gapY) {
+  function getClips(content, rotate, ratio, width, height, font, gapX, gapY, space) {
     const [ctx, canvas, contentWidth, contentHeight] = prepareCanvas(width, height, ratio);
     if (content instanceof HTMLImageElement) {
       ctx.drawImage(content, 0, 0, contentWidth, contentHeight);
@@ -81323,7 +82932,8 @@ function useClips() {
       ctx.textBaseline = textBaseline;
       const contents = isArray(content) ? content : [content];
       contents == null ? void 0 : contents.forEach((item, index3) => {
-        ctx.fillText(item != null ? item : "", contentWidth / 2, index3 * (mergedFontSize + FontGap * ratio));
+        const [alignRatio, spaceRatio] = TEXT_ALIGN_RATIO_MAP[textAlign];
+        ctx.fillText(item != null ? item : "", contentWidth * alignRatio + space * spaceRatio, index3 * (mergedFontSize + FontGap * ratio));
       });
     }
     const angle2 = Math.PI / 180 * Number(rotate);
@@ -81379,11 +82989,11 @@ function useClips() {
 }
 
 // node_modules/element-plus/es/components/watermark/src/watermark2.mjs
-var __default__110 = defineComponent({
+var __default__117 = defineComponent({
   name: "ElWatermark"
 });
-var _sfc_main150 = /* @__PURE__ */ defineComponent({
-  ...__default__110,
+var _sfc_main446 = /* @__PURE__ */ defineComponent({
+  ...__default__117,
   props: watermarkProps,
   setup(__props) {
     const props2 = __props;
@@ -81483,6 +83093,7 @@ var _sfc_main150 = /* @__PURE__ */ defineComponent({
     const getMarkSize = (ctx) => {
       let defaultWidth = 120;
       let defaultHeight = 64;
+      let space = 0;
       const { image, content, width, height, rotate } = props2;
       if (!image && ctx.measureText) {
         ctx.font = `${Number(fontSize.value)}px ${fontFamily.value}`;
@@ -81506,10 +83117,10 @@ var _sfc_main150 = /* @__PURE__ */ defineComponent({
         defaultWidth = maxWidth;
         defaultHeight = maxHeight * contents.length + (contents.length - 1) * FontGap;
         const angle2 = Math.PI / 180 * Number(rotate);
-        const space = Math.ceil(Math.abs(Math.sin(angle2) * defaultHeight) / 2);
+        space = Math.ceil(Math.abs(Math.sin(angle2) * defaultHeight) / 2);
         defaultWidth += space;
       }
-      return [width != null ? width : defaultWidth, height != null ? height : defaultHeight];
+      return [width != null ? width : defaultWidth, height != null ? height : defaultHeight, space];
     };
     const getClips = useClips();
     const renderWatermark = () => {
@@ -81523,7 +83134,7 @@ var _sfc_main150 = /* @__PURE__ */ defineComponent({
           watermarkRef.value = document.createElement("div");
         }
         const ratio = getPixelRatio();
-        const [markWidth, markHeight] = getMarkSize(ctx);
+        const [markWidth, markHeight, space] = getMarkSize(ctx);
         const drawCanvas = (drawContent) => {
           const [textClips, clipWidth] = getClips(drawContent || "", rotate, ratio, markWidth, markHeight, {
             color: color2.value,
@@ -81533,7 +83144,7 @@ var _sfc_main150 = /* @__PURE__ */ defineComponent({
             fontFamily: fontFamily.value,
             textAlign: textAlign.value,
             textBaseline: textBaseline.value
-          }, gapX.value, gapY.value);
+          }, gapX.value, gapY.value, space);
           appendWatermark(textClips, clipWidth);
         };
         if (image) {
@@ -81591,7 +83202,7 @@ var _sfc_main150 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Watermark = /* @__PURE__ */ _export_sfc(_sfc_main150, [["__file", "watermark.vue"]]);
+var Watermark = /* @__PURE__ */ _export_sfc(_sfc_main446, [["__file", "watermark.vue"]]);
 
 // node_modules/element-plus/es/components/watermark/index.mjs
 var ElWatermark = withInstall(Watermark);
@@ -81818,12 +83429,12 @@ var overflowMiddleware = () => {
 };
 
 // node_modules/element-plus/es/components/tour/src/mask2.mjs
-var __default__111 = defineComponent({
+var __default__118 = defineComponent({
   name: "ElTourMask",
   inheritAttrs: false
 });
-var _sfc_main151 = /* @__PURE__ */ defineComponent({
-  ...__default__111,
+var _sfc_main447 = /* @__PURE__ */ defineComponent({
+  ...__default__118,
   props: maskProps,
   setup(__props) {
     const props2 = __props;
@@ -81850,13 +83461,20 @@ var _sfc_main151 = /* @__PURE__ */ defineComponent({
       const _radius = radius.value;
       return props2.pos ? `${_path} M${props2.pos.left + _radius},${props2.pos.top} h${props2.pos.width - _radius * 2} ${info.topRight} v${props2.pos.height - _radius * 2} ${info.bottomRight} h${-props2.pos.width + _radius * 2} ${info.bottomLeft} v${-props2.pos.height + _radius * 2} ${info.topLeft} z` : _path;
     });
-    const pathStyle = computed2(() => {
-      return {
-        fill: props2.fill,
-        pointerEvents: "auto",
-        cursor: "auto"
-      };
-    });
+    const maskStyle = computed2(() => ({
+      position: "fixed",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      zIndex: props2.zIndex,
+      pointerEvents: props2.pos && props2.targetAreaClickable ? "none" : "auto"
+    }));
+    const pathStyle = computed2(() => ({
+      fill: props2.fill,
+      pointerEvents: "auto",
+      cursor: "auto"
+    }));
     useLockscreen(toRef(props2, "visible"), {
       ns
     });
@@ -81864,15 +83482,7 @@ var _sfc_main151 = /* @__PURE__ */ defineComponent({
       return _ctx.visible ? (openBlock(), createElementBlock("div", mergeProps({
         key: 0,
         class: unref(ns).e("mask"),
-        style: {
-          position: "fixed",
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          zIndex: _ctx.zIndex,
-          pointerEvents: _ctx.pos && _ctx.targetAreaClickable ? "none" : "auto"
-        }
+        style: unref(maskStyle)
       }, _ctx.$attrs), [
         (openBlock(), createElementBlock("svg", { style: {
           width: "100%",
@@ -81888,7 +83498,7 @@ var _sfc_main151 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElTourMask = /* @__PURE__ */ _export_sfc(_sfc_main151, [["__file", "mask.vue"]]);
+var ElTourMask = /* @__PURE__ */ _export_sfc(_sfc_main447, [["__file", "mask.vue"]]);
 
 // node_modules/element-plus/es/components/tour/src/content.mjs
 var tourStrategies = ["absolute", "fixed"];
@@ -81936,11 +83546,11 @@ var tourContentEmits = {
 };
 
 // node_modules/element-plus/es/components/tour/src/content2.mjs
-var __default__112 = defineComponent({
+var __default__119 = defineComponent({
   name: "ElTourContent"
 });
-var _sfc_main152 = /* @__PURE__ */ defineComponent({
-  ...__default__112,
+var _sfc_main448 = /* @__PURE__ */ defineComponent({
+  ...__default__119,
   props: tourContentProps,
   emits: tourContentEmits,
   setup(__props, { emit: emit2 }) {
@@ -81998,7 +83608,7 @@ var _sfc_main152 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElTourContent = /* @__PURE__ */ _export_sfc(_sfc_main152, [["__file", "content.vue"]]);
+var ElTourContent = /* @__PURE__ */ _export_sfc(_sfc_main448, [["__file", "content.vue"]]);
 
 // node_modules/element-plus/es/components/tour/src/steps.mjs
 var ElTourSteps = defineComponent({
@@ -82044,7 +83654,7 @@ var ElTourSteps = defineComponent({
   }
 });
 
-// node_modules/element-plus/es/components/tour/src/tour.mjs
+// node_modules/element-plus/es/components/tour/src/tour2.mjs
 var tourProps = buildProps({
   modelValue: Boolean,
   current: {
@@ -82110,12 +83720,12 @@ var tourEmits = {
   change: (current) => isNumber2(current)
 };
 
-// node_modules/element-plus/es/components/tour/src/tour2.mjs
-var __default__113 = defineComponent({
+// node_modules/element-plus/es/components/tour/src/tour.mjs
+var __default__120 = defineComponent({
   name: "ElTour"
 });
-var _sfc_main153 = /* @__PURE__ */ defineComponent({
-  ...__default__113,
+var _sfc_main449 = /* @__PURE__ */ defineComponent({
+  ...__default__120,
   props: tourProps,
   emits: tourEmits,
   setup(__props, { emit: emit2 }) {
@@ -82252,7 +83862,7 @@ var _sfc_main153 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Tour = /* @__PURE__ */ _export_sfc(_sfc_main153, [["__file", "tour.vue"]]);
+var Tour = /* @__PURE__ */ _export_sfc(_sfc_main449, [["__file", "tour.vue"]]);
 
 // node_modules/element-plus/es/components/tour/src/step.mjs
 var tourStepProps = buildProps({
@@ -82299,11 +83909,11 @@ var tourStepEmits = {
 };
 
 // node_modules/element-plus/es/components/tour/src/step2.mjs
-var __default__114 = defineComponent({
+var __default__121 = defineComponent({
   name: "ElTourStep"
 });
-var _sfc_main154 = /* @__PURE__ */ defineComponent({
-  ...__default__114,
+var _sfc_main450 = /* @__PURE__ */ defineComponent({
+  ...__default__121,
   props: tourStepProps,
   emits: tourStepEmits,
   setup(__props, { emit: emit2 }) {
@@ -82371,6 +83981,26 @@ var _sfc_main154 = /* @__PURE__ */ defineComponent({
       tourOnClose();
       emit2("close");
     };
+    const handleKeydown = (e) => {
+      const target2 = e.target;
+      if (target2 == null ? void 0 : target2.isContentEditable)
+        return;
+      const actions = {
+        [EVENT_CODE.left]: () => current.value > 0 && onPrev(),
+        [EVENT_CODE.right]: onNext
+      };
+      const action = actions[e.code];
+      if (action) {
+        e.preventDefault();
+        action();
+      }
+    };
+    onMounted(() => {
+      window.addEventListener("keydown", handleKeydown);
+    });
+    onBeforeUnmount(() => {
+      window.removeEventListener("keydown", handleKeydown);
+    });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock(Fragment, null, [
         unref(mergedShowClose) ? (openBlock(), createElementBlock("button", {
@@ -82458,7 +84088,7 @@ var _sfc_main154 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var TourStep = /* @__PURE__ */ _export_sfc(_sfc_main154, [["__file", "step.vue"]]);
+var TourStep = /* @__PURE__ */ _export_sfc(_sfc_main450, [["__file", "step.vue"]]);
 
 // node_modules/element-plus/es/components/tour/index.mjs
 var ElTour = withInstall(Tour, {
@@ -82498,10 +84128,7 @@ var anchorProps = buildProps({
     type: definePropType(String),
     default: "vertical"
   },
-  selectScrollTop: {
-    type: Boolean,
-    default: false
-  }
+  selectScrollTop: Boolean
 });
 var anchorEmits = {
   change: (href) => isString(href),
@@ -82545,16 +84172,18 @@ function throttleByRaf(cb) {
 }
 
 // node_modules/element-plus/es/components/anchor/src/anchor2.mjs
-var __default__115 = defineComponent({
+var __default__122 = defineComponent({
   name: "ElAnchor"
 });
-var _sfc_main155 = /* @__PURE__ */ defineComponent({
-  ...__default__115,
+var _sfc_main451 = /* @__PURE__ */ defineComponent({
+  ...__default__122,
   props: anchorProps,
   emits: anchorEmits,
   setup(__props, { expose, emit: emit2 }) {
     const props2 = __props;
+    const slots = useSlots();
     const currentAnchor = ref("");
+    const markerStyle = ref({});
     const anchorRef = ref(null);
     const markerRef = ref(null);
     const containerEl = ref();
@@ -82656,30 +84285,41 @@ var _sfc_main155 = /* @__PURE__ */ defineComponent({
       }
     };
     useEventListener(containerEl, "scroll", handleScroll2);
-    const markerStyle = computed2(() => {
-      if (!anchorRef.value || !markerRef.value || !currentAnchor.value)
-        return {};
-      const currentLinkEl = links[currentAnchor.value];
-      if (!currentLinkEl)
-        return {};
-      const anchorRect = anchorRef.value.getBoundingClientRect();
-      const markerRect = markerRef.value.getBoundingClientRect();
-      const linkRect = currentLinkEl.getBoundingClientRect();
-      if (props2.direction === "horizontal") {
-        const left2 = linkRect.left - anchorRect.left;
-        return {
-          left: `${left2}px`,
-          width: `${linkRect.width}px`,
-          opacity: 1
-        };
-      } else {
-        const top2 = linkRect.top - anchorRect.top + (linkRect.height - markerRect.height) / 2;
-        return {
-          top: `${top2}px`,
-          opacity: 1
-        };
-      }
-    });
+    const updateMarkerStyle = () => {
+      nextTick(() => {
+        if (!anchorRef.value || !markerRef.value || !currentAnchor.value) {
+          markerStyle.value = {};
+          return;
+        }
+        const currentLinkEl = links[currentAnchor.value];
+        if (!currentLinkEl) {
+          markerStyle.value = {};
+          return;
+        }
+        const anchorRect = anchorRef.value.getBoundingClientRect();
+        const markerRect = markerRef.value.getBoundingClientRect();
+        const linkRect = currentLinkEl.getBoundingClientRect();
+        if (props2.direction === "horizontal") {
+          const left2 = linkRect.left - anchorRect.left;
+          markerStyle.value = {
+            left: `${left2}px`,
+            width: `${linkRect.width}px`,
+            opacity: 1
+          };
+        } else {
+          const top2 = linkRect.top - anchorRect.top + (linkRect.height - markerRect.height) / 2;
+          markerStyle.value = {
+            top: `${top2}px`,
+            opacity: 1
+          };
+        }
+      });
+    };
+    watch2(currentAnchor, updateMarkerStyle);
+    watch2(() => {
+      var _a26;
+      return (_a26 = slots.default) == null ? void 0 : _a26.call(slots);
+    }, updateMarkerStyle);
     onMounted(() => {
       getContainer();
       const hash = decodeURIComponent(window.location.hash);
@@ -82715,7 +84355,7 @@ var _sfc_main155 = /* @__PURE__ */ defineComponent({
           ref_key: "markerRef",
           ref: markerRef,
           class: normalizeClass(unref(ns).e("marker")),
-          style: normalizeStyle(unref(markerStyle))
+          style: normalizeStyle(markerStyle.value)
         }, null, 6)) : createCommentVNode("v-if", true),
         createBaseVNode("div", {
           class: normalizeClass(unref(ns).e("list"))
@@ -82726,7 +84366,7 @@ var _sfc_main155 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Anchor = /* @__PURE__ */ _export_sfc(_sfc_main155, [["__file", "anchor.vue"]]);
+var Anchor = /* @__PURE__ */ _export_sfc(_sfc_main451, [["__file", "anchor.vue"]]);
 
 // node_modules/element-plus/es/components/anchor/src/anchor-link.mjs
 var anchorLinkProps = buildProps({
@@ -82735,11 +84375,11 @@ var anchorLinkProps = buildProps({
 });
 
 // node_modules/element-plus/es/components/anchor/src/anchor-link2.mjs
-var __default__116 = defineComponent({
+var __default__123 = defineComponent({
   name: "ElAnchorLink"
 });
-var _sfc_main156 = /* @__PURE__ */ defineComponent({
-  ...__default__116,
+var _sfc_main452 = /* @__PURE__ */ defineComponent({
+  ...__default__123,
   props: anchorLinkProps,
   setup(__props) {
     const props2 = __props;
@@ -82811,7 +84451,7 @@ var _sfc_main156 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var AnchorLink = /* @__PURE__ */ _export_sfc(_sfc_main156, [["__file", "anchor-link.vue"]]);
+var AnchorLink = /* @__PURE__ */ _export_sfc(_sfc_main452, [["__file", "anchor-link.vue"]]);
 
 // node_modules/element-plus/es/components/anchor/index.mjs
 var ElAnchor = withInstall(Anchor, {
@@ -82819,7 +84459,7 @@ var ElAnchor = withInstall(Anchor, {
 });
 var ElAnchorLink = withNoopInstall(AnchorLink);
 
-// node_modules/element-plus/es/components/segmented/src/segmented2.mjs
+// node_modules/element-plus/es/components/segmented/src/segmented.mjs
 var defaultProps5 = {
   label: "label",
   value: "value",
@@ -82858,12 +84498,12 @@ var segmentedEmits = {
   [CHANGE_EVENT]: (val) => isString(val) || isNumber2(val) || isBoolean3(val)
 };
 
-// node_modules/element-plus/es/components/segmented/src/segmented.mjs
-var __default__117 = defineComponent({
+// node_modules/element-plus/es/components/segmented/src/segmented2.mjs
+var __default__124 = defineComponent({
   name: "ElSegmented"
 });
-var _sfc_main157 = /* @__PURE__ */ defineComponent({
-  ...__default__117,
+var _sfc_main453 = /* @__PURE__ */ defineComponent({
+  ...__default__124,
   props: segmentedProps,
   emits: segmentedEmits,
   setup(__props, { emit: emit2 }) {
@@ -82892,6 +84532,7 @@ var _sfc_main157 = /* @__PURE__ */ defineComponent({
       emit2(CHANGE_EVENT, value);
     };
     const aliasProps = computed2(() => ({ ...defaultProps5, ...props2.props }));
+    const intoAny = (item) => item;
     const getValue4 = (item) => {
       return isObject(item) ? item[aliasProps.value.value] : item;
     };
@@ -82927,13 +84568,12 @@ var _sfc_main157 = /* @__PURE__ */ defineComponent({
         state.focusVisible = false;
         return;
       }
-      const rect = selectedItem.getBoundingClientRect();
       state.isInit = true;
       if (props2.direction === "vertical") {
-        state.height = rect.height;
+        state.height = selectedItem.offsetHeight;
         state.translateY = selectedItem.offsetTop;
       } else {
-        state.width = rect.width;
+        state.width = selectedItem.offsetWidth;
         state.translateX = selectedItem.offsetLeft;
       }
       try {
@@ -82966,7 +84606,7 @@ var _sfc_main157 = /* @__PURE__ */ defineComponent({
       var _a26;
       updateSelect();
       if (props2.validateEvent) {
-        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn(err));
+        (_a26 = formItem == null ? void 0 : formItem.validate) == null ? void 0 : _a26.call(formItem, "change").catch((err) => debugWarn());
       }
     }, {
       flush: "post"
@@ -83005,7 +84645,9 @@ var _sfc_main157 = /* @__PURE__ */ defineComponent({
               createBaseVNode("div", {
                 class: normalizeClass(unref(ns).e("item-label"))
               }, [
-                renderSlot(_ctx.$slots, "default", { item }, () => [
+                renderSlot(_ctx.$slots, "default", {
+                  item: intoAny(item)
+                }, () => [
                   createTextVNode(toDisplayString(getLabel(item)), 1)
                 ])
               ], 2)
@@ -83016,7 +84658,7 @@ var _sfc_main157 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Segmented = /* @__PURE__ */ _export_sfc(_sfc_main157, [["__file", "segmented.vue"]]);
+var Segmented = /* @__PURE__ */ _export_sfc(_sfc_main453, [["__file", "segmented.vue"]]);
 
 // node_modules/element-plus/es/components/segmented/index.mjs
 var ElSegmented = withInstall(Segmented);
@@ -83224,6 +84866,7 @@ var mentionProps = buildProps({
 });
 var mentionEmits = {
   [UPDATE_MODEL_EVENT]: (value) => isString(value),
+  "whole-remove": (pattern4, prefix) => isString(pattern4) && isString(prefix),
   input: (value) => isString(value),
   search: (pattern4, prefix) => isString(pattern4) && isString(prefix),
   select: (option, prefix) => isString(option.value) && isString(prefix),
@@ -83231,7 +84874,7 @@ var mentionEmits = {
   blur: (evt) => evt instanceof FocusEvent
 };
 
-// node_modules/element-plus/es/components/mention/src/mention-dropdown2.mjs
+// node_modules/element-plus/es/components/mention/src/mention-dropdown.mjs
 var mentionDropdownProps = buildProps({
   options: {
     type: definePropType(Array),
@@ -83246,12 +84889,12 @@ var mentionDropdownEmits = {
   select: (option) => isString(option.value)
 };
 
-// node_modules/element-plus/es/components/mention/src/mention-dropdown.mjs
-var __default__118 = defineComponent({
+// node_modules/element-plus/es/components/mention/src/mention-dropdown2.mjs
+var __default__125 = defineComponent({
   name: "ElMentionDropdown"
 });
-var _sfc_main158 = /* @__PURE__ */ defineComponent({
-  ...__default__118,
+var _sfc_main454 = /* @__PURE__ */ defineComponent({
+  ...__default__125,
   props: mentionDropdownProps,
   emits: mentionDropdownEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -83405,15 +85048,15 @@ var _sfc_main158 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var ElMentionDropdown = /* @__PURE__ */ _export_sfc(_sfc_main158, [["__file", "mention-dropdown.vue"]]);
+var ElMentionDropdown = /* @__PURE__ */ _export_sfc(_sfc_main454, [["__file", "mention-dropdown.vue"]]);
 
 // node_modules/element-plus/es/components/mention/src/mention2.mjs
-var __default__119 = defineComponent({
+var __default__126 = defineComponent({
   name: "ElMention",
   inheritAttrs: false
 });
-var _sfc_main159 = /* @__PURE__ */ defineComponent({
-  ...__default__119,
+var _sfc_main455 = /* @__PURE__ */ defineComponent({
+  ...__default__126,
   props: mentionProps,
   emits: mentionEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -83495,6 +85138,7 @@ var _sfc_main159 = /* @__PURE__ */ defineComponent({
               const newValue = inputValue.slice(0, prefixIndex) + inputValue.slice(splitIndex + 1);
               emit2(UPDATE_MODEL_EVENT, newValue);
               emit2(INPUT_EVENT, newValue);
+              emit2("whole-remove", pattern4, prefix);
               const newSelectionEnd = prefixIndex;
               nextTick(() => {
                 inputEl.selectionStart = newSelectionEnd;
@@ -83506,9 +85150,7 @@ var _sfc_main159 = /* @__PURE__ */ defineComponent({
       }
     };
     const { wrapperRef } = useFocusController(elInputRef, {
-      beforeFocus() {
-        return disabled.value;
-      },
+      disabled,
       afterFocus() {
         syncAfterCursorMove();
       },
@@ -83679,581 +85321,10 @@ var _sfc_main159 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var Mention = /* @__PURE__ */ _export_sfc(_sfc_main159, [["__file", "mention.vue"]]);
+var Mention = /* @__PURE__ */ _export_sfc(_sfc_main455, [["__file", "mention.vue"]]);
 
 // node_modules/element-plus/es/components/mention/index.mjs
 var ElMention = withInstall(Mention);
-
-// node_modules/element-plus/es/components/splitter/src/splitter.mjs
-var splitterProps = buildProps({
-  layout: {
-    type: String,
-    default: "horizontal",
-    values: ["horizontal", "vertical"]
-  }
-});
-
-// node_modules/element-plus/es/components/splitter/src/type.mjs
-var splitterRootContextKey = Symbol("splitterRootContextKey");
-
-// node_modules/element-plus/es/components/splitter/src/hooks/useContainer.mjs
-function useContainer(layout2) {
-  const containerEl = ref();
-  const { width, height } = useElementSize(containerEl);
-  const containerSize = computed2(() => {
-    return layout2.value === "horizontal" ? width.value : height.value;
-  });
-  return { containerEl, containerSize };
-}
-
-// node_modules/element-plus/es/components/splitter/src/hooks/useSize.mjs
-function getPct(str2) {
-  return Number(str2.slice(0, -1)) / 100;
-}
-function getPx(str2) {
-  return Number(str2.slice(0, -2));
-}
-function isPct(itemSize3) {
-  return isString(itemSize3) && itemSize3.endsWith("%");
-}
-function isPx(itemSize3) {
-  return isString(itemSize3) && itemSize3.endsWith("px");
-}
-function useSize(panels, containerSize) {
-  const propSizes = computed2(() => panels.value.map((i) => i.size));
-  const panelCounts = computed2(() => panels.value.length);
-  const percentSizes = ref([]);
-  watch2([propSizes, panelCounts, containerSize], () => {
-    var _a26;
-    let ptgList = [];
-    let emptyCount = 0;
-    for (let i = 0; i < panelCounts.value; i += 1) {
-      const itemSize3 = (_a26 = panels.value[i]) == null ? void 0 : _a26.size;
-      if (isPct(itemSize3)) {
-        ptgList[i] = getPct(itemSize3);
-      } else if (isPx(itemSize3)) {
-        ptgList[i] = getPx(itemSize3) / containerSize.value;
-      } else if (itemSize3 || itemSize3 === 0) {
-        const num = Number(itemSize3);
-        if (!Number.isNaN(num)) {
-          ptgList[i] = num / containerSize.value;
-        }
-      } else {
-        emptyCount += 1;
-        ptgList[i] = void 0;
-      }
-    }
-    const totalPtg = ptgList.reduce((acc, ptg) => acc + (ptg || 0), 0);
-    if (totalPtg > 1 || !emptyCount) {
-      const scale2 = 1 / totalPtg;
-      ptgList = ptgList.map((ptg) => ptg === void 0 ? 0 : ptg * scale2);
-    } else {
-      const avgRest = (1 - totalPtg) / emptyCount;
-      ptgList = ptgList.map((ptg) => ptg === void 0 ? avgRest : ptg);
-    }
-    percentSizes.value = ptgList;
-  });
-  const ptg2px = (ptg) => ptg * containerSize.value;
-  const pxSizes = computed2(() => percentSizes.value.map(ptg2px));
-  return { percentSizes, pxSizes };
-}
-
-// node_modules/element-plus/es/components/splitter/src/hooks/useResize.mjs
-function useResize(panels, containerSize, pxSizes) {
-  const ptg2px = (ptg) => ptg * containerSize.value || 0;
-  function getLimitSize(str2, defaultLimit) {
-    if (isPct(str2)) {
-      return ptg2px(getPct(str2));
-    } else if (isPx(str2)) {
-      return getPx(str2);
-    }
-    return str2 != null ? str2 : defaultLimit;
-  }
-  const movingIndex = ref(null);
-  let cachePxSizes = [];
-  const limitSizes = computed2(() => panels.value.map((item) => [item.min, item.max]));
-  const onMoveStart = (index3) => {
-    movingIndex.value = { index: index3, confirmed: false };
-    cachePxSizes = pxSizes.value;
-  };
-  const onMoving = (index3, offset3) => {
-    var _a26, _b25;
-    let confirmedIndex = null;
-    if ((!movingIndex.value || !movingIndex.value.confirmed) && offset3 !== 0) {
-      if (offset3 > 0) {
-        confirmedIndex = index3;
-        movingIndex.value = { index: index3, confirmed: true };
-      } else {
-        for (let i = index3; i >= 0; i -= 1) {
-          if (cachePxSizes[i] > 0) {
-            confirmedIndex = i;
-            movingIndex.value = { index: i, confirmed: true };
-            break;
-          }
-        }
-      }
-    }
-    const mergedIndex = (_b25 = confirmedIndex != null ? confirmedIndex : (_a26 = movingIndex.value) == null ? void 0 : _a26.index) != null ? _b25 : index3;
-    const numSizes = [...cachePxSizes];
-    const nextIndex = mergedIndex + 1;
-    const startMinSize = getLimitSize(limitSizes.value[mergedIndex][0], 0);
-    const endMinSize = getLimitSize(limitSizes.value[nextIndex][0], 0);
-    const startMaxSize = getLimitSize(limitSizes.value[mergedIndex][1], containerSize.value || 0);
-    const endMaxSize = getLimitSize(limitSizes.value[nextIndex][1], containerSize.value || 0);
-    let mergedOffset = offset3;
-    if (numSizes[mergedIndex] + mergedOffset < startMinSize) {
-      mergedOffset = startMinSize - numSizes[mergedIndex];
-    }
-    if (numSizes[nextIndex] - mergedOffset < endMinSize) {
-      mergedOffset = numSizes[nextIndex] - endMinSize;
-    }
-    if (numSizes[mergedIndex] + mergedOffset > startMaxSize) {
-      mergedOffset = startMaxSize - numSizes[mergedIndex];
-    }
-    if (numSizes[nextIndex] - mergedOffset > endMaxSize) {
-      mergedOffset = numSizes[nextIndex] - endMaxSize;
-    }
-    numSizes[mergedIndex] += mergedOffset;
-    numSizes[nextIndex] -= mergedOffset;
-    panels.value.forEach((panel, index22) => {
-      panel.size = numSizes[index22];
-    });
-  };
-  const onMoveEnd = () => {
-    movingIndex.value = null;
-    cachePxSizes = [];
-  };
-  const cacheCollapsedSize = [];
-  const onCollapse = (index3, type5) => {
-    const currentSizes = pxSizes.value;
-    const currentIndex = type5 === "start" ? index3 : index3 + 1;
-    const targetIndex = type5 === "start" ? index3 + 1 : index3;
-    const currentSize = currentSizes[currentIndex];
-    const targetSize = currentSizes[targetIndex];
-    if (currentSize !== 0 && targetSize !== 0) {
-      currentSizes[currentIndex] = 0;
-      currentSizes[targetIndex] += currentSize;
-      cacheCollapsedSize[index3] = currentSize;
-    } else {
-      const totalSize = currentSize + targetSize;
-      const targetCacheCollapsedSize = cacheCollapsedSize[index3];
-      const currentCacheCollapsedSize = totalSize - targetCacheCollapsedSize;
-      currentSizes[targetIndex] = targetCacheCollapsedSize;
-      currentSizes[currentIndex] = currentCacheCollapsedSize;
-    }
-    panels.value.forEach((panel, index22) => {
-      panel.size = currentSizes[index22];
-    });
-  };
-  return { onMoveStart, onMoving, onMoveEnd, movingIndex, onCollapse };
-}
-
-// node_modules/element-plus/es/components/splitter/src/splitter2.mjs
-var __default__120 = defineComponent({
-  name: "ElSplitter"
-});
-var _sfc_main160 = /* @__PURE__ */ defineComponent({
-  ...__default__120,
-  props: splitterProps,
-  emits: ["resizeStart", "resize", "resizeEnd"],
-  setup(__props, { emit: emits }) {
-    const props2 = __props;
-    const ns = useNamespace("splitter");
-    const { containerEl, containerSize } = useContainer(toRef(props2, "layout"));
-    const {
-      removeChild: unregisterPanel,
-      children: panels,
-      addChild: sortPanel
-    } = useOrderedChildren(getCurrentInstance(), "ElSplitterPanel");
-    watch2(panels, () => {
-      panels.value.forEach((instance, index3) => {
-        instance.setIndex(index3);
-      });
-    });
-    const { percentSizes, pxSizes } = useSize(panels, containerSize);
-    const { onMoveStart, onMoving, onMoveEnd, onCollapse, movingIndex } = useResize(panels, containerSize, pxSizes);
-    const onResizeStart = (index3) => {
-      onMoveStart(index3);
-      emits("resizeStart", index3, pxSizes.value);
-    };
-    const onResize = (index3, offset3) => {
-      onMoving(index3, offset3);
-      emits("resize", index3, pxSizes.value);
-    };
-    const onResizeEnd = (index3) => {
-      onMoveEnd();
-      emits("resizeEnd", index3, pxSizes.value);
-    };
-    provide(splitterRootContextKey, reactive({
-      panels,
-      percentSizes,
-      pxSizes,
-      layout: props2.layout,
-      movingIndex,
-      containerSize,
-      onMoveStart: onResizeStart,
-      onMoving: onResize,
-      onMoveEnd: onResizeEnd,
-      onCollapse,
-      registerPanel: (panel) => {
-        panels.value.push(panel);
-      },
-      sortPanel,
-      unregisterPanel
-    }));
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", {
-        ref_key: "containerEl",
-        ref: containerEl,
-        class: normalizeClass([unref(ns).b(), unref(ns).e(_ctx.layout)])
-      }, [
-        renderSlot(_ctx.$slots, "default"),
-        createCommentVNode(" Prevent iframe touch events from breaking "),
-        unref(movingIndex) ? (openBlock(), createElementBlock("div", {
-          key: 0,
-          class: normalizeClass([unref(ns).e("mask"), unref(ns).e(`mask-${_ctx.layout}`)])
-        }, null, 2)) : createCommentVNode("v-if", true)
-      ], 2);
-    };
-  }
-});
-var Splitter = /* @__PURE__ */ _export_sfc(_sfc_main160, [["__file", "splitter.vue"]]);
-
-// node_modules/element-plus/es/components/splitter/src/hooks/usePanel.mjs
-function getCollapsible(collapsible) {
-  if (collapsible && isObject(collapsible)) {
-    return collapsible;
-  }
-  return {
-    start: !!collapsible,
-    end: !!collapsible
-  };
-}
-function isCollapsible(panel, size2, nextPanel, nextSize) {
-  if ((panel == null ? void 0 : panel.collapsible.end) && size2 > 0) {
-    return true;
-  }
-  if ((nextPanel == null ? void 0 : nextPanel.collapsible.start) && nextSize === 0 && size2 > 0) {
-    return true;
-  }
-  return false;
-}
-
-// node_modules/element-plus/es/components/splitter/src/split-bar.mjs
-var __default__121 = defineComponent({
-  name: "ElSplitterBar"
-});
-var _sfc_main161 = /* @__PURE__ */ defineComponent({
-  ...__default__121,
-  props: {
-    index: {
-      type: Number,
-      required: true
-    },
-    layout: {
-      type: String,
-      values: ["horizontal", "vertical"],
-      default: "horizontal"
-    },
-    resizable: {
-      type: Boolean,
-      default: true
-    },
-    startCollapsible: {
-      type: Boolean
-    },
-    endCollapsible: {
-      type: Boolean
-    }
-  },
-  emits: ["moveStart", "moving", "moveEnd", "collapse"],
-  setup(__props, { emit: emit2 }) {
-    const props2 = __props;
-    const ns = useNamespace("splitter-bar");
-    const isHorizontal2 = computed2(() => props2.layout === "horizontal");
-    const barWrapStyles = computed2(() => {
-      if (isHorizontal2.value) {
-        return { width: 0 };
-      }
-      return { height: 0 };
-    });
-    const draggerStyles = computed2(() => {
-      return {
-        width: isHorizontal2.value ? "16px" : "100%",
-        height: isHorizontal2.value ? "100%" : "16px",
-        cursor: isHorizontal2.value ? "col-resize" : "row-resize",
-        touchAction: "none"
-      };
-    });
-    const draggerPseudoClass = computed2(() => {
-      const prefix = ns.e("dragger");
-      let className = isHorizontal2.value ? `${prefix}-horizontal` : `${prefix}-vertical`;
-      if (startPos.value)
-        className += ` ${prefix}-active`;
-      return className;
-    });
-    const startPos = ref(null);
-    const onMousedown = (e) => {
-      if (!props2.resizable)
-        return;
-      startPos.value = [e.pageX, e.pageY];
-      emit2("moveStart", props2.index);
-      window.addEventListener("mouseup", onMouseUp);
-      window.addEventListener("mousemove", onMouseMove);
-    };
-    const onTouchStart = (e) => {
-      if (props2.resizable && e.touches.length === 1) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        startPos.value = [touch.pageX, touch.pageY];
-        emit2("moveStart", props2.index);
-        window.addEventListener("touchend", onTouchEnd);
-        window.addEventListener("touchmove", onTouchMove);
-      }
-    };
-    const onMouseMove = (e) => {
-      const { pageX, pageY } = e;
-      const offsetX = pageX - startPos.value[0];
-      const offsetY = pageY - startPos.value[1];
-      const offset3 = isHorizontal2.value ? offsetX : offsetY;
-      emit2("moving", props2.index, offset3);
-    };
-    const onTouchMove = (e) => {
-      if (e.touches.length === 1) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const offsetX = touch.pageX - startPos.value[0];
-        const offsetY = touch.pageY - startPos.value[1];
-        const offset3 = isHorizontal2.value ? offsetX : offsetY;
-        emit2("moving", props2.index, offset3);
-      }
-    };
-    const onMouseUp = () => {
-      startPos.value = null;
-      window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("mousemove", onMouseMove);
-      emit2("moveEnd", props2.index);
-    };
-    const onTouchEnd = () => {
-      startPos.value = null;
-      window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("touchmove", onTouchMove);
-      emit2("moveEnd", props2.index);
-    };
-    const StartIcon = computed2(() => isHorizontal2.value ? arrow_left_default : arrow_up_default);
-    const EndIcon = computed2(() => isHorizontal2.value ? arrow_right_default : arrow_down_default);
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock("div", {
-        class: normalizeClass([unref(ns).b()]),
-        style: normalizeStyle(unref(barWrapStyles))
-      }, [
-        __props.startCollapsible ? (openBlock(), createElementBlock("div", {
-          key: 0,
-          class: normalizeClass([unref(ns).e("collapse-icon"), unref(ns).e(`${__props.layout}-collapse-icon-start`)]),
-          onClick: ($event) => emit2("collapse", __props.index, "start")
-        }, [
-          renderSlot(_ctx.$slots, "start-collapsible", {}, () => [
-            (openBlock(), createBlock(resolveDynamicComponent(unref(StartIcon)), { style: { "width": "12px", "height": "12px" } }))
-          ])
-        ], 10, ["onClick"])) : createCommentVNode("v-if", true),
-        createBaseVNode("div", {
-          class: normalizeClass([
-            unref(ns).e("dragger"),
-            unref(draggerPseudoClass),
-            __props.resizable ? "" : unref(ns).e("disable")
-          ]),
-          style: normalizeStyle(unref(draggerStyles)),
-          onMousedown,
-          onTouchstart: onTouchStart
-        }, null, 38),
-        __props.endCollapsible ? (openBlock(), createElementBlock("div", {
-          key: 1,
-          class: normalizeClass([unref(ns).e("collapse-icon"), unref(ns).e(`${__props.layout}-collapse-icon-end`)]),
-          onClick: ($event) => emit2("collapse", __props.index, "end")
-        }, [
-          renderSlot(_ctx.$slots, "end-collapsible", {}, () => [
-            (openBlock(), createBlock(resolveDynamicComponent(unref(EndIcon)), { style: { "width": "12px", "height": "12px" } }))
-          ])
-        ], 10, ["onClick"])) : createCommentVNode("v-if", true)
-      ], 6);
-    };
-  }
-});
-var SplitBar = /* @__PURE__ */ _export_sfc(_sfc_main161, [["__file", "split-bar.vue"]]);
-
-// node_modules/element-plus/es/components/splitter/src/split-panel.mjs
-var splitterPanelProps = buildProps({
-  min: {
-    type: [String, Number]
-  },
-  max: {
-    type: [String, Number]
-  },
-  size: {
-    type: [String, Number]
-  },
-  resizable: {
-    type: Boolean,
-    default: true
-  },
-  collapsible: {
-    type: Boolean,
-    default: false
-  }
-});
-
-// node_modules/element-plus/es/components/splitter/src/split-panel2.mjs
-var COMPONENT_NAME27 = "ElSplitterPanel";
-var __default__122 = defineComponent({
-  name: COMPONENT_NAME27
-});
-var _sfc_main162 = /* @__PURE__ */ defineComponent({
-  ...__default__122,
-  props: splitterPanelProps,
-  emits: ["update:size"],
-  setup(__props, { emit: emits }) {
-    const props2 = __props;
-    const ns = useNamespace("splitter-panel");
-    const splitterContext = inject(splitterRootContextKey);
-    if (!splitterContext)
-      throwError(COMPONENT_NAME27, "usage: <el-splitter><el-splitter-panel /></el-splitter/>");
-    const { panels, layout: layout2, containerSize, pxSizes } = toRefs(splitterContext);
-    const {
-      registerPanel,
-      sortPanel,
-      unregisterPanel,
-      onCollapse,
-      onMoveEnd,
-      onMoveStart,
-      onMoving
-    } = splitterContext;
-    const panelEl = ref();
-    const uid3 = getCurrentInstance().uid;
-    const index3 = ref(0);
-    const panel = computed2(() => panels.value[index3.value]);
-    const setIndex = (val) => {
-      index3.value = val;
-    };
-    const panelSize = computed2(() => {
-      var _a26;
-      if (!panel.value)
-        return 0;
-      return (_a26 = pxSizes.value[index3.value]) != null ? _a26 : 0;
-    });
-    const nextSize = computed2(() => {
-      var _a26;
-      if (!panel.value)
-        return 0;
-      return (_a26 = pxSizes.value[index3.value + 1]) != null ? _a26 : 0;
-    });
-    const nextPanel = computed2(() => {
-      if (panel.value) {
-        return panels.value[index3.value + 1];
-      }
-      return null;
-    });
-    const isResizable = computed2(() => {
-      var _a26;
-      if (!nextPanel.value)
-        return false;
-      return props2.resizable && ((_a26 = nextPanel.value) == null ? void 0 : _a26.resizable) && (panelSize.value !== 0 || !props2.min) && (nextSize.value !== 0 || !nextPanel.value.min);
-    });
-    const isShowBar = computed2(() => {
-      if (!panel.value)
-        return false;
-      return index3.value !== panels.value.length - 1;
-    });
-    const startCollapsible = computed2(() => isCollapsible(panel.value, panelSize.value, nextPanel.value, nextSize.value));
-    const endCollapsible = computed2(() => isCollapsible(nextPanel.value, nextSize.value, panel.value, panelSize.value));
-    function sizeToPx(str2) {
-      if (isPct(str2)) {
-        return getPct(str2) * containerSize.value || 0;
-      } else if (isPx(str2)) {
-        return getPx(str2);
-      }
-      return str2 != null ? str2 : 0;
-    }
-    let isSizeUpdating = false;
-    watch2(() => props2.size, () => {
-      if (panel.value) {
-        const size2 = sizeToPx(props2.size);
-        const maxSize = sizeToPx(props2.max);
-        const minSize = sizeToPx(props2.min);
-        const finalSize = Math.min(Math.max(size2, minSize || 0), maxSize || size2);
-        if (finalSize !== size2) {
-          isSizeUpdating = true;
-          emits("update:size", finalSize);
-        }
-        panel.value.size = finalSize;
-        nextTick(() => isSizeUpdating = false);
-      }
-    });
-    watch2(() => {
-      var _a26;
-      return (_a26 = panel.value) == null ? void 0 : _a26.size;
-    }, (val) => {
-      if (!isSizeUpdating && val !== props2.size) {
-        emits("update:size", val);
-      }
-    });
-    watch2(() => props2.resizable, (val) => {
-      if (panel.value) {
-        panel.value.resizable = val;
-      }
-    });
-    const _panel = reactive({
-      el: panelEl.value,
-      uid: uid3,
-      setIndex,
-      ...props2,
-      collapsible: getCollapsible(props2.collapsible)
-    });
-    registerPanel(_panel);
-    onMounted(() => {
-      sortPanel(_panel);
-    });
-    onUnmounted(() => unregisterPanel == null ? void 0 : unregisterPanel(uid3));
-    return (_ctx, _cache) => {
-      return openBlock(), createElementBlock(Fragment, null, [
-        createBaseVNode("div", mergeProps({
-          ref_key: "panelEl",
-          ref: panelEl,
-          class: [unref(ns).b()],
-          style: { flexBasis: `${unref(panelSize)}px` }
-        }, _ctx.$attrs), [
-          renderSlot(_ctx.$slots, "default")
-        ], 16),
-        unref(isShowBar) ? (openBlock(), createBlock(SplitBar, {
-          key: 0,
-          index: index3.value,
-          layout: unref(layout2),
-          resizable: unref(isResizable),
-          "start-collapsible": unref(startCollapsible),
-          "end-collapsible": unref(endCollapsible),
-          onMoveStart: unref(onMoveStart),
-          onMoving: unref(onMoving),
-          onMoveEnd: unref(onMoveEnd),
-          onCollapse: unref(onCollapse)
-        }, {
-          "start-collapsible": withCtx(() => [
-            renderSlot(_ctx.$slots, "start-collapsible")
-          ]),
-          "end-collapsible": withCtx(() => [
-            renderSlot(_ctx.$slots, "end-collapsible")
-          ]),
-          _: 3
-        }, 8, ["index", "layout", "resizable", "start-collapsible", "end-collapsible", "onMoveStart", "onMoving", "onMoveEnd", "onCollapse"])) : createCommentVNode("v-if", true)
-      ], 64);
-    };
-  }
-});
-var SplitPanel = /* @__PURE__ */ _export_sfc(_sfc_main162, [["__file", "split-panel.vue"]]);
-
-// node_modules/element-plus/es/components/splitter/index.mjs
-var ElSplitter = withInstall(Splitter, {
-  SplitPanel
-});
-var ElSplitterPanel = withNoopInstall(SplitPanel);
 
 // node_modules/element-plus/es/component.mjs
 var Components = [
@@ -84282,6 +85353,7 @@ var Components = [
   ElCollapse,
   ElCollapseItem,
   ElCollapseTransition,
+  ElColorPickerPanel,
   ElColorPicker,
   ElConfigProvider,
   ElContainer,
@@ -84290,6 +85362,7 @@ var Components = [
   ElHeader,
   ElMain,
   ElDatePicker,
+  ElDatePickerPanel,
   ElDescriptions,
   ElDescriptionsItem,
   ElDialog,
@@ -84368,7 +85441,7 @@ var Components = [
 ];
 
 // node_modules/element-plus/es/components/infinite-scroll/src/index.mjs
-var SCOPE11 = "ElInfiniteScroll";
+var SCOPE4 = "ElInfiniteScroll";
 var CHECK_INTERVAL = 50;
 var DEFAULT_DELAY = 200;
 var DEFAULT_DISTANCE = 0;
@@ -84403,18 +85476,18 @@ var getScrollOptions = (el, instance) => {
   }, {});
 };
 var destroyObserver = (el) => {
-  const { observer } = el[SCOPE11];
+  const { observer } = el[SCOPE4];
   if (observer) {
     observer.disconnect();
-    delete el[SCOPE11].observer;
+    delete el[SCOPE4].observer;
   }
 };
 var handleScroll = (el, cb) => {
-  const { container, containerEl, instance, observer, lastScrollTop } = el[SCOPE11];
+  const { container, containerEl, instance, observer, lastScrollTop } = el[SCOPE4];
   const { disabled, distance } = getScrollOptions(el, instance);
   const { clientHeight, scrollHeight, scrollTop } = containerEl;
   const delta = scrollTop - lastScrollTop;
-  el[SCOPE11].lastScrollTop = scrollTop;
+  el[SCOPE4].lastScrollTop = scrollTop;
   if (observer || disabled || delta < 0)
     return;
   let shouldTrigger = false;
@@ -84430,7 +85503,7 @@ var handleScroll = (el, cb) => {
   }
 };
 function checkFull(el, cb) {
-  const { containerEl, instance } = el[SCOPE11];
+  const { containerEl, instance } = el[SCOPE4];
   const { disabled } = getScrollOptions(el, instance);
   if (disabled || containerEl.clientHeight === 0)
     return;
@@ -84444,7 +85517,7 @@ var InfiniteScroll = {
   async mounted(el, binding) {
     const { instance, value: cb } = binding;
     if (!isFunction(cb)) {
-      throwError(SCOPE11, "'v-infinite-scroll' binding value must be a function");
+      throwError(SCOPE4, "'v-infinite-scroll' binding value must be a function");
     }
     await nextTick();
     const { delay, immediate } = getScrollOptions(el, instance);
@@ -84453,7 +85526,7 @@ var InfiniteScroll = {
     const onScroll = throttle_default(handleScroll.bind(null, el, cb), delay);
     if (!container)
       return;
-    el[SCOPE11] = {
+    el[SCOPE4] = {
       instance,
       container,
       containerEl,
@@ -84464,24 +85537,24 @@ var InfiniteScroll = {
     };
     if (immediate) {
       const observer = new MutationObserver(throttle_default(checkFull.bind(null, el, cb), CHECK_INTERVAL));
-      el[SCOPE11].observer = observer;
+      el[SCOPE4].observer = observer;
       observer.observe(el, { childList: true, subtree: true });
       checkFull(el, cb);
     }
     container.addEventListener("scroll", onScroll);
   },
   unmounted(el) {
-    if (!el[SCOPE11])
+    if (!el[SCOPE4])
       return;
-    const { container, onScroll } = el[SCOPE11];
+    const { container, onScroll } = el[SCOPE4];
     container == null ? void 0 : container.removeEventListener("scroll", onScroll);
     destroyObserver(el);
   },
   async updated(el) {
-    if (!el[SCOPE11]) {
+    if (!el[SCOPE4]) {
       await nextTick();
     } else {
-      const { containerEl, cb, observer } = el[SCOPE11];
+      const { containerEl, cb, observer } = el[SCOPE4];
       if (containerEl.clientHeight && observer) {
         checkFull(el, cb);
       }
@@ -84712,18 +85785,18 @@ Loading._context = null;
 
 // node_modules/element-plus/es/components/loading/src/directive.mjs
 var INSTANCE_KEY = Symbol("ElLoading");
+var getAttributeName = (name) => {
+  return `element-loading-${hyphenate(name)}`;
+};
 var createInstance = (el, binding) => {
   var _a26, _b25, _c, _d;
   const vm = binding.instance;
   const getBindingProp = (key) => isObject(binding.value) ? binding.value[key] : void 0;
   const resolveExpression = (key) => {
     const data = isString(key) && (vm == null ? void 0 : vm[key]) || key;
-    if (data)
-      return ref(data);
-    else
-      return data;
+    return ref(data);
   };
-  const getProp2 = (name) => resolveExpression(getBindingProp(name) || el.getAttribute(`element-loading-${hyphenate(name)}`));
+  const getProp2 = (name) => resolveExpression(getBindingProp(name) || el.getAttribute(getAttributeName(name)));
   const fullscreen = (_a26 = getBindingProp("fullscreen")) != null ? _a26 : binding.modifiers.fullscreen;
   const options = {
     text: getProp2("text"),
@@ -84744,7 +85817,7 @@ var createInstance = (el, binding) => {
     instance
   };
 };
-var updateOptions = (newOptions, originalOptions) => {
+var updateOptions = (originalOptions, newOptions) => {
   for (const key of Object.keys(originalOptions)) {
     if (isRef2(originalOptions[key]))
       originalOptions[key].value = newOptions[key];
@@ -84758,15 +85831,22 @@ var vLoading = {
   },
   updated(el, binding) {
     const instance = el[INSTANCE_KEY];
-    if (binding.oldValue !== binding.value) {
-      if (binding.value && !binding.oldValue) {
-        createInstance(el, binding);
-      } else if (binding.value && binding.oldValue) {
-        if (isObject(binding.value))
-          updateOptions(binding.value, instance.options);
-      } else {
-        instance == null ? void 0 : instance.instance.close();
-      }
+    if (!binding.value) {
+      instance == null ? void 0 : instance.instance.close();
+      el[INSTANCE_KEY] = null;
+      return;
+    }
+    if (!instance)
+      createInstance(el, binding);
+    else {
+      updateOptions(instance.options, isObject(binding.value) ? binding.value : {
+        text: el.getAttribute(getAttributeName("text")),
+        svg: el.getAttribute(getAttributeName("svg")),
+        svgViewBox: el.getAttribute(getAttributeName("svgViewBox")),
+        spinner: el.getAttribute(getAttributeName("spinner")),
+        background: el.getAttribute(getAttributeName("background")),
+        customClass: el.getAttribute(getAttributeName("customClass"))
+      });
     }
   },
   unmounted(el) {
@@ -84789,7 +85869,7 @@ var ElLoading = {
   service: Loading
 };
 
-// node_modules/element-plus/es/components/message/src/message.mjs
+// node_modules/element-plus/es/components/message/src/message2.mjs
 var messageTypes = [
   "primary",
   "success",
@@ -84797,6 +85877,15 @@ var messageTypes = [
   "warning",
   "error"
 ];
+var messagePlacement = [
+  "top",
+  "top-left",
+  "top-right",
+  "bottom",
+  "bottom-left",
+  "bottom-right"
+];
+var MESSAGE_DEFAULT_PLACEMENT = "top";
 var messageDefaults = mutable({
   customClass: "",
   dangerouslyUseHTMLString: false,
@@ -84809,6 +85898,7 @@ var messageDefaults = mutable({
   type: "info",
   plain: false,
   offset: 16,
+  placement: void 0,
   zIndex: 0,
   grouping: false,
   repeatNum: 1,
@@ -84864,6 +85954,11 @@ var messageProps = buildProps({
     type: Number,
     default: messageDefaults.offset
   },
+  placement: {
+    type: String,
+    values: messagePlacement,
+    default: messageDefaults.placement
+  },
   zIndex: {
     type: Number,
     default: messageDefaults.zIndex
@@ -84882,8 +85977,15 @@ var messageEmits = {
 };
 
 // node_modules/element-plus/es/components/message/src/instance.mjs
-var instances = shallowReactive([]);
-var getInstance = (id2) => {
+var placementInstances = shallowReactive({});
+var getOrCreatePlacementInstances = (placement) => {
+  if (!placementInstances[placement]) {
+    placementInstances[placement] = shallowReactive([]);
+  }
+  return placementInstances[placement];
+};
+var getInstance = (id2, placement) => {
+  const instances = placementInstances[placement] || [];
   const idx = instances.findIndex((instance) => instance.id === id2);
   const current = instances[idx];
   let prev;
@@ -84892,23 +85994,24 @@ var getInstance = (id2) => {
   }
   return { current, prev };
 };
-var getLastOffset = (id2) => {
-  const { prev } = getInstance(id2);
+var getLastOffset = (id2, placement) => {
+  const { prev } = getInstance(id2, placement);
   if (!prev)
     return 0;
   return prev.vm.exposed.bottom.value;
 };
-var getOffsetOrSpace = (id2, offset3) => {
+var getOffsetOrSpace = (id2, offset3, placement) => {
+  const instances = placementInstances[placement] || [];
   const idx = instances.findIndex((instance) => instance.id === id2);
   return idx > 0 ? 16 : offset3;
 };
 
-// node_modules/element-plus/es/components/message/src/message2.mjs
-var __default__123 = defineComponent({
+// node_modules/element-plus/es/components/message/src/message.mjs
+var __default__127 = defineComponent({
   name: "ElMessage"
 });
-var _sfc_main163 = /* @__PURE__ */ defineComponent({
-  ...__default__123,
+var _sfc_main456 = /* @__PURE__ */ defineComponent({
+  ...__default__127,
   props: messageProps,
   emits: messageEmits,
   setup(__props, { expose, emit: emit2 }) {
@@ -84927,11 +86030,22 @@ var _sfc_main163 = /* @__PURE__ */ defineComponent({
       return { [ns.bm("icon", type5)]: type5 && TypeComponentsMap[type5] };
     });
     const iconComponent = computed2(() => props2.icon || TypeComponentsMap[props2.type] || "");
-    const lastOffset = computed2(() => getLastOffset(props2.id));
-    const offset3 = computed2(() => getOffsetOrSpace(props2.id, props2.offset) + lastOffset.value);
+    const placement = computed2(() => props2.placement || MESSAGE_DEFAULT_PLACEMENT);
+    const lastOffset = computed2(() => getLastOffset(props2.id, placement.value));
+    const offset3 = computed2(() => {
+      return getOffsetOrSpace(props2.id, props2.offset, placement.value) + lastOffset.value;
+    });
     const bottom2 = computed2(() => height.value + offset3.value);
+    const horizontalClass = computed2(() => {
+      if (placement.value.includes("left"))
+        return ns.is("left");
+      if (placement.value.includes("right"))
+        return ns.is("right");
+      return ns.is("center");
+    });
+    const verticalProperty = computed2(() => placement.value.startsWith("top") ? "top" : "bottom");
     const customStyle = computed2(() => ({
-      top: `${offset3.value}px`,
+      [verticalProperty.value]: `${offset3.value}px`,
       zIndex: currentZIndex.value
     }));
     function startTimer() {
@@ -84995,6 +86109,8 @@ var _sfc_main163 = /* @__PURE__ */ defineComponent({
               { [unref(ns).m(_ctx.type)]: _ctx.type },
               unref(ns).is("closable", _ctx.showClose),
               unref(ns).is("plain", _ctx.plain),
+              unref(ns).is("bottom", unref(verticalProperty) === "bottom"),
+              unref(horizontalClass),
               _ctx.customClass
             ]),
             style: normalizeStyle(unref(customStyle)),
@@ -85048,26 +86164,42 @@ var _sfc_main163 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var MessageConstructor = /* @__PURE__ */ _export_sfc(_sfc_main163, [["__file", "message.vue"]]);
+var MessageConstructor = /* @__PURE__ */ _export_sfc(_sfc_main456, [["__file", "message.vue"]]);
 
 // node_modules/element-plus/es/components/message/src/method.mjs
 var seed = 1;
+var normalizeAppendTo = (normalized) => {
+  const appendTo = normalized.appendTo;
+  if (!appendTo) {
+    normalized.appendTo = document.body;
+  } else if (isString(normalized.appendTo)) {
+    let appendTo2 = document.querySelector(normalized.appendTo);
+    if (!isElement(appendTo2)) {
+      appendTo2 = document.body;
+    }
+    normalized.appendTo = appendTo2;
+  }
+};
+var normalizePlacement = (normalized) => {
+  if (!normalized.placement && isString(messageConfig.placement) && messageConfig.placement) {
+    normalized.placement = messageConfig.placement;
+  }
+  if (!normalized.placement) {
+    normalized.placement = MESSAGE_DEFAULT_PLACEMENT;
+  }
+  if (!messagePlacement.includes(normalized.placement)) {
+    debugWarn("ElMessage", `Invalid placement: ${normalized.placement}. Falling back to '${MESSAGE_DEFAULT_PLACEMENT}'.`);
+    normalized.placement = MESSAGE_DEFAULT_PLACEMENT;
+  }
+};
 var normalizeOptions = (params) => {
   const options = !params || isString(params) || isVNode(params) || isFunction(params) ? { message: params } : params;
   const normalized = {
     ...messageDefaults,
     ...options
   };
-  if (!normalized.appendTo) {
-    normalized.appendTo = document.body;
-  } else if (isString(normalized.appendTo)) {
-    let appendTo = document.querySelector(normalized.appendTo);
-    if (!isElement(appendTo)) {
-      debugWarn("ElMessage", "the appendTo option is not an HTMLElement. Falling back to document.body.");
-      appendTo = document.body;
-    }
-    normalized.appendTo = appendTo;
-  }
+  normalizeAppendTo(normalized);
+  normalizePlacement(normalized);
   if (isBoolean3(messageConfig.grouping) && !normalized.grouping) {
     normalized.grouping = messageConfig.grouping;
   }
@@ -85086,6 +86218,8 @@ var normalizeOptions = (params) => {
   return normalized;
 };
 var closeMessage = (instance) => {
+  const placement = instance.props.placement || MESSAGE_DEFAULT_PLACEMENT;
+  const instances = placementInstances[placement];
   const idx = instances.indexOf(instance);
   if (idx === -1)
     return;
@@ -85133,6 +86267,7 @@ var message = (options = {}, context) => {
   if (!isClient)
     return { close: () => void 0 };
   const normalized = normalizeOptions(options);
+  const instances = getOrCreatePlacementInstances(normalized.placement || MESSAGE_DEFAULT_PLACEMENT);
   if (normalized.grouping && instances.length) {
     const instance2 = instances.find(({ vnode: vm }) => {
       var _a26;
@@ -85158,14 +86293,25 @@ messageTypes.forEach((type5) => {
   };
 });
 function closeAll(type5) {
-  const instancesToClose = [...instances];
-  for (const instance of instancesToClose) {
-    if (!type5 || type5 === instance.props.type) {
-      instance.handler.close();
+  for (const placement in placementInstances) {
+    if (hasOwn(placementInstances, placement)) {
+      const instances = [...placementInstances[placement]];
+      for (const instance of instances) {
+        if (!type5 || type5 === instance.props.type) {
+          instance.handler.close();
+        }
+      }
     }
   }
 }
+function closeAllByPlacement(placement) {
+  if (!placementInstances[placement])
+    return;
+  const instances = [...placementInstances[placement]];
+  instances.forEach((instance) => instance.handler.close());
+}
 message.closeAll = closeAll;
+message.closeAllByPlacement = closeAllByPlacement;
 message._context = null;
 
 // node_modules/element-plus/es/components/message/index.mjs
@@ -85175,7 +86321,6 @@ var ElMessage = withInstallFunction(message, "$message");
 var FOCUSABLE_CHILDREN = "_trap-focus-children";
 var FOCUS_STACK = [];
 var FOCUS_HANDLER = (e) => {
-  var _a26;
   if (FOCUS_STACK.length === 0)
     return;
   const focusableElement = FOCUS_STACK[FOCUS_STACK.length - 1][FOCUSABLE_CHILDREN];
@@ -85197,12 +86342,6 @@ var FOCUS_HANDLER = (e) => {
     if (isLast && !goingBackward) {
       e.preventDefault();
       focusableElement[0].focus();
-    }
-    if (false) {
-      const index3 = focusableElement.indexOf(e.target);
-      if (index3 !== -1) {
-        (_a26 = focusableElement[goingBackward ? index3 - 1 : index3 + 1]) == null ? void 0 : _a26.focus();
-      }
     }
   }
 };
@@ -85228,7 +86367,7 @@ var TrapFocus = {
 };
 
 // node_modules/element-plus/es/components/message-box/src/index.mjs
-var _sfc_main164 = defineComponent({
+var _sfc_main457 = defineComponent({
   name: "ElMessageBox",
   directives: {
     TrapFocus
@@ -85274,10 +86413,7 @@ var _sfc_main164 = defineComponent({
     center: Boolean,
     draggable: Boolean,
     overflow: Boolean,
-    roundButton: {
-      default: false,
-      type: Boolean
-    },
+    roundButton: Boolean,
     container: {
       type: String,
       default: "body"
@@ -85391,7 +86527,7 @@ var _sfc_main164 = defineComponent({
     });
     const draggable2 = computed2(() => props2.draggable);
     const overflow = computed2(() => props2.overflow);
-    useDraggable(rootRef, headerRef, draggable2, overflow);
+    const { isDragging: isDragging2 } = useDraggable(rootRef, headerRef, draggable2, overflow);
     onMounted(async () => {
       await nextTick();
       if (props2.closeOnHashChange) {
@@ -85495,6 +86631,7 @@ var _sfc_main164 = defineComponent({
       focusStartRef,
       headerRef,
       inputRef,
+      isDragging: isDragging2,
       confirmRef,
       doClose,
       handleClose,
@@ -85506,7 +86643,7 @@ var _sfc_main164 = defineComponent({
     };
   }
 });
-function _sfc_render28(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render25(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_icon = resolveComponent("el-icon");
   const _component_el_input = resolveComponent("el-input");
   const _component_el_button = resolveComponent("el-button");
@@ -85548,6 +86685,7 @@ function _sfc_render28(_ctx, _cache, $props, $setup, $data, $options) {
                     _ctx.ns.b(),
                     _ctx.customClass,
                     _ctx.ns.is("draggable", _ctx.draggable),
+                    _ctx.ns.is("dragging", _ctx.isDragging),
                     { [_ctx.ns.m("center")]: _ctx.center }
                   ]),
                   style: normalizeStyle(_ctx.customStyle),
@@ -85615,13 +86753,9 @@ function _sfc_render28(_ctx, _cache, $props, $setup, $data, $options) {
                         renderSlot(_ctx.$slots, "default", {}, () => [
                           !_ctx.dangerouslyUseHTMLString ? (openBlock(), createBlock(resolveDynamicComponent(_ctx.showInput ? "label" : "p"), {
                             key: 0,
-                            for: _ctx.showInput ? _ctx.inputId : void 0
-                          }, {
-                            default: withCtx(() => [
-                              createTextVNode(toDisplayString(!_ctx.dangerouslyUseHTMLString ? _ctx.message : ""), 1)
-                            ]),
-                            _: 1
-                          }, 8, ["for"])) : (openBlock(), createBlock(resolveDynamicComponent(_ctx.showInput ? "label" : "p"), {
+                            for: _ctx.showInput ? _ctx.inputId : void 0,
+                            textContent: toDisplayString(_ctx.message)
+                          }, null, 8, ["for", "textContent"])) : (openBlock(), createBlock(resolveDynamicComponent(_ctx.showInput ? "label" : "p"), {
                             key: 1,
                             for: _ctx.showInput ? _ctx.inputId : void 0,
                             innerHTML: _ctx.message
@@ -85705,7 +86839,7 @@ function _sfc_render28(_ctx, _cache, $props, $setup, $data, $options) {
     _: 3
   }, 8, ["onAfterLeave"]);
 }
-var MessageBoxConstructor = /* @__PURE__ */ _export_sfc(_sfc_main164, [["render", _sfc_render28], ["__file", "index.vue"]]);
+var MessageBoxConstructor = /* @__PURE__ */ _export_sfc(_sfc_main457, [["render", _sfc_render25], ["__file", "index.vue"]]);
 
 // node_modules/element-plus/es/components/message-box/src/messageBox.mjs
 var messageInstance = /* @__PURE__ */ new Map();
@@ -85719,7 +86853,6 @@ var getAppendToElement = (props2) => {
       appendTo = props2.appendTo;
     }
     if (!isElement(appendTo)) {
-      debugWarn("ElMessageBox", "the appendTo option is not an HTMLElement. Falling back to document.body.");
       appendTo = document.body;
     }
   }
@@ -85924,11 +87057,11 @@ var notificationEmits = {
 };
 
 // node_modules/element-plus/es/components/notification/src/notification2.mjs
-var __default__124 = defineComponent({
+var __default__128 = defineComponent({
   name: "ElNotification"
 });
-var _sfc_main165 = /* @__PURE__ */ defineComponent({
-  ...__default__124,
+var _sfc_main458 = /* @__PURE__ */ defineComponent({
+  ...__default__128,
   props: notificationProps,
   emits: notificationEmits,
   setup(__props, { expose }) {
@@ -86056,7 +87189,7 @@ var _sfc_main165 = /* @__PURE__ */ defineComponent({
     };
   }
 });
-var NotificationConstructor = /* @__PURE__ */ _export_sfc(_sfc_main165, [["__file", "notification.vue"]]);
+var NotificationConstructor = /* @__PURE__ */ _export_sfc(_sfc_main458, [["__file", "notification.vue"]]);
 
 // node_modules/element-plus/es/components/notification/src/notify.mjs
 var notifications = {
@@ -86097,7 +87230,6 @@ var notify = function(options = {}, context) {
     appendTo = document.querySelector(options.appendTo);
   }
   if (!isElement(appendTo)) {
-    debugWarn("ElNotification", "the appendTo option is not an HTMLElement. Falling back to document.body.");
     appendTo = document.body;
   }
   const container = document.createElement("div");
@@ -86156,7 +87288,16 @@ function closeAll2() {
     });
   }
 }
+function updateOffsets(position = "top-right") {
+  var _a26, _b25, _c;
+  let verticalOffset = ((_b25 = (_a26 = notifications[position][0]) == null ? void 0 : _a26.vm.props) == null ? void 0 : _b25.offset) || 0;
+  for (const { vm } of notifications[position]) {
+    vm.component.props.offset = verticalOffset;
+    verticalOffset += (((_c = vm.el) == null ? void 0 : _c.offsetHeight) || 0) + GAP_SIZE;
+  }
+}
 notify.closeAll = closeAll2;
+notify.updateOffsets = updateOffsets;
 notify._context = null;
 
 // node_modules/element-plus/es/components/notification/index.mjs
@@ -86180,7 +87321,7 @@ var import_dayjs19 = __toESM(require_dayjs_min(), 1);
 var install = installer.install;
 var version3 = installer.version;
 
-// sfc-script:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/AICard.vue?type=script
+// sfc-script:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/AICard.vue?type=script
 var AICard_default = /* @__PURE__ */ defineComponent({
   __name: "AICard",
   props: {
@@ -86274,7 +87415,7 @@ var AICard_default = /* @__PURE__ */ defineComponent({
   }
 });
 
-// sfc-template:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/AICard.vue?type=template
+// sfc-template:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/AICard.vue?type=template
 var _hoisted_1 = { class: "ai-card" };
 var _hoisted_2 = { class: "input-section" };
 var _hoisted_3 = { class: "input-wrapper" };
@@ -86312,7 +87453,7 @@ function render2(_ctx, _cache, $props, $setup, $data, $options) {
                 "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.chatModel = $event),
                 class: "model-select"
               },
-              _cache[2] || (_cache[2] = [
+              [..._cache[2] || (_cache[2] = [
                 createBaseVNode(
                   "option",
                   { value: "deepseek-reasoner" },
@@ -86327,7 +87468,7 @@ function render2(_ctx, _cache, $props, $setup, $data, $options) {
                   -1
                   /* CACHED */
                 )
-              ]),
+              ])],
               512
               /* NEED_PATCH */
             ), [
@@ -104444,154 +105585,82 @@ function zoom_default2() {
   return zoom;
 }
 
-// sfc-script:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/HeatMap.vue?type=script
+// sfc-script:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/HeatMap.vue?type=script
 var HeatMap_default = {
   __name: "HeatMap",
   setup(__props, { expose: __expose }) {
     __expose();
-    var svgWidth = ref(220);
-    var svgHeight = ref(150);
-    var svgMargin = ref(30);
-    var weekBoxWidth = ref(0);
-    var monthBoxHeight = ref(20);
     const promptStore = usePromptStore();
-    const drawHeatmap = async () => {
+    const pixel_width = ref(12);
+    const svg_left_or_right_margin = ref(10);
+    const pixel_margin = ref(5);
+    var rect_count_x = ref(0);
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        var newWidth = entry.contentRect.width;
+        rect_count_x.value = Math.floor((newWidth - svg_left_or_right_margin.value * 2 - pixel_margin.value) / (pixel_width.value + pixel_margin.value));
+      }
+    });
+    watch2(rect_count_x, (newValue, oldValue) => {
+      draw_svg();
+    });
+    onMounted(async () => {
       await nextTick();
-      const heatmap = select_default3(".heatmap");
-      heatmap.selectAll("*").remove();
-      heatmap.attr("width", svgWidth.value);
-      heatmap.attr("height", svgHeight.value);
-      var dataset = generateData(3);
-      var monthScale = linear3().domain([0, dataset.months.length]).range([0, svgWidth.value - weekBoxWidth.value - svgMargin.value + 10]);
-      const monthBox = heatmap.append("g").attr("transform", "translate(" + (svgMargin.value + weekBoxWidth.value) + ", " + svgMargin.value + ")");
-      monthBox.selectAll("text").data(dataset.months).enter().append("text").text((v3) => {
-        return v3;
-      }).attr("x", (v3, i) => {
-        return monthScale(i);
-      }).attr("fill", "#999").attr("font-size", "12px").attr("font-family", "sans-serif");
-      const cellBox = heatmap.append("g").attr(
-        "transform",
-        "translate(" + (svgMargin.value + weekBoxWidth.value) + ", " + (svgMargin.value + 10) + ")"
-      );
-      const cellMargin = ref(3);
-      const cellHeight = (svgHeight.value - svgMargin.value - monthBoxHeight.value - cellMargin.value * 6 - 10) / 7;
-      const cellWidth = (svgWidth.value - weekBoxWidth.value - svgMargin.value - 10 - cellMargin.value * (dataset.days.length / 7 - 1)) / (dataset.days.length / 7);
-      const cellSize = Math.min(cellWidth, cellHeight);
-      var cellCol = 0;
-      var cell = cellBox.selectAll("rect").data(dataset.days).enter().append("rect").attr("width", cellSize).attr("height", cellSize).attr("rx", 3).attr("fill", (v3) => {
-        if (v3.total == void 0) {
+      observer.observe(document.getElementById("svg_container"));
+      draw_svg();
+    });
+    const draw_svg = async () => {
+      await nextTick();
+      select_default3("#svg_container").selectAll("rect").remove();
+      const rect_count = rect_count_x.value * 7;
+      const today = /* @__PURE__ */ new Date();
+      var date_list = [];
+      for (let i = 0; i < rect_count; i++) {
+        const date5 = /* @__PURE__ */ new Date();
+        date5.setDate(today.getDate() - i);
+        const date_str = date5.toISOString().split("T")[0];
+        let prompts_num = 0;
+        if (promptStore.promptStats[date_str]) {
+          prompts_num = promptStore.promptStats[date_str].num;
+        }
+        date_list.unshift({ "date": date_str, "prompts_num": prompts_num || 0 });
+      }
+      select_default3("#svg_container").selectAll("rect").data(date_list).enter().append("rect").attr("width", pixel_width.value).attr("height", pixel_width.value).attr("fill", "#4A90E2").attr("x", (d2, i) => {
+        const col = Math.floor(i / 7);
+        return svg_left_or_right_margin.value + (pixel_width.value + pixel_margin.value) * col;
+      }).attr("y", (d2, i) => {
+        const row = i % 7;
+        return svg_left_or_right_margin.value + (pixel_width.value + pixel_margin.value) * row;
+      }).attr("fill", (v3) => {
+        if (v3.prompts_num == 0) {
           return "#EFEFEF";
         }
-        if (v3.total > 14) {
+        if (v3.prompts_num > 14) {
           return "#2C82C9";
         }
-        if (v3.total > 9) {
+        if (v3.prompts_num > 9) {
           return "#4A90E2";
         }
-        if (v3.total > 4) {
+        if (v3.prompts_num > 4) {
           return "#7CB9E8";
         }
         return "#A7C7E7";
-      }).attr("x", (v3, i) => {
-        if (i % 7 == 0) {
-          cellCol++;
-        }
-        var x5 = (cellCol - 1) * cellSize;
-        return cellCol > 1 ? x5 + cellMargin.value * (cellCol - 1) : x5;
-      }).attr("y", (v3, i) => {
-        var y4 = i % 7;
-        return y4 > 0 ? y4 * cellSize + cellMargin.value * y4 : y4 * cellSize;
-      }).on("click", (e, v3) => handleClick(e, v3));
-      cell.append("title").text((v3) => {
-        let message2 = "None";
-        if (v3.total) {
-          message2 = v3.total + " prompting questions.";
-        }
-        return v3.date + "\n" + message2;
-      });
+      }).on("click", (e, v3) => handleClick(e, v3)).append("title").text((d2) => `${d2.date}: ${d2.prompts_num} prompts`);
     };
-    watch2(() => promptStore.promptStats, async () => {
-      await drawHeatmap();
-    }, { deep: true });
-    onMounted(async () => {
-      await drawHeatmap();
-    });
     const handleClick = (e, v3) => {
       promptStore.selectedDate = v3.date;
     };
-    const generateData = (forwardMonth, options = {}) => {
-      const data = promptStore.promptStats;
-      var fillData = {};
-      for (const key in data) {
-        fillData[key] = data[key].num;
-      }
-      const config = Object.assign({}, {
-        endDate: null,
-        fill: fillData
-      }, options);
-      const months = [];
-      const days = [];
-      for (let i = forwardMonth; i > 0; i--) {
-        let referDate = config.endDate ? new Date(config.endDate) : /* @__PURE__ */ new Date();
-        referDate.setMonth(referDate.getMonth() - i + 2);
-        referDate.setDate(0);
-        let month = referDate.getMonth() + 1;
-        month = month < 10 ? "0" + month : month;
-        for (let d3 = 1; d3 <= referDate.getDate(); d3++) {
-          let day2 = d3 < 10 ? "0" + d3 : d3;
-          let data2 = {
-            date: referDate.getFullYear() + "-" + month + "-" + day2
-          };
-          if (config.fill.hasOwnProperty(data2.date)) {
-            data2.total = config.fill[data2.date];
-          }
-          days.push(data2);
-        }
-        months.push(referDate.getFullYear() + "-" + month);
-      }
-      let firstDate = days[0].date;
-      let d2 = new Date(firstDate);
-      let day = d2.getDay();
-      if (day == 0) {
-        day = 7;
-      }
-      for (let i = 1; i < day; i++) {
-        let d3 = new Date(firstDate);
-        d3.setDate(d3.getDate() - i);
-        let v3 = [d3.getFullYear(), d3.getMonth() + 1, d3.getDate()];
-        if (v3[1] < 10) {
-          v3[1] = "0" + v3[1];
-        }
-        if (v3[2] < 10) {
-          v3[2] = "0" + v3[2];
-        }
-        days.unshift({ date: v3.join("-") });
-      }
-      return { days, months };
-    };
-    const __returned__ = { get svgWidth() {
-      return svgWidth;
-    }, set svgWidth(v3) {
-      svgWidth = v3;
-    }, get svgHeight() {
-      return svgHeight;
-    }, set svgHeight(v3) {
-      svgHeight = v3;
-    }, get svgMargin() {
-      return svgMargin;
-    }, set svgMargin(v3) {
-      svgMargin = v3;
-    }, get weekBoxWidth() {
-      return weekBoxWidth;
-    }, set weekBoxWidth(v3) {
-      weekBoxWidth = v3;
-    }, get monthBoxHeight() {
-      return monthBoxHeight;
-    }, set monthBoxHeight(v3) {
-      monthBoxHeight = v3;
-    }, promptStore, drawHeatmap, handleClick, generateData, get d3() {
+    watch2(() => promptStore.promptStats, async () => {
+      await nextTick();
+      draw_svg();
+    }, { deep: true });
+    const __returned__ = { promptStore, pixel_width, svg_left_or_right_margin, pixel_margin, get rect_count_x() {
+      return rect_count_x;
+    }, set rect_count_x(v3) {
+      rect_count_x = v3;
+    }, observer, draw_svg, handleClick, get d3() {
       return src_exports;
-    }, onMounted, ref, watch: watch2, nextTick, get usePromptStore() {
+    }, ref, onMounted, nextTick, watchEffect, watch: watch2, reactive, get usePromptStore() {
       return usePromptStore;
     } };
     Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
@@ -104599,19 +105668,18 @@ var HeatMap_default = {
   }
 };
 
-// sfc-template:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/HeatMap.vue?type=template
-var _hoisted_12 = {
-  ref: "heatmap",
-  class: "heatmap"
-};
+// sfc-template:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/HeatMap.vue?type=template
+var _hoisted_12 = { id: "container" };
 function render3(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock(
-    "svg",
-    _hoisted_12,
-    null,
-    512
-    /* NEED_PATCH */
-  );
+  return openBlock(), createElementBlock("div", _hoisted_12, [..._cache[0] || (_cache[0] = [
+    createBaseVNode(
+      "svg",
+      { id: "svg_container" },
+      null,
+      -1
+      /* CACHED */
+    )
+  ])]);
 }
 
 // src/components/HeatMap.vue
@@ -104620,7 +105688,7 @@ HeatMap_default.__file = "src/components/HeatMap.vue";
 HeatMap_default.__scopeId = "data-v-4e0aa827";
 var HeatMap_default2 = HeatMap_default;
 
-// sfc-script:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/PromptLine.vue?type=script
+// sfc-script:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/PromptLine.vue?type=script
 var PromptLine_default = /* @__PURE__ */ defineComponent({
   __name: "PromptLine",
   props: {
@@ -104681,7 +105749,7 @@ var PromptLine_default = /* @__PURE__ */ defineComponent({
   }
 });
 
-// sfc-template:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/PromptLine.vue?type=template
+// sfc-template:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/PromptLine.vue?type=template
 var _hoisted_13 = { class: "date-title" };
 var _hoisted_22 = ["onClick"];
 var _hoisted_32 = { class: "prompt-content" };
@@ -104746,7 +105814,7 @@ PromptLine_default.__file = "src/components/PromptLine.vue";
 PromptLine_default.__scopeId = "data-v-d3bf3f9c";
 var PromptLine_default2 = PromptLine_default;
 
-// sfc-script:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/MainTemplate.vue?type=script
+// sfc-script:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/MainTemplate.vue?type=script
 var MainTemplate_default = /* @__PURE__ */ defineComponent({
   __name: "MainTemplate",
   props: {
@@ -104799,7 +105867,7 @@ var MainTemplate_default = /* @__PURE__ */ defineComponent({
   }
 });
 
-// sfc-template:/Volumes/mali/obdisian-vaults-for-dev/.obsidian/plugins/deepseek-ai-assistant/src/components/MainTemplate.vue?type=template
+// sfc-template:/Users/mali/Desktop/dev-vault/.obsidian/plugins/deepseek-ai-assistant/src/components/MainTemplate.vue?type=template
 function render5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_el_aside = resolveComponent("el-aside");
   const _component_el_main = resolveComponent("el-main");
@@ -104809,7 +105877,7 @@ function render5(_ctx, _cache, $props, $setup, $data, $options) {
       createVNode(_component_el_aside, null, {
         default: withCtx(() => [
           createVNode($setup["HeatMap"]),
-          createCommentVNode(" <ContributionsHeatMap/> "),
+          createCommentVNode(" <ThinkingClue/>\n            <WordCloud/> "),
           createVNode($setup["PromptLine"], { plugin: $props.plugin }, null, 8, ["plugin"])
         ]),
         _: 1
@@ -104922,7 +105990,7 @@ var Plugin_Deepseek_AI_Assistant = class extends import_obsidian4.Plugin {
 
 @vue/shared/dist/shared.esm-bundler.js:
   (**
-  * @vue/shared v3.5.17
+  * @vue/shared v3.5.20
   * (c) 2018-present Yuxi (Evan) You and Vue contributors
   * @license MIT
   **)
@@ -104930,14 +105998,14 @@ var Plugin_Deepseek_AI_Assistant = class extends import_obsidian4.Plugin {
 
 @vue/reactivity/dist/reactivity.esm-bundler.js:
   (**
-  * @vue/reactivity v3.5.17
+  * @vue/reactivity v3.5.20
   * (c) 2018-present Yuxi (Evan) You and Vue contributors
   * @license MIT
   **)
 
 @vue/runtime-core/dist/runtime-core.esm-bundler.js:
   (**
-  * @vue/runtime-core v3.5.17
+  * @vue/runtime-core v3.5.20
   * (c) 2018-present Yuxi (Evan) You and Vue contributors
   * @license MIT
   **)
@@ -104953,20 +106021,17 @@ var Plugin_Deepseek_AI_Assistant = class extends import_obsidian4.Plugin {
 
 @vue/runtime-dom/dist/runtime-dom.esm-bundler.js:
   (**
-  * @vue/runtime-dom v3.5.17
+  * @vue/runtime-dom v3.5.20
   * (c) 2018-present Yuxi (Evan) You and Vue contributors
   * @license MIT
   **)
-
-@vue/runtime-dom/dist/runtime-dom.esm-bundler.js:
-  (*! #__NO_SIDE_EFFECTS__ *)
 
 @vue/runtime-dom/dist/runtime-dom.esm-bundler.js:
   (*! #__NO_SIDE_EFFECTS__ *)
 
 vue/dist/vue.runtime.esm-bundler.js:
   (**
-  * vue v3.5.17
+  * vue v3.5.20
   * (c) 2018-present Yuxi (Evan) You and Vue contributors
   * @license MIT
   **)
@@ -104993,7 +106058,7 @@ lodash-es/lodash.js:
    *)
 
 @element-plus/icons-vue/dist/index.js:
-  (*! Element Plus Icons Vue v2.3.1 *)
+  (*! Element Plus Icons Vue v2.3.2 *)
 
 normalize-wheel-es/dist/index.mjs:
   (**
