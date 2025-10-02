@@ -81,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "Откат",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -102,8 +102,7 @@
               "title": "Закладки"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -225,7 +224,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e689fe0ca950e951",
+  "active": "4f4c733d5d9f5285",
   "lastOpenFiles": [
     "Откат.md",
     "Домашняя страница.md",
