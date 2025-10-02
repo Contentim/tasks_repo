@@ -1,4 +1,4 @@
-#log #логирование #debug #alert #LogEvent #websoft#помощь
+#log #логирование #debug #alert #LogEvent #websoft #помощь
 #### Сброс кэша на странице портала
 ```js
 ?fcache=1
