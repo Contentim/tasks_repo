@@ -110,7 +110,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "shared",
+                "query": "type",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -250,7 +250,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "5664e81fdfe35434",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Решение проблем.md",
     "Домашняя страница.md",
