@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Развернуть локальный стенд.md",
                 "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Развернуть локальный стенд"
             }
           },
           {
@@ -110,7 +110,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "type",
+                "query": "shared",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -200,13 +200,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Развернуть локальный стенд.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Развернуть локальный стенд"
             }
           },
           {
@@ -250,10 +250,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "5664e81fdfe35434",
   "lastOpenFiles": [
-    "Решение проблем.md",
     "Домашняя страница.md",
+    "Решение проблем.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
