@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Получить все каталоги.md",
-                "mode": "preview",
+                "file": "Работа/Websoft/Стенды.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Получить все каталоги"
+              "title": "Стенды"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Получить все каталоги.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Получить все каталоги"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -195,6 +195,7 @@
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Домашняя страница.md",
+    "Получить все каталоги.md",
     "Работа/Websoft/Стенды.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Развернуть локальный стенд.md",
@@ -210,7 +211,6 @@
     "attachments/Pasted image 20251002105923.png",
     "attachments/Pasted image 20251002105627.png",
     "Регулярные выражения.md",
-    "Получить все каталоги.md",
     "Каталоги-связки.md",
     "Демо-данные для платформы.md",
     "Ролевая модель приложений.md",
