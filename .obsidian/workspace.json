@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Развернуть локальный стенд"
             }
           }
         ]
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Развернуть локальный стенд"
             }
           },
           {
@@ -192,11 +192,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Получить все каталоги.md",
-    "Работа/Websoft/Стенды.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Развернуть локальный стенд.md",
     "Получить список всех каталогов системы.md",
