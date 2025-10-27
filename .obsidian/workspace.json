@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Ссылки на задачи.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Ссылки на задачи"
             }
           }
         ],
@@ -158,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Ссылки на задачи.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Ссылки на задачи"
             }
           },
           {
@@ -209,10 +209,10 @@
   },
   "active": "1dfd81d096fca524",
   "lastOpenFiles": [
-    "Untitled.md",
+    "Домашняя страница.md",
+    "Ссылки на задачи.md",
     "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
-    "Домашняя страница.md",
     "Получить все каталоги.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Получить список всех каталогов системы.md",
