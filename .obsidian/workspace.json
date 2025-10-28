@@ -35,8 +35,7 @@
               "title": "Домашняя страница"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -158,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -207,10 +206,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "1dfd81d096fca524",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Убрать стрелки возле заголовка в таблице отчета.md",
     "Домашняя страница.md",
+    "Убрать стрелки возле заголовка в таблице отчета.md",
     "Ссылки на задачи.md",
     "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
