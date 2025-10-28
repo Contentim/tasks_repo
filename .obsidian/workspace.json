@@ -27,15 +27,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "фывфыв.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "фывфыв"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -157,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "фывфыв.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура фывфыв"
             }
           },
           {
@@ -206,12 +207,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "1dfd81d096fca524",
   "lastOpenFiles": [
     "Домашняя страница.md",
+    "фывфыв.md",
+    "Работа/Websoft/Стенды.md",
     "Убрать стрелки возле заголовка в таблице отчета.md",
     "Ссылки на задачи.md",
-    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Получить все каталоги.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
@@ -241,7 +243,6 @@
     "Без названия.base",
     "Без названия 1.base",
     "Без названия 2.base",
-    "asdasdasd.md",
     "attachments/Pasted image 20250925190204.png",
     "attachments/Pasted image 20250826152806.png",
     "attachments/Pasted image 20250514105517.png",
