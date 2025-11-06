@@ -27,15 +27,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Домашняя страница"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -67,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "shared",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -157,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Домашняя страница.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Развернуть локальный стенд"
+              "title": "Структура Домашняя страница"
             }
           },
           {
@@ -206,11 +207,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "86ecc6d52fa363cd",
   "lastOpenFiles": [
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Развернуть локальный стенд.md",
+    "Домашняя страница.md",
     "Округление StrRealFixed.md",
     "Роль Методист(эксперт) - не видны записи присвоенные для подкатегорий.md",
     "Убрать стрелки возле заголовка в таблице отчета.md",
