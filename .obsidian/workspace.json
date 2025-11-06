@@ -42,7 +42,7 @@
               "type": "markdown",
               "state": {
                 "file": "Лампочки.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -223,6 +223,7 @@
   },
   "active": "69af6745514cc09d",
   "lastOpenFiles": [
+    "attachments/Pasted image 20251106192934.png",
     "Домашняя страница.md",
     "Лампочки.md",
     "Работа/Websoft/Стенды.md",
@@ -252,7 +253,6 @@
     "Чек-лист для задач с большим списком файлов.md",
     "JSDoc - конфигурация.md",
     "Переход и миграция с XML на SQL.md",
-    "Запустить стенд newint.md",
     "Без названия 4.base",
     "Без названия.base",
     "Без названия 1.base",
