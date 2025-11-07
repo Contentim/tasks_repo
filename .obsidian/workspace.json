@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -172,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Лампочки.md",
+                "file": "Домашняя страница.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Лампочки"
+              "title": "Структура Домашняя страница"
             }
           },
           {
@@ -221,11 +221,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "69af6745514cc09d",
+  "active": "86ecc6d52fa363cd",
   "lastOpenFiles": [
+    "Лампочки.md",
     "attachments/Pasted image 20251106192934.png",
     "Домашняя страница.md",
-    "Лампочки.md",
     "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Округление StrRealFixed.md",
@@ -264,7 +264,6 @@
     "attachments/Pasted image 20250407142557.png",
     "attachments/Pasted image 20250407142448.png",
     "attachments/Pasted image 20250407142415.png",
-    "attachments/Pasted image 20250206142640.png",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
     "attachments/xHttp_64.exe",
