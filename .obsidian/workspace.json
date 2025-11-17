@@ -35,8 +35,7 @@
               "title": "Развернуть локальный стенд"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -158,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Развернуть локальный стенд"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -207,11 +206,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "86ecc6d52fa363cd",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Лампочки.md",
     "Работа/Websoft/Стенды.md",
-    "Развернуть локальный стенд.md",
     "attachments/Pasted image 20251107101316.png",
     "Домашняя страница.md",
     "attachments/Pasted image 20251106192934.png",
