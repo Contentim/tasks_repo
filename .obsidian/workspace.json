@@ -67,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "verbo",
+                "query": "кэш",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -206,7 +206,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
