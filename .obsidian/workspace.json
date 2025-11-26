@@ -27,15 +27,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
-                "mode": "preview",
+                "file": "Работа/Websoft/Стенды.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Стенды"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -157,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Логирование, debug и трассировка, сброс кэша"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -195,6 +196,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "homepage:Open homepage": false,
       "bases:Создать новую базу": false,
       "switcher:Меню быстрого перехода": false,
       "graph:Граф": false,
@@ -202,17 +204,17 @@
       "daily-notes:Сегодняшняя заметка": false,
       "templates:Вставить шаблон": false,
       "command-palette:Открыть палитру команд": false,
-      "homepage:Open homepage": false,
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "86ecc6d52fa363cd",
   "lastOpenFiles": [
-    "Развернуть локальный стенд.md",
-    "Работа/Websoft/Стенды.md",
-    "Лампочки.md",
-    "attachments/Pasted image 20251107101316.png",
     "Домашняя страница.md",
+    "Лампочки.md",
+    "Развернуть локальный стенд.md",
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Работа/Websoft/Стенды.md",
+    "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
     "Округление StrRealFixed.md",
     "Роль Методист(эксперт) - не видны записи присвоенные для подкатегорий.md",
@@ -223,7 +225,6 @@
     "Получить список всех каталогов системы.md",
     "Решение проблем.md",
     "Test Base.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Без названия 3.base",
     "Откат.md",
     "Без названия 5.base",
