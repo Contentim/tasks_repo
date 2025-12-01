@@ -35,7 +35,8 @@
               "title": "Стенды"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -157,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Логирование, debug и трассировка, сброс кэша"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -206,13 +207,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "86ecc6d52fa363cd",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Лампочки.md",
     "Развернуть локальный стенд.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
     "Округление StrRealFixed.md",
