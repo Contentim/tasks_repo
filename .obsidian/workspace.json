@@ -39,12 +39,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
         ],
@@ -80,7 +80,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "sha",
+                "query": "verbo",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -170,13 +170,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Развернуть локальный стенд"
+              "title": "Структура Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -221,10 +221,10 @@
   },
   "active": "41f459f853b1487d",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Развернуть локальный стенд.md",
     "Лампочки.md",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
