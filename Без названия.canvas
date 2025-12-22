@@ -1,6 +1,13 @@
 {
 	"nodes":[
-		{"id":"7b68b773c76f587f","x":-113,"y":-9,"width":250,"height":60,"type":"text","text":"Желания"}
+		{"id":"7b68b773c76f587f","x":-113,"y":-9,"width":250,"height":60,"type":"text","text":"Желания"},
+		{"id":"53ca6c6af08af8c2","x":-100,"y":-160,"width":250,"height":60,"type":"text","text":"доска желаний"},
+		{"id":"28db41596d5f8023","x":265,"y":-10,"width":250,"height":60,"type":"text","text":"люблю"},
+		{"id":"d519199f0b3c6d91","x":305,"y":72,"width":250,"height":60,"type":"text","text":"хочу"}
 	],
-	"edges":[]
+	"edges":[
+		{"id":"d8f48d88cddbf6ca","fromNode":"7b68b773c76f587f","fromSide":"top","toNode":"53ca6c6af08af8c2","toSide":"bottom"},
+		{"id":"a7d62156505b20c9","fromNode":"7b68b773c76f587f","fromSide":"right","toNode":"28db41596d5f8023","toSide":"left"},
+		{"id":"dd2f19f89b2c483e","fromNode":"7b68b773c76f587f","fromSide":"right","toNode":"d519199f0b3c6d91","toSide":"left"}
+	]
 }
