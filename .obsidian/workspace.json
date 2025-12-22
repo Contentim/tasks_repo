@@ -60,9 +60,26 @@
               "icon": "lucide-file",
               "title": "Логирование, debug и трассировка, сброс кэша"
             }
+          },
+          {
+            "id": "f899df2f9c39cda3",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Без названия.canvas",
+                "viewState": {
+                  "x": 0,
+                  "y": 0,
+                  "zoom": 0
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Без названия"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -184,13 +201,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Стенды клиентские.md",
+                "file": "Без названия.canvas",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды клиентские"
+              "title": "Структура Без названия"
             }
           },
           {
@@ -218,7 +235,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 636.5
+    "width": 311.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -233,10 +250,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "b1252f101222ba03",
+  "active": "f899df2f9c39cda3",
   "lastOpenFiles": [
-    "Домашняя страница.md",
+    "Без названия.canvas",
+    "Сократ на диване.md",
     "Стенды клиентские.md",
+    "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Команды GIT.md",
     "Откат.md",
@@ -265,8 +284,6 @@
     "Каталоги-связки.md",
     "Демо-данные для платформы.md",
     "Ролевая модель приложений.md",
-    "Глобальные константы.md",
-    "Чек-лист для задач с большим списком файлов.md",
     "Без названия 4.base",
     "Без названия.base",
     "Без названия 1.base",
@@ -282,7 +299,6 @@
     "attachments/xHttp_64.exe",
     "attachments",
     "Ремонт/План работ.canvas",
-    "Ремонт/Без названия.canvas",
-    "Без названия.canvas"
+    "Ремонт/Без названия.canvas"
   ]
 }
