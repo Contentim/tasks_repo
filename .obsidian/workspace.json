@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Логирование, debug и трассировка, сброс кэша"
+              "title": "Домашняя страница"
             }
           },
           {
@@ -92,8 +92,7 @@
               "title": "Доска желаний"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -264,11 +263,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "642fe2082c1da898",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Доска желаний.canvas",
-    "Домашняя страница.md",
+    "Открыть страницу с шаблоном.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Домашняя страница.md",
+    "Доска желаний.canvas",
     "Сократ на диване.md",
     "Стенды клиентские.md",
     "Команды GIT.md",
