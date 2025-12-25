@@ -93,7 +93,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -215,13 +215,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Домашняя страница.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Логирование, debug и трассировка, сброс кэша"
+              "title": "Структура Домашняя страница"
             }
           },
           {
@@ -264,12 +264,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "41f459f853b1487d",
+  "active": "642fe2082c1da898",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Стенды клиентские.md",
     "Открыть страницу с шаблоном через GET-параметр.md",
     "Домашняя страница.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Доска желаний.canvas",
     "Сократ на диване.md",
     "Команды GIT.md",
