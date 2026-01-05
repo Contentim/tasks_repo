@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Диагностические вопросы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Без названия 1"
+              "title": "Диагностические вопросы"
             }
           }
         ],
@@ -172,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Диагностические вопросы.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Без названия 1"
+              "title": "Структура Диагностические вопросы"
             }
           },
           {
@@ -223,7 +223,7 @@
   },
   "active": "654722059b6d9825",
   "lastOpenFiles": [
-    "Без названия 1.md",
+    "Диагностические вопросы.md",
     "Диагностика отношений.md",
     "Диагностика — Личная динамика.md",
     "Домашняя страница.md",
