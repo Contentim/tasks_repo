@@ -92,7 +92,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -214,13 +214,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Диагностика отношений.md",
+                "file": "Заметка 1.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Диагностика отношений"
+              "title": "Структура Заметка 1"
             }
           },
           {
@@ -263,10 +263,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "536216a0728742a2",
+  "active": "4402a85275c759ef",
   "lastOpenFiles": [
-    "Заметка 1.md",
     "Диагностика отношений.md",
+    "Заметка 1.md",
     "Диагностические вопросы.md",
     "Заметка 2.md",
     "Заметка 3.md",
