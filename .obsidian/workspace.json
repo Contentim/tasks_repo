@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -172,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Диагностика — Личная динамика.md",
+                "file": "Диагностика отношений.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Диагностика — Личная динамика"
+              "title": "Структура Диагностика отношений"
             }
           },
           {
@@ -221,10 +221,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "ecb9a65ca3b0c035",
+  "active": "536216a0728742a2",
   "lastOpenFiles": [
-    "Диагностика отношений.md",
     "Диагностика — Личная динамика.md",
+    "Диагностика отношений.md",
     "Домашняя страница.md",
     "Доска желаний.canvas",
     "Любовь-морковь - как создать любовные отношения.md",
