@@ -34,8 +34,19 @@
               "icon": "lucide-file",
               "title": "Диагностика отношений"
             }
+          },
+          {
+            "id": "ecb9a65ca3b0c035",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Новая вкладка"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -157,13 +168,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Диагностика отношений.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Диагностика отношений"
+              "title": "Структура"
             }
           },
           {
@@ -206,11 +216,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "ecb9a65ca3b0c035",
   "lastOpenFiles": [
+    "Диагностика отношений.md",
     "Домашняя страница.md",
     "Доска желаний.canvas",
-    "Диагностика отношений.md",
     "Любовь-морковь - как создать любовные отношения.md",
     "attachments/Pasted image 20251225142153.png",
     "Книги/Логика/История становления и развития логики.md",
