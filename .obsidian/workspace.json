@@ -92,7 +92,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -214,13 +214,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Диагностические вопросы.md",
+                "file": "Диагностика отношений.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Диагностические вопросы"
+              "title": "Структура Диагностика отношений"
             }
           },
           {
@@ -263,7 +263,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "654722059b6d9825",
+  "active": "536216a0728742a2",
   "lastOpenFiles": [
     "Заметка 1.md",
     "Диагностические вопросы.md",
