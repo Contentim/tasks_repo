@@ -39,10 +39,14 @@
             "id": "ecb9a65ca3b0c035",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Диагностика — Личная динамика.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "Диагностика — Личная динамика"
             }
           }
         ],
@@ -168,12 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Диагностика — Личная динамика.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура"
+              "title": "Структура Диагностика — Личная динамика"
             }
           },
           {
@@ -218,6 +223,7 @@
   },
   "active": "ecb9a65ca3b0c035",
   "lastOpenFiles": [
+    "Диагностика — Личная динамика.md",
     "Диагностика отношений.md",
     "Домашняя страница.md",
     "Доска желаний.canvas",
