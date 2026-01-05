@@ -92,7 +92,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -214,13 +214,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Заметка 2.md",
+                "file": "Диагностические вопросы.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Заметка 2"
+              "title": "Структура Диагностические вопросы"
             }
           },
           {
@@ -263,14 +263,14 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "62583bd6de0315c7",
+  "active": "654722059b6d9825",
   "lastOpenFiles": [
-    "Заметка 3.md",
-    "Заметка 2.md",
-    "Заметка 1.md",
-    "Диагностические вопросы.md",
-    "Вариант A.md",
     "Диагностика отношений.md",
+    "Диагностические вопросы.md",
+    "Заметка 2.md",
+    "Заметка 3.md",
+    "Заметка 1.md",
+    "Вариант A.md",
     "Диагностика — Личная динамика.md",
     "Домашняя страница.md",
     "Доска желаний.canvas",
