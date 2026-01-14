@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Получить все каталоги.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Получить все каталоги"
             }
           },
           {
@@ -35,8 +35,7 @@
               "title": "Пэйджинг"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -68,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "сортиро",
+                "query": "каталог",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -158,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Пэйджинг.md",
+                "file": "Получить все каталоги.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Пэйджинг"
+              "title": "Структура Получить все каталоги"
             }
           },
           {
@@ -207,11 +206,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a91f71a2b24ef19f",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Домашняя страница.md",
-    "Пэйджинг.md",
+    "Каталоги. Работа с каталогами.md",
     "Развернуть локальный стенд.md",
+    "Пэйджинг.md",
+    "Домашняя страница.md",
     "Получить все каталоги.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
@@ -236,7 +236,6 @@
     "Открыть страницу с шаблоном через GET-параметр.md",
     "Сократ на диване.md",
     "Команды GIT.md",
-    "Откат.md",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
     "Без названия 3.base",
