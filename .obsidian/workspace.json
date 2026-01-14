@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Пэйджинг.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Пэйджинг"
             }
           }
         ],
@@ -68,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "кэш",
+                "query": "сортиро",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -158,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Пэйджинг.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Пэйджинг"
             }
           },
           {
@@ -209,11 +209,12 @@
   },
   "active": "a91f71a2b24ef19f",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Пэйджинг.md",
     "Развернуть локальный стенд.md",
     "Получить все каталоги.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
-    "Домашняя страница.md",
     "Диагностика отношений.md",
     "Заметка 1.md",
     "Диагностические вопросы.md",
@@ -236,7 +237,6 @@
     "Сократ на диване.md",
     "Команды GIT.md",
     "Откат.md",
-    "Сортировка массива объектов по названию свойства.md",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
     "Без названия 3.base",
