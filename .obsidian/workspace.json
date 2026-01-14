@@ -35,7 +35,8 @@
               "title": "Пэйджинг"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -157,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Получить все каталоги.md",
+                "file": "Пэйджинг.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Получить все каталоги"
+              "title": "Структура Пэйджинг"
             }
           },
           {
@@ -206,13 +207,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "a91f71a2b24ef19f",
   "lastOpenFiles": [
+    "Получить все каталоги.md",
     "Каталоги. Работа с каталогами.md",
     "Развернуть локальный стенд.md",
     "Пэйджинг.md",
     "Домашняя страница.md",
-    "Получить все каталоги.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
     "Диагностика отношений.md",
