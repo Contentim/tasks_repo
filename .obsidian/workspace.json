@@ -13,12 +13,24 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
+            }
+          },
+          {
+            "id": "4365ee9599762200",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.11.4"
+              },
+              "icon": "lucide-book-up",
+              "title": "примечания к выпуску 1.11.4"
             }
           }
         ]
@@ -143,13 +155,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -194,8 +206,8 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Решение проблем.md",
     "Домашняя страница.md",
+    "Решение проблем.md",
     "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Каталоги. Работа с каталогами.md",
