@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -65,7 +65,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "каталог",
+                "query": "tracing",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -155,13 +155,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -206,9 +206,9 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Решение проблем.md",
-    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Каталоги. Работа с каталогами.md",
     "Получить все каталоги.md",
