@@ -47,8 +47,7 @@
               "title": "Стенды"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -170,13 +169,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -219,11 +218,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "ec18b9a09c2e4b52",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Работа/Websoft/Стенды.md",
     "Решение проблем.md",
     "Развернуть локальный стенд.md",
     "Каталоги. Работа с каталогами.md",
