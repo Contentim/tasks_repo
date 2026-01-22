@@ -39,12 +39,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Иконки для работы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Иконки для работы"
             }
           },
           {
@@ -94,7 +94,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tracing",
+                "query": "икон",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -235,9 +235,10 @@
   },
   "active": "36b8f9f9500557bc",
   "lastOpenFiles": [
-    "Чек-лист отчетов.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Иконки для работы.md",
     "Работа/Websoft/Стенды.md",
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Чек-лист отчетов.md",
     "Домашняя страница.md",
     "Решение проблем.md",
     "Развернуть локальный стенд.md",
@@ -262,7 +263,6 @@
     "Пикник(фабула).md",
     "Любовная история - свидание.md",
     "Фразы для стикеров.md",
-    "Открыть страницу с шаблоном через GET-параметр.md",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
     "Без названия 3.base",
