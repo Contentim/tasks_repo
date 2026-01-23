@@ -62,7 +62,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -184,13 +184,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Решение проблем.md",
+                "file": "Чек-лист отчетов.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Решение проблем"
+              "title": "Структура Чек-лист отчетов"
             }
           },
           {
@@ -233,10 +233,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "39a6e859f5c5983f",
+  "active": "36b8f9f9500557bc",
   "lastOpenFiles": [
-    "Чек-лист отчетов.md",
     "Решение проблем.md",
+    "Чек-лист отчетов.md",
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Иконки для работы.md",
