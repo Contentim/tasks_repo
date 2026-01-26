@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -172,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт.md",
+                "file": "Чек-лист отчетов.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Ремонт"
+              "title": "Структура Чек-лист отчетов"
             }
           },
           {
@@ -221,7 +221,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "0dfda1538f8f7329",
+  "active": "e13961b4085423cc",
   "lastOpenFiles": [
     "Ремонт.md",
     "Работа/Websoft/Стенды.md",
