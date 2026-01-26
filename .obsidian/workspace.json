@@ -25,12 +25,14 @@
             "id": "e13961b4085423cc",
             "type": "leaf",
             "state": {
-              "type": "release-notes",
+              "type": "markdown",
               "state": {
-                "currentVersion": "1.11.5"
+                "file": "Чек-лист отчетов.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-book-up",
-              "title": "примечания к выпуску 1.11.5"
+              "icon": "lucide-file",
+              "title": "Чек-лист отчетов"
             }
           }
         ],
@@ -66,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "икон",
+                "query": "чек",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -156,12 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Чек-лист отчетов.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура"
+              "title": "Структура Чек-лист отчетов"
             }
           },
           {
@@ -206,6 +209,7 @@
   },
   "active": "e13961b4085423cc",
   "lastOpenFiles": [
+    "Чек-лист для задач с большим списком файлов.md",
     "Домашняя страница.md",
     "Чек-лист отчетов.md",
     "Решение проблем.md",
@@ -233,7 +237,6 @@
     "Пикник - сюжет.md",
     "Пикник(фабула).md",
     "Любовная история - свидание.md",
-    "Фразы для стикеров.md",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
     "Без названия 3.base",
