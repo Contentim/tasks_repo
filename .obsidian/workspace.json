@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -172,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Чек-лист отчетов.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Развернуть локальный стенд"
+              "title": "Структура Чек-лист отчетов"
             }
           },
           {
@@ -221,8 +221,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "0dfda1538f8f7329",
+  "active": "e13961b4085423cc",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Ремонт.md",
     "Чек-лист отчетов.md",
     "Работа/Websoft/Стенды.md",
@@ -231,7 +232,6 @@
     "Решение проблем.md",
     "Иконки для работы.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Развернуть локальный стенд.md",
     "Каталоги. Работа с каталогами.md",
     "Получить все каталоги.md",
     "Пэйджинг.md",
