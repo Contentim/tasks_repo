@@ -49,8 +49,7 @@
               "title": "Ремонт"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -172,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ремонт.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Ремонт"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -221,12 +220,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "0dfda1538f8f7329",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Ремонт.md",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "Чек-лист отчетов.md",
-    "Ремонт.md",
     "Домашняя страница.md",
     "Чек-лист для задач с большим списком файлов.md",
     "Решение проблем.md",
