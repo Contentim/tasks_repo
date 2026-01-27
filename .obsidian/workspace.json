@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Развернуть локальный стенд"
             }
           },
           {
@@ -81,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "ремонт",
+                "query": "shared",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -171,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Развернуть локальный стенд.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Развернуть локальный стенд"
             }
           },
           {
@@ -222,9 +222,9 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Ремонт.md",
     "Развернуть локальный стенд.md",
-    "Работа/Websoft/Стенды.md",
     "Чек-лист отчетов.md",
     "Домашняя страница.md",
     "Чек-лист для задач с большим списком файлов.md",
