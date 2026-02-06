@@ -13,40 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
-            }
-          },
-          {
-            "id": "e13961b4085423cc",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Чек-лист отчетов.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Чек-лист отчетов"
-            }
-          },
-          {
-            "id": "0dfda1538f8f7329",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Ремонт.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Ремонт"
+              "title": "Домашняя страница"
             }
           }
         ]
@@ -81,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "shared",
+                "query": "Д",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -171,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Домашняя страница.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Домашняя страница"
             }
           },
           {
@@ -220,11 +192,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Чек-лист отчетов.md",
-    "Работа/Websoft/Стенды.md",
     "Ремонт.md",
     "Домашняя страница.md",
     "Чек-лист для задач с большим списком файлов.md",
