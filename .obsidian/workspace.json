@@ -49,8 +49,7 @@
               "title": "Решение проблем"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -172,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Решение проблем.md",
+                "file": "Чек-лист отчетов.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Решение проблем"
+              "title": "Структура Чек-лист отчетов"
             }
           },
           {
@@ -221,10 +220,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "d38f065a4608cac3",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Чек-лист отчетов.md",
     "Решение проблем.md",
+    "Чек-лист отчетов.md",
     "Работа/Websoft/Стенды.md",
     "Получить все каталоги.md",
     "Схема предохранителей Вортекс Эстина.md",
