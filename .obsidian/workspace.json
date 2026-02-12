@@ -69,15 +69,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Получить все каталоги.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Получить все каталоги"
             }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -109,7 +110,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "отчет",
+                "query": "каталог",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -199,13 +200,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Чек-лист отчетов.md",
+                "file": "Получить все каталоги.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Чек-лист отчетов"
+              "title": "Структура Получить все каталоги"
             }
           },
           {
@@ -248,7 +249,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "13775b8263a719ed",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Чек-лист отчетов.md",
