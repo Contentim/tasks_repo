@@ -78,7 +78,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -200,13 +200,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Настройки узла для подключения через мобильное приложение и само подключение.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Настройки узла для подключения через мобильное приложение и само подключение"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -249,13 +249,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "33e7fb9b09283df0",
+  "active": "6119a883fda497e5",
   "lastOpenFiles": [
+    "Настройки узла для подключения через мобильное приложение и само подключение.md",
     "attachments/Pasted image 20260216115725.png",
     "attachments/Pasted image 20260216115657.png",
     "attachments/Pasted image 20260216115600.png",
     "attachments/Pasted image 20260216115537.png",
-    "Настройки узла для подключения через мобильное приложение и само подключение.md",
     "Работа/Websoft/Стенды.md",
     "Чек-лист отчетов.md",
     "Решение проблем.md",
@@ -293,7 +293,6 @@
     "Без названия 1.base",
     "Без названия 2.base",
     "attachments/Pasted image 20250925190204.png",
-    "attachments/Pasted image 20250826152806.png",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
     "attachments/xHttp_64.exe",
