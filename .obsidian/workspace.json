@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -110,7 +110,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "refre",
+                "query": "tracing",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -200,13 +200,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -251,11 +251,11 @@
   },
   "active": "6119a883fda497e5",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Настройки узла для подключения через мобильное приложение и само подключение.md",
     "Чек-лист отчетов.md",
     "Решение проблем.md",
-    "Работа/Websoft/Стенды.md",
     "attachments/Pasted image 20260216115725.png",
     "attachments/Pasted image 20260216115657.png",
     "attachments/Pasted image 20260216115600.png",
