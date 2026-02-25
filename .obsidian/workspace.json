@@ -78,7 +78,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -200,13 +200,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Логирование, debug и трассировка, сброс кэша"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -249,12 +249,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "6119a883fda497e5",
+  "active": "d63b2ad559ee2cb2",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Решение проблем.md",
     "Чек-лист отчетов.md",
     "Работа/Websoft/Стенды.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Дюрация.md",
     "Домашняя страница.md",
     "Настройки узла для подключения через мобильное приложение и само подключение.md",
