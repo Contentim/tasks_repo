@@ -2,5 +2,6 @@
   "alwaysUpdateLinks": true,
   "attachmentFolderPath": "./attachments",
   "defaultViewMode": "source",
-  "showLineNumber": false
+  "showLineNumber": false,
+  "readableLineLength": true
 }
