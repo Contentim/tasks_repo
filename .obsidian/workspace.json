@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Убрать стрелки возле заголовка в таблице отчета.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Развернуть локальный стенд"
+              "title": "Убрать стрелки возле заголовка в таблице отчета"
             }
           },
           {
@@ -138,7 +138,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "shared",
+                "query": "PROHIBIT",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -228,13 +228,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Убрать стрелки возле заголовка в таблице отчета.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Развернуть локальный стенд"
+              "title": "Структура Убрать стрелки возле заголовка в таблице отчета"
             }
           },
           {
@@ -277,14 +277,14 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "6119a883fda497e5",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Создание записи в админке.md",
     "Чек-лист отчетов.md",
     "Решение проблем.md",
-    "Развернуть локальный стенд.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Дюрация.md",
     "Настройки узла для подключения через мобильное приложение и само подключение.md",
