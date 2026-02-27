@@ -106,7 +106,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "vertical"
@@ -228,13 +228,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Убрать стрелки возле заголовка в таблице отчета.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Убрать стрелки возле заголовка в таблице отчета"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -277,8 +277,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "6119a883fda497e5",
+  "active": "d63b2ad559ee2cb2",
   "lastOpenFiles": [
+    "Убрать стрелки возле заголовка в таблице отчета.md",
     "Развернуть локальный стенд.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
@@ -309,7 +310,6 @@
     "Вариант A.md",
     "Диагностика — Личная динамика.md",
     "Доска желаний.canvas",
-    "Любовь-морковь - как создать любовные отношения.md",
     "attachments/Pasted image 20251225142153.png",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
