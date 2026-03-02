@@ -105,8 +105,7 @@
               "title": "Создание записи в админке"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -228,13 +227,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Чек-лист отчетов.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Чек-лист отчетов"
             }
           },
           {
@@ -277,11 +276,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "d63b2ad559ee2cb2",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Убрать стрелки возле заголовка в таблице отчета.md",
     "Развернуть локальный стенд.md",
-    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Создание записи в админке.md",
     "Чек-лист отчетов.md",
