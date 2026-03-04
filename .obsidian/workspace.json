@@ -119,8 +119,7 @@
               "title": "Промт - облигация - депозит(эквивалент)"
             }
           }
-        ],
-        "currentTab": 7
+        ]
       }
     ],
     "direction": "vertical"
@@ -242,13 +241,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Промт - облигация - депозит(эквивалент).md",
+                "file": "Чек-лист отчетов.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Промт - облигация - депозит(эквивалент)"
+              "title": "Структура Чек-лист отчетов"
             }
           },
           {
@@ -291,10 +290,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "9efa029407f4ba5e",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Чек-лист отчетов.md",
     "Промт - облигация - депозит(эквивалент).md",
+    "Чек-лист отчетов.md",
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Убрать стрелки возле заголовка в таблице отчета.md",
