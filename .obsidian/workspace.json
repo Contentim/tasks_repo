@@ -13,24 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
-            }
-          },
-          {
-            "id": "6ca4015467d10fc9",
-            "type": "leaf",
-            "state": {
-              "type": "release-notes",
-              "state": {
-                "currentVersion": "1.12.4"
-              },
-              "icon": "lucide-book-up",
-              "title": "примечания к выпуску 1.12.4"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
         ]
@@ -65,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "shared",
+                "query": "tracin",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -155,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -207,8 +195,8 @@
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Домашняя страница.md",
-    "Чек-лист отчетов.md",
     "Работа/Websoft/Стенды.md",
+    "Чек-лист отчетов.md",
     "Развернуть локальный стенд.md",
     "Промт - облигация - депозит(эквивалент).md",
     "Убрать стрелки возле заголовка в таблице отчета.md",
