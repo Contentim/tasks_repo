@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Развернуть локальный стенд.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Логирование, debug и трассировка, сброс кэша"
+              "title": "Развернуть локальный стенд"
             }
           },
           {
@@ -35,8 +35,7 @@
               "title": "Отчеты монолита + чек-лист"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -68,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "tracin",
+                "query": "refre",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -158,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Отчеты монолита + чек-лист.md",
+                "file": "Развернуть локальный стенд.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Отчеты монолита + чек-лист"
+              "title": "Структура Развернуть локальный стенд"
             }
           },
           {
@@ -207,12 +206,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "43c525016cf56ab2",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Работа/Websoft/Стенды.md",
     "Отчеты монолита + чек-лист.md",
+    "Домашняя страница.md",
+    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Промт - облигация - депозит(эквивалент).md",
     "Убрать стрелки возле заголовка в таблице отчета.md",
