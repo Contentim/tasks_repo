@@ -81,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "refre",
+                "query": "settin",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -220,7 +220,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Об анализе текста на наличия искусства.md",
     "Поэзия. Тезисы о....md",
