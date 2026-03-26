@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Лампочки.md",
+                "file": "Схема предохранителей Вортекс Эстина.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Лампочки"
+              "title": "Схема предохранителей Вортекс Эстина"
             }
           },
           {
@@ -81,7 +81,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "ламп",
+                "query": "свет",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -171,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Лампочки.md",
+                "file": "Схема предохранителей Вортекс Эстина.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Лампочки"
+              "title": "Структура Схема предохранителей Вортекс Эстина"
             }
           },
           {
@@ -223,6 +223,7 @@
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Домашняя страница.md",
+    "Лампочки.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Об анализе текста на наличия искусства.md",
     "Поэзия. Тезисы о....md",
@@ -251,7 +252,6 @@
     "Диагностика отношений.md",
     "Заметка 1.md",
     "Диагностические вопросы.md",
-    "Заметка 2.md",
     "Доска желаний.canvas",
     "attachments/Pasted image 20251225142153.png",
     "attachments/Pasted image 20251107101316.png",
