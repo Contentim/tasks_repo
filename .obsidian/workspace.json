@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Об анализе текста на наличия искусства.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Об анализе текста на наличия искусства"
             }
           },
           {
@@ -35,8 +35,7 @@
               "title": "Каталоги-связки"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -158,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Каталоги-связки.md",
+                "file": "Об анализе текста на наличия искусства.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Каталоги-связки"
+              "title": "Структура Об анализе текста на наличия искусства"
             }
           },
           {
@@ -207,9 +206,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "2834035ea1e8a273",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Домашняя страница.md",
+    "Каталоги-связки.md",
     "Схема предохранителей Вортекс Эстина.md",
     "Лампочки.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
@@ -238,7 +238,6 @@
     "Пэйджинг.md",
     "Диагностика отношений.md",
     "Заметка 1.md",
-    "Диагностические вопросы.md",
     "Доска желаний.canvas",
     "attachments/Pasted image 20251225142153.png",
     "attachments/Pasted image 20251107101316.png",
