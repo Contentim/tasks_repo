@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Каталоги-связки.md",
+                "file": "Развернуть локальный стенд.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Каталоги-связки"
+              "title": "Развернуть локальный стенд"
             }
           }
         ],
@@ -68,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "связки",
+                "query": "refresh",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -158,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Каталоги-связки.md",
+                "file": "Развернуть локальный стенд.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Каталоги-связки"
+              "title": "Структура Развернуть локальный стенд"
             }
           },
           {
@@ -209,9 +209,9 @@
   },
   "active": "fb40d85c9c33a612",
   "lastOpenFiles": [
+    "Каталоги-связки.md",
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
-    "Каталоги-связки.md",
     "Развернуть локальный стенд.md",
     "Промт - текст песни как искусство.md",
     "Об анализе текста на наличия искусства.md",
