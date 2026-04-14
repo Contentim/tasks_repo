@@ -35,8 +35,7 @@
               "title": "Развернуть локальный стенд"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -158,13 +157,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Развернуть локальный стенд.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Развернуть локальный стенд"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -207,12 +206,12 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "fb40d85c9c33a612",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Каталоги-связки.md",
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
-    "Развернуть локальный стенд.md",
     "Промт - текст песни как искусство.md",
     "Об анализе текста на наличия искусства.md",
     "Схема предохранителей Вортекс Эстина.md",
