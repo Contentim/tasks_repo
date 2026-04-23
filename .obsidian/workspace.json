@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Иконки для работы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Иконки для работы"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "refresh",
+                "query": "икон",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -143,13 +143,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Иконки для работы.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Иконки для работы"
             }
           },
           {
@@ -194,8 +194,8 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
+    "Домашняя страница.md",
     "Развернуть локальный стенд.md",
     "Отчеты монолита + чек-лист.md",
     "Каталоги-связки.md",
