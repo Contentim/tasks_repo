@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
         ],
@@ -68,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "global",
+                "query": "кэш",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -158,13 +158,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Стенды"
+              "title": "Структура Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -207,10 +207,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "6ba41bab3e0c19f7",
   "lastOpenFiles": [
-    "Иконки для работы.md",
     "Работа/Websoft/Стенды.md",
+    "Иконки для работы.md",
     "Домашняя страница.md",
     "Развернуть локальный стенд.md",
     "Отчеты монолита + чек-лист.md",
