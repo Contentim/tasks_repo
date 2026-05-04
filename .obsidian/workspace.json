@@ -68,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "икон",
+                "query": "global",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -207,11 +207,11 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "6ba41bab3e0c19f7",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "Иконки для работы.md",
     "Работа/Websoft/Стенды.md",
+    "Домашняя страница.md",
     "Развернуть локальный стенд.md",
     "Отчеты монолита + чек-лист.md",
     "Каталоги-связки.md",
