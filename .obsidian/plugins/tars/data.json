@@ -12,6 +12,16 @@
         "model": "qwen-turbo",
         "parameters": {}
       }
+    },
+    {
+      "tag": "DeepSeek",
+      "vendor": "DeepSeek",
+      "options": {
+        "apiKey": "",
+        "baseURL": "https://api.deepseek.com",
+        "model": "deepseek-chat",
+        "parameters": {}
+      }
     }
   ],
   "systemTags": [
