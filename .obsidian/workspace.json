@@ -55,12 +55,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Настройка поиска на портале.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Без названия 1"
+              "title": "Настройка поиска на портале"
             }
           }
         ],
@@ -186,13 +186,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Без названия 1.md",
+                "file": "Настройка поиска на портале.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Без названия 1"
+              "title": "Структура Настройка поиска на портале"
             }
           },
           {
@@ -237,7 +237,7 @@
   },
   "active": "f1e7413a222d5625",
   "lastOpenFiles": [
-    "Без названия 1.md",
+    "Настройка поиска на портале.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
