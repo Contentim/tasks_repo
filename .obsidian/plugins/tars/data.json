@@ -17,7 +17,7 @@
       "tag": "DeepSeek",
       "vendor": "DeepSeek",
       "options": {
-        "apiKey": "",
+        "apiKey": "sk-e748023e8eb548768988bbdfb6193399",
         "baseURL": "https://api.deepseek.com",
         "model": "deepseek-chat",
         "parameters": {}
@@ -45,7 +45,7 @@
   "answerDelayInMilliseconds": 2000,
   "confirmRegenerate": true,
   "enableTagSuggest": true,
-  "tagSuggestMaxLineLength": 20,
+  "tagSuggestMaxLineLength": 22,
   "enableExportToJSONL": false,
   "enableReplaceTag": false,
   "enableDefaultSystemMsg": false,
