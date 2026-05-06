@@ -29,7 +29,7 @@
 .edit-modal-section-header {
 	margin-top: 5px;
 	margin-bottom: 5px;
-	color: var(--text-muted)
+	color: var(--text-muted);
 }
 
 .edit-modal-aliases {
@@ -51,4 +51,17 @@
 	font-size: var(--font-ui-medium);
 	float: right;
 	background-color: var(--interactive-normal);
+}
+
+.popover-go-to-def-button {
+	position: absolute;
+	top: 1em;
+	right: 1em;
+
+	background-color: var(--interactive-normal);
+	opacity: 0.2;
+	transition-duration: 0.1s;
+}
+.popover-go-to-def-button:hover {
+	opacity: 1;
 }
