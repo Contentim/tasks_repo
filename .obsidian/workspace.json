@@ -41,12 +41,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Стенды"
             }
           }
         ],
@@ -172,13 +172,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура Домашняя страница"
+              "title": "Структура Стенды"
             }
           },
           {
@@ -223,11 +223,11 @@
   },
   "active": "5ccaf648572c1e23",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Настройка поиска на портале.md",
     "attachments/Pasted image 20260506133923.png",
     "attachments/Pasted image 20260506133756.png",
-    "Домашняя страница.md",
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Иконки для работы.md",
