@@ -4,16 +4,6 @@
   },
   "providers": [
     {
-      "tag": "Doubao",
-      "vendor": "Doubao",
-      "options": {
-        "apiKey": "",
-        "baseURL": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
-        "model": "",
-        "parameters": {}
-      }
-    },
-    {
       "tag": "Qwen",
       "vendor": "Qwen",
       "options": {
