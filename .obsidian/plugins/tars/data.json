@@ -1,0 +1,54 @@
+{
+  "editorStatus": {
+    "isTextInserting": false
+  },
+  "providers": [
+    {
+      "tag": "Doubao",
+      "vendor": "Doubao",
+      "options": {
+        "apiKey": "",
+        "baseURL": "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+        "model": "",
+        "parameters": {}
+      }
+    },
+    {
+      "tag": "Qwen",
+      "vendor": "Qwen",
+      "options": {
+        "apiKey": "",
+        "baseURL": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+        "model": "qwen-turbo",
+        "parameters": {}
+      }
+    }
+  ],
+  "systemTags": [
+    "System"
+  ],
+  "newChatTags": [
+    "NewChat"
+  ],
+  "userTags": [
+    "User"
+  ],
+  "roleEmojis": {
+    "assistant": "✨",
+    "system": "🔧",
+    "newChat": "🚀",
+    "user": "💬"
+  },
+  "promptTemplates": [],
+  "enableInternalLink": true,
+  "enableInternalLinkForAssistantMsg": false,
+  "answerDelayInMilliseconds": 2000,
+  "confirmRegenerate": true,
+  "enableTagSuggest": true,
+  "tagSuggestMaxLineLength": 20,
+  "enableExportToJSONL": false,
+  "enableReplaceTag": false,
+  "enableDefaultSystemMsg": false,
+  "defaultSystemMsg": "",
+  "enableStreamLog": false
+}
