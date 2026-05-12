@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "кэш",
+                "query": "#",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -204,9 +204,10 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Без названия.canvas",
+    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
-    "Домашняя страница.md",
     "Настройка поиска на портале.md",
     "attachments/Pasted image 20260506133923.png",
     "attachments/Pasted image 20260506133756.png",
