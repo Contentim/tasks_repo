@@ -187,12 +187,22 @@
             "state": {
               "type": "git-view",
               "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
+              "icon": "lucide-ghost",
+              "title": "git-view"
             }
           },
           {
             "id": "eab4147d5838ea95",
+            "type": "leaf",
+            "state": {
+              "type": "todo",
+              "state": {},
+              "icon": "lucide-ghost",
+              "title": "todo"
+            }
+          },
+          {
+            "id": "cee3fa5ccdbced06",
             "type": "leaf",
             "state": {
               "type": "todo",
@@ -202,7 +212,7 @@
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
@@ -210,7 +220,6 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "homepage:Open homepage": false,
       "bases:Создать новую базу": false,
       "switcher:Меню быстрого перехода": false,
       "graph:Граф": false,
@@ -218,10 +227,11 @@
       "daily-notes:Сегодняшняя заметка": false,
       "templates:Вставить шаблон": false,
       "command-palette:Открыть палитру команд": false,
-      "obsidian-git:Open Git source control": false
+      "obsidian-git:Open Git source control": false,
+      "homepage:Open homepage": false
     }
   },
-  "active": "5ccaf648572c1e23",
+  "active": "cee3fa5ccdbced06",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
