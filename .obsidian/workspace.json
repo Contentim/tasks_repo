@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Уведомления - tools.create_notification (из документации с пояснениями).md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Уведомления - tools.create_notification (из документации с пояснениями)"
+              "title": "Домашняя страница"
             }
           },
           {
@@ -34,8 +34,19 @@
               "icon": "lucide-file",
               "title": "Общие настройки. Вкл-выкл программно"
             }
+          },
+          {
+            "id": "f5313ee9bca06914",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Новая вкладка"
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -216,9 +227,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "f5313ee9bca06914",
   "lastOpenFiles": [
     "Домашняя страница.md",
+    "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Общие настройки. Вкл-выкл программно.md",
     "Работа/Websoft/Стенды.md",
     "Иконки для работы.md",
@@ -250,7 +262,6 @@
     "Каталоги. Работа с каталогами.md",
     "Получить список всех каталогов системы.md",
     "Чек-лист для задач с большим списком файлов.md",
-    "Ремонт.md",
     "Доска желаний.canvas",
     "attachments/Pasted image 20251225142153.png",
     "attachments/Pasted image 20251107101316.png",
