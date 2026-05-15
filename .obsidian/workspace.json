@@ -34,23 +34,8 @@
               "icon": "lucide-file",
               "title": "Общие настройки. Вкл-выкл программно"
             }
-          },
-          {
-            "id": "f5313ee9bca06914",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Статусы задач. Методичка.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Статусы задач. Методичка"
-            }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -231,12 +216,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "f5313ee9bca06914",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Статусы задач. Методичка.md",
-    "Домашняя страница.md",
-    "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Общие настройки. Вкл-выкл программно.md",
+    "Домашняя страница.md",
+    "Статусы задач. Методичка.md",
+    "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Работа/Websoft/Стенды.md",
     "Иконки для работы.md",
     "Без названия.canvas",
