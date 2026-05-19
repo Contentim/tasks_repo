@@ -35,7 +35,8 @@
               "title": "Общие настройки. Вкл-выкл программно"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -67,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "create_notification",
+                "query": "refresh",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -216,13 +217,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "Общие настройки. Вкл-выкл программно.md",
     "Статусы задач. Методичка.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
-    "Работа/Websoft/Стенды.md",
     "Иконки для работы.md",
     "Без названия.canvas",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
