@@ -35,8 +35,7 @@
               "title": "Развернуть локальный стенд"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -217,8 +216,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "c4b7e91ace969dc2",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Развернуть локальный стенд.md",
     "Общие настройки. Вкл-выкл программно.md",
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
@@ -231,7 +231,6 @@
     "attachments/Pasted image 20260506133923.png",
     "attachments/Pasted image 20260506133756.png",
     "Как развернуть локальный стенд из branch DEV_WORKSPACE_ADMIN.md",
-    "Развернуть локальный стенд.md",
     "Отчеты монолита + чек-лист.md",
     "Каталоги-связки.md",
     "Промт - текст песни как искусство.md",
