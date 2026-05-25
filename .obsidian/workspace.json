@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Стенды.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "refresh",
+                "query": "#log",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -204,9 +204,9 @@
   },
   "active": "101009b89e3cd698",
   "lastOpenFiles": [
+    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
     "LPE. Заметки.md",
-    "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
     "Общие настройки. Вкл-выкл программно.md",
     "Статусы задач. Методичка.md",
