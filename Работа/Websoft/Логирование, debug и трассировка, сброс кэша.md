@@ -11,8 +11,8 @@ LogEvent('', tools.object_to_text(oResult,'json'))
 ```
 
 ## Серверный alert
-```
-tools.alert_server( tools.object_to_text('BWFORE _curDocID '+_curDocID,'json') );
+```js
+tools.alert_server( tools.object_to_text('BEFORE _curDocID '+_curDocID,'json') );
 ```
 #### Вывод логов в файл *DEVELOPER_REPORT*
 ```js
