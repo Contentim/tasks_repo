@@ -74,8 +74,7 @@
               "title": "Закладки"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -202,7 +201,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "101009b89e3cd698",
+  "active": "4f4c733d5d9f5285",
   "lastOpenFiles": [
     "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
