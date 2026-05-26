@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Работа/Websoft/Стенды.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Логирование, debug и трассировка, сброс кэша"
+              "title": "Стенды"
             }
           }
         ]
@@ -201,10 +201,21 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "4f4c733d5d9f5285",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Работа/Websoft/Стенды.md",
     "Домашняя страница.md",
+    "Доска желаний.canvas",
+    "Диагностика отношений.md",
+    "Демо-данные для платформы.md",
+    "Глобальные константы.md",
+    "Вкладки формы.md",
+    "Без названия 5.base",
+    "Без названия 4.base",
+    "Без названия 2.base",
+    "Без названия 1.base",
+    "Без названия.md",
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+    "Работа/Websoft/Стенды.md",
     "LPE. Заметки.md",
     "Развернуть локальный стенд.md",
     "Общие настройки. Вкл-выкл программно.md",
@@ -212,7 +223,6 @@
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Иконки для работы.md",
     "Без названия.canvas",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Настройка поиска на портале.md",
     "attachments/Pasted image 20260506133923.png",
     "attachments/Pasted image 20260506133756.png",
@@ -226,27 +236,16 @@
     "Поэзия. Тезисы о....md",
     "Промт - облигация - депозит(эквивалент).md",
     "Убрать стрелки возле заголовка в таблице отчета.md",
-    "Создание записи в админке.md",
-    "Решение проблем.md",
-    "Дюрация.md",
-    "Настройки узла для подключения через мобильное приложение и само подключение.md",
     "attachments/Pasted image 20260216115725.png",
     "attachments/Pasted image 20260216115657.png",
     "attachments/Pasted image 20260216115600.png",
     "attachments/Pasted image 20260216115537.png",
-    "Получить все каталоги.md",
-    "Каталоги. Работа с каталогами.md",
-    "Доска желаний.canvas",
     "attachments/Pasted image 20251225142153.png",
     "attachments/Pasted image 20251107101316.png",
     "attachments/Pasted image 20251106192934.png",
     "Без названия 3.base",
-    "Без названия 5.base",
     "attachments/Pasted image 20251002105923.png",
-    "Без названия 4.base",
     "Без названия.base",
-    "Без названия 1.base",
-    "Без названия 2.base",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
     "attachments/xHttp_64.exe",
