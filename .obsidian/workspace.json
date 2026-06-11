@@ -22,19 +22,6 @@
             }
           },
           {
-            "id": "6ee107c68154fb3e",
-            "type": "leaf",
-            "state": {
-              "type": "bases",
-              "state": {
-                "file": "Без названия 6.base",
-                "viewName": "Таблица"
-              },
-              "icon": "lucide-table",
-              "title": "Без названия 6"
-            }
-          },
-          {
             "id": "c1ddd559ea8454c5",
             "type": "leaf",
             "state": {
@@ -48,8 +35,7 @@
               "title": "Стенды"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -229,7 +215,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "c1ddd559ea8454c5",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Без названия 6.base",
