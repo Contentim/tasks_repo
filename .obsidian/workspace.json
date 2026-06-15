@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Уведомления - tools.create_notification (из документации с пояснениями).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Уведомления - tools.create_notification (из документации с пояснениями)"
             }
           }
         ]
@@ -204,8 +204,8 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Домашняя страница.md",
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Вкладки формы.md",
     "Без названия 6.base",
