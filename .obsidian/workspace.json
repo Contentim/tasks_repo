@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Уведомления - tools.create_notification (из документации с пояснениями).md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Уведомления - tools.create_notification (из документации с пояснениями)"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
         ],
@@ -68,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "логир",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -89,7 +89,8 @@
               "title": "Закладки"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -219,6 +220,7 @@
   "active": "1c070f2bff0a3d8d",
   "lastOpenFiles": [
     "Домашняя страница.md",
+    "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Вкладки формы.md",
     "Без названия 6.base",
     "Без названия 4.base",
@@ -241,7 +243,6 @@
     "LPE. Заметки.md",
     "Общие настройки. Вкл-выкл программно.md",
     "Статусы задач. Методичка.md",
-    "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Иконки для работы.md",
     "Без названия.canvas",
     "Настройка поиска на портале.md",
