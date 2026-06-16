@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
+                "file": "Отчеты монолита + чек-лист.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Логирование, debug и трассировка, сброс кэша"
+              "title": "Отчеты монолита + чек-лист"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "уведомле",
+                "query": "отчеты",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -204,10 +204,10 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Домашняя страница.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Ролевая модель приложений.md",
-    "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Вкладки формы.md",
     "Без названия 6.base",
     "Без названия 4.base",
