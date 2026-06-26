@@ -68,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "отчеты",
+                "query": "short_name",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -217,7 +217,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "fabc4d22b14603d2",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "49170.md",
