@@ -42,15 +42,14 @@
               "type": "markdown",
               "state": {
                 "file": "58231.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
               "title": "58231"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -231,10 +230,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "f8ace0c136b11caf",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "58090.md",
     "58231.md",
+    "58090.md",
     "Домашняя страница.md",
     "49170.md",
     "Про классику в обработке в стиле техно.md",
