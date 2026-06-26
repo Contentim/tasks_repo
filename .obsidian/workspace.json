@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -231,10 +231,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "fabc4d22b14603d2",
+  "active": "f8ace0c136b11caf",
   "lastOpenFiles": [
-    "58231.md",
     "58090.md",
+    "58231.md",
     "Домашняя страница.md",
     "49170.md",
     "Про классику в обработке в стиле техно.md",
