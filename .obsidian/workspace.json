@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Демо-данные для платформы.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Демо-данные для платформы"
+              "title": "Домашняя страница"
             }
           },
           {
@@ -35,8 +35,7 @@
               "title": "Демо-данные для монолита"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -217,10 +216,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e0305ff8d92f49c3",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Демо-данные для монолита.md",
     "Демо-данные для платформы.md",
+    "Демо-данные для монолита.md",
     "Домашняя страница.md",
     "Иконки для работы.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
