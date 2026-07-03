@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           },
           {
@@ -67,7 +67,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "демо",
+                "query": "traci",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -218,9 +218,9 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Демо-данные для платформы.md",
     "Демо-данные для монолита.md",
-    "Домашняя страница.md",
     "Иконки для работы.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
