@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Иконки для работы.md",
+                "file": "Демо-данные для платформы.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Иконки для работы"
+              "title": "Демо-данные для платформы"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "икон",
+                "query": "демо",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -205,6 +205,7 @@
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Домашняя страница.md",
+    "Иконки для работы.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Работа/Websoft/Стенды.md",
     "Развернуть локальный стенд.md",
@@ -235,7 +236,6 @@
     "LPE. Заметки.md",
     "Общие настройки. Вкл-выкл программно.md",
     "Статусы задач. Методичка.md",
-    "Иконки для работы.md",
     "Без названия.canvas",
     "Настройка поиска на портале.md",
     "attachments/Pasted image 20260506133923.png",
