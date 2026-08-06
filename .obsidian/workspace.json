@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Отчеты монолита + чек-лист.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Отчеты монолита + чек-лист"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "файл",
+                "query": "отчеты",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -204,9 +204,9 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Домашняя страница.md",
     "Задачи для обучения.md",
     "Диагностика отношений.md",
-    "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Демо-данные для платформы.md",
