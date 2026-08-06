@@ -13,26 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Задачи для обучения.md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Задачи для обучения"
-            }
-          },
-          {
-            "id": "7af1599dee3562f3",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Работа/Websoft/Стенды.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Стенды"
+              "title": "Домашняя страница"
             }
           }
         ]
@@ -218,6 +204,7 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Задачи для обучения.md",
     "Диагностика отношений.md",
     "Домашняя страница.md",
     "Работа/Websoft/Стенды.md",
@@ -250,7 +237,6 @@
     "Без названия.md",
     "LPE. Заметки.md",
     "Общие настройки. Вкл-выкл программно.md",
-    "Статусы задач. Методичка.md",
     "Без названия.canvas",
     "attachments/Pasted image 20260506133923.png",
     "attachments/Pasted image 20260506133756.png",
