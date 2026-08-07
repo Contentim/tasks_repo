@@ -35,7 +35,8 @@
               "title": "Про Евротранс и безопасные кредитные рейтинги"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -216,8 +217,9 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "d3d3b55d8e350168",
   "lastOpenFiles": [
+    "Промт - облигация - депозит(эквивалент).md",
     "Домашняя страница.md",
     "Про Евротранс и безопасные кредитные рейтинги.md",
     "attachments/Pasted image 20260807144832.png",
