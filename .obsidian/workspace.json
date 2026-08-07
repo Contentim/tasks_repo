@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Домашняя страница.md",
+                "file": "Промт - облигация - депозит(эквивалент).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Домашняя страница"
+              "title": "Промт - облигация - депозит(эквивалент)"
             }
           },
           {
@@ -28,15 +28,14 @@
               "type": "markdown",
               "state": {
                 "file": "Про Евротранс и безопасные кредитные рейтинги.md",
-                "mode": "source",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
               "title": "Про Евротранс и безопасные кредитные рейтинги"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -217,12 +216,12 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "d3d3b55d8e350168",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "Домашняя страница.md",
+    "Про Евротранс и безопасные кредитные рейтинги.md",
     "attachments/Pasted image 20260807144832.png",
     "attachments/Pasted image 20260807144803.png",
-    "Про Евротранс и безопасные кредитные рейтинги.md",
-    "Домашняя страница.md",
     "Отчеты монолита + чек-лист.md",
     "Задачи для обучения.md",
     "Диагностика отношений.md",
@@ -262,7 +261,6 @@
     "attachments/Pasted image 20260216115537.png",
     "attachments/Pasted image 20251225142153.png",
     "attachments/Pasted image 20251107101316.png",
-    "attachments/Pasted image 20251106192934.png",
     "Без названия.base",
     "attachments/Logs/xhttp_2025-01-23.log",
     "attachments/Logs",
