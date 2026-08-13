@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "отчеты",
+                "query": "режим",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -202,7 +202,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Домашняя страница.md",
     "Отчеты монолита + чек-лист.md",
