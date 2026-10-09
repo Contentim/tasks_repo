@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Фиксы.md",
+                "file": "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Фиксы"
+              "title": "Логирование, debug и трассировка, сброс кэша"
             }
           }
         ],
@@ -68,7 +68,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "отчет",
+                "query": "логир",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -217,7 +217,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "00e86128842a654b",
+  "active": "101009b89e3cd698",
   "lastOpenFiles": [
     "Фиксы.md",
     "Домашняя страница.md",
