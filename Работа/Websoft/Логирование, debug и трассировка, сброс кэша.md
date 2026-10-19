@@ -25,6 +25,19 @@ LogEvent('DEVELOPER_REPORT', alert(value))
 LogEvent('DEVELOPER_REPORT', tools.object_to_text(value,'json'))
 ```
 
+```js
+EnableLog('LOG_FILE', true);
+try
+{
+	var oTr = oXqe.Transpile();
+	LogEvent('LOG_FILE', 'XQE [' + oTr.BackendName + ']: ' + oTr.QueryText);
+	LogEvent('LOG_FILE', 'XQE params: ' + tools.object_to_text(oTr.Parameters, 'json'));
+}
+catch (_errTr)
+{
+	LogEvent('LOG_FILE', 'XQE transpile error: ' + _errTr);
+}
+```
 #### Отображение ИД объектов на странице портала(GET-параметр)
 ```php
 ?tracing=verbose
