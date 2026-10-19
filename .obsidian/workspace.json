@@ -20,8 +20,19 @@
               "icon": "lucide-file",
               "title": "Работа с ветками"
             }
+          },
+          {
+            "id": "6cc9d4a13bc87098",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Новая вкладка"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -202,11 +213,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "6cc9d4a13bc87098",
   "lastOpenFiles": [
+    "Работа с ветками.md",
     "Домашняя страница.md",
     "Иконки для работы.md",
-    "Работа с ветками.md",
     "Заметки для работы.md",
     "Проверочный код. Выборки.md",
     "Без названия 7.base",
