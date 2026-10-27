@@ -55,16 +55,16 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "sObjectIDs.md",
+                "file": "XQueryExpr.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "sObjectIDs"
+              "title": "XQueryExpr"
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -245,13 +245,14 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "f20e543881a90267",
+  "active": "d042878274cbdae9",
   "lastOpenFiles": [
-    "sObjectIDs.md",
-    "Как вывести название статуса, типа и т.п..md",
-    "Домашняя страница.md",
-    "Работа с ветками.md",
     "Заметки для работы.md",
+    "Как вывести название статуса, типа и т.п..md",
+    "XQueryExpr.md",
+    "Домашняя страница.md",
+    "sObjectIDs.md",
+    "Работа с ветками.md",
     "Работа/Websoft/Логирование, debug и трассировка, сброс кэша.md",
     "Иконки для работы.md",
     "Проверочный код. Выборки.md",
@@ -276,7 +277,6 @@
     "58090 - Workspace 2.0. Пространство знаний. Ошибка 400 при смене типа руководителя у сотрудника..md",
     "Про классику в обработке в стиле техно.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
-    "Ролевая модель приложений.md",
     "Без названия 6.base",
     "Без названия 4.base",
     "Без названия 3.base",
