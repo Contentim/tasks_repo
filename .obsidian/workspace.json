@@ -63,8 +63,7 @@
               "title": "XQueryExpr"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -245,11 +244,11 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "d042878274cbdae9",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
+    "XQueryExpr.md",
     "Заметки для работы.md",
     "Как вывести название статуса, типа и т.п..md",
-    "XQueryExpr.md",
     "Домашняя страница.md",
     "sObjectIDs.md",
     "Работа с ветками.md",
