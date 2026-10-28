@@ -63,8 +63,7 @@
               "title": "Домашняя страница"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -245,10 +244,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "d042878274cbdae9",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Видимость полей в BS.md",
     "Домашняя страница.md",
+    "Видимость полей в BS.md",
     "XQueryExpr.md",
     "Работа с ветками.md",
     "Заметки для работы.md",
