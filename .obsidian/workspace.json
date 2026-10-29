@@ -77,8 +77,7 @@
               "title": "Диалог мужа и жены"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -259,7 +258,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "1d82e05dcd491aa2",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Диалог мужа и жены.md",
     "Работа с ветками.md",
