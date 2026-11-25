@@ -36,13 +36,17 @@
             }
           },
           {
-            "id": "6f02d84cb393042b",
+            "id": "6fe66f9aa864c970",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "ArrayOptFind.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Новая вкладка"
+              "title": "ArrayOptFind"
             }
           }
         ],
@@ -227,11 +231,13 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "6f02d84cb393042b",
+  "active": "6fe66f9aa864c970",
   "lastOpenFiles": [
-    "Уведомления - tools.create_notification (из документации с пояснениями).md",
-    "Работа с ветками.md",
     "Домашняя страница.md",
+    "ArrayOptFind.md",
+    "Работа с ветками.md",
+    "Решение проблем.md",
+    "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Примеры выборок на которые ориентироваться при разработке и рефакторинге.md",
     "Диалог мужа и жены.md",
     "Видимость полей в BS.md",
@@ -257,8 +263,6 @@
     "Работа/Websoft/Стенды.md",
     "Демо-данные для платформы.md",
     "Демо-данные для монолита.md",
-    "Развернуть локальный стенд.md",
-    "Шаблоны страниц для портала. Пояснительная записка.md",
     "Без названия 6.base",
     "Без названия 4.base",
     "Без названия 3.base",
