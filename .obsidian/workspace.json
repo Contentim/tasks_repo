@@ -34,9 +34,19 @@
               "icon": "lucide-file",
               "title": "Работа с ветками"
             }
+          },
+          {
+            "id": "6f02d84cb393042b",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "Новая вкладка"
+            }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -217,7 +227,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "ba2af30977bc85a6",
+  "active": "6f02d84cb393042b",
   "lastOpenFiles": [
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
     "Работа с ветками.md",
