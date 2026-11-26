@@ -50,7 +50,7 @@
             }
           }
         ],
-        "currentTab": 2
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -231,10 +231,10 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "6fe66f9aa864c970",
+  "active": "ba2af30977bc85a6",
   "lastOpenFiles": [
-    "Домашняя страница.md",
     "ArrayOptFind.md",
+    "Домашняя страница.md",
     "Работа с ветками.md",
     "Решение проблем.md",
     "Уведомления - tools.create_notification (из документации с пояснениями).md",
