@@ -13,72 +13,15 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Уведомления - tools.create_notification (из документации с пояснениями).md",
+                "file": "Домашняя страница.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Уведомления - tools.create_notification (из документации с пояснениями)"
-            }
-          },
-          {
-            "id": "ba2af30977bc85a6",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Работа с ветками.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Работа с ветками"
-            }
-          },
-          {
-            "id": "6fe66f9aa864c970",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "ArrayOptFind.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "ArrayOptFind"
-            }
-          },
-          {
-            "id": "39013155d35d3b9a",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Психология дружбы v1.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Психология дружбы v1"
-            }
-          },
-          {
-            "id": "78e3670c73588072",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Психология дружбы. Эссе.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Психология дружбы. Эссе"
+              "title": "Домашняя страница"
             }
           }
-        ],
-        "currentTab": 4
+        ]
       }
     ],
     "direction": "vertical"
@@ -259,7 +202,7 @@
       "homepage:Open homepage": false
     }
   },
-  "active": "78e3670c73588072",
+  "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
     "Психология дружбы. Эссе.md",
     "Психология дружбы v1.md",

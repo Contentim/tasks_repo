@@ -9,5 +9,6 @@
     "blockquote"
   ],
   "cssTheme": "",
-  "theme": "moonstone"
+  "theme": "moonstone",
+  "showRibbon": true
 }
